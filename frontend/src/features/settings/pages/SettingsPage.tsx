@@ -48,7 +48,7 @@ export const SettingsPage: React.FC = () => {
         <div className="space-y-1">
           <h3 className="text-base font-semibold text-foreground">Appearance</h3>
           <p className="text-xs text-muted-foreground">
-            Select how HABITI looks to you. Choose between sleek Dark Mode, crisp Light Mode, or system default.
+            Select how DailyForge looks to you. Choose between sleek Dark Mode, crisp Light Mode, or system default.
           </p>
         </div>
 

@@ -65,9 +65,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authService.login(email, password);
       setUser(res.user);
       setToken(res.token);
-    } finally {
+    } catch (err) {
       setIsLoading(false);
+      throw err; // Re-throw so LoginPage can show the error
     }
+    setIsLoading(false);
   };
 
   const register = async (name: string, email: string, password?: string, confirmPassword?: string) => {
@@ -76,9 +78,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await authService.register(name, email, password, confirmPassword);
       setUser(res.user);
       setToken(res.token);
-    } finally {
+    } catch (err) {
       setIsLoading(false);
+      throw err; // Re-throw so RegisterPage can show the error
     }
+    setIsLoading(false);
   };
 
   const logout = async () => {

@@ -22,7 +22,7 @@ export const LandingPage: React.FC = () => {
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="font-extrabold text-lg tracking-tight">HABITI</span>
+          <span className="font-extrabold text-lg tracking-tight">DailyForge</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -171,7 +171,7 @@ export const LandingPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="mt-auto border-t border-border px-6 py-8 text-center text-xs text-muted-foreground">
-        <p>&copy; {new Date().getFullYear()} HABITI AI. Engineered for peak human potential.</p>
+        <p>&copy; {new Date().getFullYear()} DailyForge. Engineered for peak human potential.</p>
       </footer>
     </div>
   );

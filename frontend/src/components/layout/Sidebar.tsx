@@ -92,7 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {!isCollapsed && (
             <div className="flex flex-col">
               <span className="font-bold text-base tracking-tight text-foreground flex items-center gap-1.5">
-                HABITI <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-ai/15 text-ai border border-ai/20">AI</span>
+                DAILYFORGE <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-ai/15 text-ai border border-ai/20">AI</span>
               </span>
               <span className="text-[11px] text-muted-foreground font-mono">
                 Consistency OS

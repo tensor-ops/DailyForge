@@ -8,13 +8,15 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <ToastProvider>
-          <AuthProvider>
-            <BrowserRouter>{children}</BrowserRouter>
-          </AuthProvider>
-        </ToastProvider>
-      </ThemeProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <ToastProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ToastProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 };

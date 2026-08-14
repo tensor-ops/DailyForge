@@ -51,7 +51,7 @@ export const LoginPage: React.FC = () => {
         <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow">
           <Sparkles className="h-5 w-5" />
         </div>
-        <span className="font-extrabold text-xl tracking-tight text-foreground">HABITI AI</span>
+        <span className="font-extrabold text-xl tracking-tight text-foreground">DailyForge</span>
       </div>
 
       <Card className="max-w-md w-full p-6 sm:p-8 bg-card border border-border shadow-popover">

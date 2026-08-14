@@ -69,7 +69,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
 
         <div className="flex items-center gap-2">
           <span className="text-xs sm:text-sm font-medium text-muted-foreground hidden sm:inline-block">
-            HABITI /
+            DailyForge /
           </span>
           <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
             {getPageTitle(location.pathname)}

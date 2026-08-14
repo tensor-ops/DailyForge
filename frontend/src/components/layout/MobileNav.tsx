@@ -101,7 +101,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                 <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <span className="font-bold text-base text-foreground">HABITI AI</span>
+                <span className="font-bold text-base text-foreground">DailyForge</span>
               </div>
               <button
                 onClick={onClose}
