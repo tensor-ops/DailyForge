@@ -6,7 +6,10 @@ import { analyticsService } from '@/services/analyticsService';
 import { AnalyticsSummary, TimeRange } from '@/types/analytics';
 import { TrendingUp } from 'lucide-react';
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
 export const AnalyticsPage: React.FC = () => {
+  useDocumentTitle('DailyForge — Analytics');
   const [range, setRange] = useState<TimeRange>('30d');
   const [data, setData] = useState<AnalyticsSummary | null>(null);
 

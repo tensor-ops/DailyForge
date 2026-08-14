@@ -9,7 +9,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Sun, Moon, Laptop, Trash2 } from 'lucide-react';
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
 export const SettingsPage: React.FC = () => {
+  useDocumentTitle('DailyForge — Settings');
   const { theme, setTheme } = useTheme();
   const { user, updateUserPreferences } = useAuth();
   const { success, info } = useToast();

@@ -21,7 +21,10 @@ const CATEGORIES: ('all' | HabitCategory)[] = [
   'Mindfulness',
 ];
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
 export const HabitsPage: React.FC = () => {
+  useDocumentTitle('DailyForge — Habits');
   const { onOpenCreateHabit } = useOutletContext<{ onOpenCreateHabit: () => void }>() || {};
   const { success, error } = useToast();
 

@@ -4,17 +4,22 @@ import { cn } from '@/utils/cn';
 import {
   LayoutDashboard,
   CheckCircle2,
+  Calendar as CalendarIcon,
+  Target,
   BarChart3,
+  TrendingUp,
+  Trophy,
+  Activity,
   Bot,
-  User,
+  Sparkles,
   Settings,
+  Flame,
   ChevronLeft,
   ChevronRight,
-  Flame,
   Plus,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { Logo } from '@/components/brand/Logo';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -22,45 +27,56 @@ interface SidebarProps {
   onOpenCreateHabit?: () => void;
 }
 
-export const NAV_ITEMS = [
+export interface NavItem {
+  path: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  badge?: string | null;
+  isAi?: boolean;
+}
+
+export interface NavGroup {
+  groupName: string;
+  items: NavItem[];
+}
+
+export const NAV_GROUPS: NavGroup[] = [
   {
-    path: '/dashboard',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-    badge: null,
+    groupName: 'Main',
+    items: [
+      { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/habits', label: 'My Habits', icon: CheckCircle2, badge: '5' },
+      { path: '/dashboard', label: 'Today', icon: Activity },
+      { path: '/dashboard', label: 'Calendar', icon: CalendarIcon },
+      { path: '/dashboard', label: 'Goals', icon: Target },
+    ],
   },
   {
-    path: '/habits',
-    label: 'Habits',
-    icon: CheckCircle2,
-    badge: '5',
+    groupName: 'Insights',
+    items: [
+      { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+      { path: '/analytics', label: 'Progress', icon: TrendingUp },
+      { path: '/dashboard', label: 'Achievements', icon: Trophy },
+      { path: '/dashboard', label: 'Forge Score', icon: Sparkles },
+    ],
   },
   {
-    path: '/analytics',
-    label: 'Analytics',
-    icon: BarChart3,
-    badge: null,
+    groupName: 'Intelligence',
+    items: [
+      { path: '/ai-insights', label: 'Forge Insights', icon: Sparkles, isAi: true },
+      { path: '/ai-insights', label: 'AI Coach', icon: Bot, isAi: true, badge: 'AI' },
+    ],
   },
   {
-    path: '/ai-insights',
-    label: 'AI Coach',
-    icon: Bot,
-    badge: 'AI',
-    isAi: true,
-  },
-  {
-    path: '/profile',
-    label: 'Profile',
-    icon: User,
-    badge: null,
-  },
-  {
-    path: '/settings',
-    label: 'Settings',
-    icon: Settings,
-    badge: null,
+    groupName: 'System',
+    items: [
+      { path: '/settings', label: 'Settings', icon: Settings },
+    ],
   },
 ];
+
+// Flattened for compatibility/mobile nav usage if needed
+export const NAV_ITEMS = NAV_GROUPS.flatMap(g => g.items);
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
@@ -85,19 +101,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
             isCollapsed && 'justify-center w-full'
           )}
         >
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow shrink-0">
-            <Sparkles className="h-5 w-5" />
-          </div>
-
-          {!isCollapsed && (
-            <div className="flex flex-col">
-              <span className="font-bold text-base tracking-tight text-foreground flex items-center gap-1.5">
-                DAILYFORGE <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-ai/15 text-ai border border-ai/20">AI</span>
-              </span>
-              <span className="text-[11px] text-muted-foreground font-mono">
-                Consistency OS
-              </span>
-            </div>
+          {isCollapsed ? (
+            <Logo variant="icon" size={32} />
+          ) : (
+            <Logo variant="full" size={32} />
           )}
         </NavLink>
       </div>
@@ -118,83 +125,80 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation Items */}
-      <div className="flex-1 px-3 py-2 space-y-1 overflow-y-auto">
-        <div className="space-y-1">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group relative',
-                    isActive
-                      ? 'bg-primary/10 text-primary font-semibold'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60',
-                    isCollapsed && 'justify-center px-0'
-                  )
-                }
-                title={isCollapsed ? item.label : undefined}
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon
-                      className={cn(
-                        'h-5 w-5 shrink-0 transition-colors',
+      {/* Navigation Groups */}
+      <div className="flex-1 px-3 py-2 space-y-4 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.groupName} className="space-y-1">
+            {!isCollapsed && (
+              <h4 className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 opacity-60">
+                {group.groupName}
+              </h4>
+            )}
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <NavLink
+                    key={item.label}
+                    to={item.path}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative',
                         isActive
-                          ? item.isAi ? 'text-ai' : 'text-primary'
-                          : 'text-muted-foreground group-hover:text-foreground'
-                      )}
-                    />
-                    
-                    {!isCollapsed && (
-                      <div className="flex items-center justify-between flex-1">
-                        <span className="truncate">{item.label}</span>
-                        {item.badge && (
-                          <span
-                            className={cn(
-                              'text-[10px] font-semibold px-2 py-0.5 rounded-full',
-                              item.isAi
-                                ? 'bg-ai/15 text-ai border border-ai/30'
-                                : 'bg-muted text-muted-foreground'
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/40',
+                        isCollapsed && 'justify-center px-0'
+                      )
+                    }
+                    title={isCollapsed ? item.label : undefined}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <Icon
+                          className={cn(
+                            'h-4.5 w-4.5 shrink-0 transition-colors',
+                            isActive
+                              ? item.isAi
+                                ? 'text-ai'
+                                : 'text-primary'
+                              : 'text-muted-foreground group-hover:text-foreground'
+                          )}
+                          size={18}
+                        />
+                        
+                        {!isCollapsed && (
+                          <div className="flex items-center justify-between flex-1">
+                            <span className="truncate">{item.label}</span>
+                            {item.badge && (
+                              <span
+                                className={cn(
+                                  'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
+                                  item.isAi
+                                    ? 'bg-ai/15 text-ai border border-ai/30'
+                                    : 'bg-muted text-muted-foreground'
+                                )}
+                              >
+                                {item.badge}
+                              </span>
                             )}
-                          >
-                            {item.badge}
-                          </span>
+                          </div>
                         )}
-                      </div>
-                    )}
 
-                    {/* Active pill indicator */}
-                    {isActive && (
-                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary" />
+                        {/* Active pill indicator */}
+                        {isActive && (
+                          <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary" />
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
-        </div>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* AI Coach Mini Card (When Expanded) */}
-      {!isCollapsed && (
-        <div className="p-3">
-          <div className="p-3.5 rounded-xl border border-ai/30 bg-ai/5 space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 rounded-full bg-ai animate-pulse" />
-              <span className="text-xs font-semibold text-ai uppercase tracking-wider">AI Coach Active</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              &quot;Morning habits have a 34% higher completion rate today.&quot;
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Footer / User & Collapse */}
+      {/* User / Collapse Footer */}
       <div className="p-3 border-t border-border/70 space-y-2">
         {/* Streak Preview */}
         {!isCollapsed && user && (
@@ -218,9 +222,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {isCollapsed ? (
               <ChevronRight className="h-4 w-4" />
             ) : (
-              <div className="flex items-center gap-2 text-xs font-medium">
+              <div className="flex items-center gap-2 text-xs font-semibold">
                 <ChevronLeft className="h-4 w-4" />
-                <span>Collapse</span>
+                <span>Collapse Sidebar</span>
               </div>
             )}
           </button>

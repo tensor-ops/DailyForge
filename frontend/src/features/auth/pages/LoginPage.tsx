@@ -5,10 +5,13 @@ import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
-import { Sparkles, ArrowRight, Lock, Mail } from 'lucide-react';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
 import axios from 'axios';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Logo } from '@/components/brand/Logo';
 
 export const LoginPage: React.FC = () => {
+  useDocumentTitle('DailyForge — Sign In');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,20 +50,17 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {/* Brand */}
-      <div className="mb-6 flex items-center gap-2.5">
-        <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow">
-          <Sparkles className="h-5 w-5" />
-        </div>
-        <span className="font-extrabold text-xl tracking-tight text-foreground">DailyForge</span>
-      </div>
+      <Link to="/" className="mb-6">
+        <Logo variant="full" size={36} />
+      </Link>
 
       <Card className="max-w-md w-full p-6 sm:p-8 bg-card border border-border shadow-popover">
         <div className="text-center space-y-1.5 mb-6">
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
-            Sign in to your account
+            Welcome back
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Enter your credentials to access your daily habits and AI insights
+            Sign in to continue building better habits.
           </p>
         </div>
 

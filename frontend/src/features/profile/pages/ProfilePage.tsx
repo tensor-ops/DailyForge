@@ -13,7 +13,10 @@ import {
   Mail,
 } from 'lucide-react';
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
 export const ProfilePage: React.FC = () => {
+  useDocumentTitle('DailyForge — Profile');
   const { user } = useAuth();
 
   return (

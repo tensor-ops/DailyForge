@@ -9,12 +9,12 @@ import {
   Bot,
   User as UserIcon,
   X,
-  Sparkles,
   Flame,
   Plus,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Avatar } from '@/components/ui/Avatar';
+import { Logo } from '@/components/brand/Logo';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -97,12 +97,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
           <div className="relative z-50 w-4/5 max-w-xs bg-surface border-r border-border h-full flex flex-col p-4 shadow-popover animate-slide-in-right">
             {/* Header */}
             <div className="flex items-center justify-between pb-4 border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-primary via-indigo-500 to-ai text-white flex items-center justify-center shadow-ai-glow">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <span className="font-bold text-base text-foreground">DailyForge</span>
-              </div>
+              <Logo variant="full" size={28} />
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted transition-colors"

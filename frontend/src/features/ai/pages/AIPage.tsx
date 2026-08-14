@@ -8,7 +8,10 @@ import { aiService } from '@/services/aiService';
 import { AIInsight, AIChatMessage } from '@/types/ai';
 import { Bot, Sparkles, Send } from 'lucide-react';
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
 export const AIPage: React.FC = () => {
+  useDocumentTitle('DailyForge — AI Coach');
   const [insights, setInsights] = useState<AIInsight[]>([]);
   const [messages, setMessages] = useState<AIChatMessage[]>([
     {
