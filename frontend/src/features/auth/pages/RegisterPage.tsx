@@ -6,11 +6,13 @@ import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Sparkles, ArrowRight, Lock, Mail, User } from 'lucide-react';
+import axios from 'axios';
 
 export const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,16 +26,34 @@ export const RegisterPage: React.FC = () => {
       setError('Please fill in all fields');
       return;
     }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    if (confirmPassword && password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
     setIsSubmitting(true);
     setError('');
 
     try {
-      await register(name, email, password);
+      await register(name, email, password, password);
       success('Account created! 🎉', 'Welcome to HABITI. Start tracking your first habit!');
       navigate('/dashboard');
-    } catch {
-      setError('Registration failed. Please try again.');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+        // Zod validation errors come as array
+        if (data?.errors && Array.isArray(data.errors)) {
+          setError(data.errors.map((e: { message: string }) => e.message).join(' · '));
+        } else {
+          setError(data?.message || data?.error || 'Registration failed. Please try again.');
+        }
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -79,7 +99,7 @@ export const RegisterPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Full Name"
-            placeholder="Alex Vance"
+            placeholder="Your name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             leftIcon={<User className="h-4 w-4" />}
@@ -100,7 +120,7 @@ export const RegisterPage: React.FC = () => {
             <Input
               label="Password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Min. 6 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               leftIcon={<Lock className="h-4 w-4" />}
@@ -122,6 +142,15 @@ export const RegisterPage: React.FC = () => {
               </div>
             )}
           </div>
+
+          <Input
+            label="Confirm Password"
+            type="password"
+            placeholder="Repeat your password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            leftIcon={<Lock className="h-4 w-4" />}
+          />
 
           <Button
             type="submit"
