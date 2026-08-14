@@ -1,12 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, AuthState } from '@/types/user';
 import { authService } from '@/services/authService';
+import { userService } from '@/services/userService';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password?: string) => Promise<void>;
-  register: (name: string, email: string, password?: string) => Promise<void>;
+  register: (name: string, email: string, password?: string, confirmPassword?: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateUserPreferences: (prefs: Partial<User['preferences']>) => void;
+  updateUserPreferences: (prefs: Partial<User['preferences']>) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,22 +18,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+      const savedToken = localStorage.getItem('ai_habit_auth_token');
+      setToken(currentUser ? savedToken : null);
+    } catch {
+      setUser(null);
+      setToken(null);
+    }
+  }, []);
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const savedToken = localStorage.getItem('ai_habit_auth_token');
         if (savedToken) {
           const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-          setToken(savedToken);
+          if (currentUser) {
+            setUser(currentUser);
+            setToken(savedToken);
+          } else {
+            setUser(null);
+            setToken(null);
+          }
         } else {
-          // Provide default demo mock user initially for frictionless portfolio demo
-          const currentUser = await authService.getCurrentUser();
-          setUser(currentUser);
-          setToken('demo_active_token');
+          setUser(null);
+          setToken(null);
         }
       } catch (err) {
         console.error('Failed to restore auth session:', err);
+        setUser(null);
+        setToken(null);
       } finally {
         setIsLoading(false);
       }
@@ -51,10 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (name: string, email: string, password?: string) => {
+  const register = async (name: string, email: string, password?: string, confirmPassword?: string) => {
     setIsLoading(true);
     try {
-      const res = await authService.register(name, email, password);
+      const res = await authService.register(name, email, password, confirmPassword);
       setUser(res.user);
       setToken(res.token);
     } finally {
@@ -73,17 +92,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const updateUserPreferences = (prefs: Partial<User['preferences']>) => {
+  const updateUserPreferences = async (prefs: Partial<User['preferences']>) => {
     if (!user) return;
-    const updatedUser = {
-      ...user,
-      preferences: {
-        ...user.preferences,
-        ...prefs,
-      },
-    };
-    setUser(updatedUser);
-    localStorage.setItem('ai_habit_user', JSON.stringify(updatedUser));
+    try {
+      const updatedUser = await userService.updatePreferences(prefs);
+      setUser(updatedUser);
+    } catch (err) {
+      console.error('Failed to update preferences:', err);
+    }
   };
 
   return (
@@ -97,6 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         updateUserPreferences,
+        refreshUser,
       }}
     >
       {children}

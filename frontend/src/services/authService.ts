@@ -1,67 +1,64 @@
+import { apiClient } from './api';
 import { User } from '@/types/user';
 
-const MOCK_USER: User = {
-  id: 'usr_01_demo',
-  name: 'Alex Vance',
-  email: 'alex.vance@example.com',
-  joinedDate: '2025-01-10',
-  currentStreak: 12,
-  longestStreak: 28,
-  totalHabitsCount: 6,
-  overallCompletionRate: 84,
-  preferences: {
-    theme: 'dark',
-    emailNotifications: true,
-    dailyReminderTime: '08:00',
-    aiInsightsEnabled: true,
-    weeklyReportEnabled: true,
-  },
-};
+interface AuthResponse {
+  user: User;
+  token: string;
+}
 
 export const authService = {
-  async login(email: string, _password?: string): Promise<{ user: User; token: string }> {
-    // Simulating fast network latency
-    await new Promise((res) => setTimeout(res, 400));
-    const token = 'jwt_mock_token_' + Math.random().toString(36).substring(2);
-    const user = { ...MOCK_USER, email: email || MOCK_USER.email };
+  async login(email: string, password?: string): Promise<AuthResponse> {
+    const res = await apiClient.post<{ success: boolean; data: AuthResponse }>(
+      '/auth/login',
+      { email, password }
+    );
+    const { user, token } = res.data.data;
     localStorage.setItem('ai_habit_auth_token', token);
-    localStorage.setItem('ai_habit_user', JSON.stringify(user));
     return { user, token };
   },
 
-  async register(name: string, email: string, _password?: string): Promise<{ user: User; token: string }> {
-    await new Promise((res) => setTimeout(res, 400));
-    const token = 'jwt_mock_token_' + Math.random().toString(36).substring(2);
-    const user: User = {
-      ...MOCK_USER,
-      id: 'usr_' + Math.random().toString(36).substring(2, 8),
-      name: name || 'New User',
-      email: email || 'user@example.com',
-      joinedDate: new Date().toISOString().split('T')[0],
-      currentStreak: 0,
-      longestStreak: 0,
-      totalHabitsCount: 0,
-      overallCompletionRate: 0,
-    };
+  async register(
+    name: string,
+    email: string,
+    password?: string,
+    confirmPassword?: string
+  ): Promise<AuthResponse> {
+    const res = await apiClient.post<{ success: boolean; data: AuthResponse }>(
+      '/auth/register',
+      {
+        name,
+        email,
+        password,
+        confirmPassword: confirmPassword || password,
+      }
+    );
+    const { user, token } = res.data.data;
     localStorage.setItem('ai_habit_auth_token', token);
-    localStorage.setItem('ai_habit_user', JSON.stringify(user));
     return { user, token };
   },
 
   async getCurrentUser(): Promise<User | null> {
-    const saved = localStorage.getItem('ai_habit_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return MOCK_USER;
-      }
+    const token = localStorage.getItem('ai_habit_auth_token');
+    if (!token) return null;
+
+    try {
+      const res = await apiClient.get<{ success: boolean; data: { user: User } }>(
+        '/auth/me'
+      );
+      return res.data.data.user;
+    } catch {
+      localStorage.removeItem('ai_habit_auth_token');
+      return null;
     }
-    return MOCK_USER;
   },
 
   async logout(): Promise<void> {
-    localStorage.removeItem('ai_habit_auth_token');
-    localStorage.removeItem('ai_habit_user');
+    try {
+      await apiClient.post('/auth/logout');
+    } catch {
+      // ignore network errors on logout
+    } finally {
+      localStorage.removeItem('ai_habit_auth_token');
+    }
   },
 };
