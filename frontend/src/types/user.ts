@@ -1,13 +1,18 @@
 export interface User {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   avatarUrl?: string;
-  joinedDate: string;
-  currentStreak: number;
-  longestStreak: number;
-  totalHabitsCount: number;
-  overallCompletionRate: number;
+  timezone?: string;
+  // Backend computed / cached fields (may be absent for new users)
+  joinedDate?: string;
+  createdAt?: string;
+  currentStreak?: number;
+  longestStreak?: number;
+  totalHabitsCount?: number;
+  overallCompletionRate?: number;
+  lastLoginAt?: string;
   preferences: UserPreferences;
 }
 

@@ -6,10 +6,11 @@ import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Sparkles, ArrowRight, Lock, Mail } from 'lucide-react';
+import axios from 'axios';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('alex.vance@example.com');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,8 +20,8 @@ export const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      setError('Please provide a valid email address');
+    if (!email || !password) {
+      setError('Please enter your email and password');
       return;
     }
 
@@ -29,10 +30,15 @@ export const LoginPage: React.FC = () => {
 
     try {
       await login(email, password);
-      success('Welcome back, Alex! 👋', "Let's make today count.");
+      success('Welcome back! 👋', "Let's make today count.");
       navigate('/dashboard');
-    } catch {
-      setError('Invalid credentials. Please try again.');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const msg = err.response?.data?.message || err.response?.data?.error || 'Invalid credentials. Please try again.';
+        setError(msg);
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -110,11 +116,12 @@ export const LoginPage: React.FC = () => {
             variant="secondary"
             className="w-full text-xs"
             onClick={() => {
-              setEmail('alex.vance@example.com');
-              setPassword('password123');
+              setEmail('demo@aihabittracker.com');
+              setPassword('Password123!');
+              setError('');
             }}
           >
-            Fill Demo Credentials
+            🚀 Fill Demo Credentials
           </Button>
         </form>
 
