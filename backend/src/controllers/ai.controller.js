@@ -47,10 +47,38 @@ async function getConversations(req, res, next) {
   }
 }
 
+async function parseHabit(req, res, next) {
+  try {
+    const { text } = req.body;
+    if (!text || text.trim().length < 3) {
+      return res.status(400).json({ success: false, message: 'Habit description text is required' });
+    }
+    const parsed = await aiService.parseNaturalHabit(text.trim());
+    return sendSuccess(res, parsed, 'Habit parsed successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function planGoal(req, res, next) {
+  try {
+    const { goalText } = req.body;
+    if (!goalText || goalText.trim().length < 3) {
+      return res.status(400).json({ success: false, message: 'Goal description is required' });
+    }
+    const plan = await aiService.planGoal(goalText.trim());
+    return sendSuccess(res, plan, 'Goal plan generated successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getInsights,
   generateInsights,
   getRecommendations,
   chat,
   getConversations,
+  parseHabit,
+  planGoal,
 };

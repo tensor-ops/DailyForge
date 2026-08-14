@@ -13,5 +13,8 @@ router.post('/insights/generate', aiLimiter, aiController.generateInsights);
 router.get('/recommendations', aiController.getRecommendations);
 router.post('/chat', aiLimiter, validate(chatSchema), aiController.chat);
 router.get('/conversations', aiController.getConversations);
+router.post('/habits/parse', aiLimiter, aiController.parseHabit);
+router.post('/goals/plan', aiLimiter, aiController.planGoal);
 
 module.exports = router;
+

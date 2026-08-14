@@ -13,14 +13,39 @@ const userRoutes = require('./routes/user.routes');
 const habitRoutes = require('./routes/habit.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const aiRoutes = require('./routes/ai.routes');
+const goalRoutes = require('./routes/goal.routes');
 
 const app = express();
 
 // Security & Parsing Middleware
 app.use(helmet());
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:5175'
+];
+if (config.clientUrl) {
+  allowedOrigins.push(config.clientUrl);
+}
+
 app.use(
   cors({
-    origin: config.clientUrl || '*',
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) return callback(null, true);
+      const isAllowed = allowedOrigins.includes(origin) || 
+                        /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -84,6 +109,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/habits', habitRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/ai', aiRoutes);
+app.use('/api/v1/goals', goalRoutes);
 
 // Fallback 404 & Global Error Handling
 app.use(notFoundHandler);
