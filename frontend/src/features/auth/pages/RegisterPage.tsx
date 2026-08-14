@@ -45,11 +45,11 @@ export const RegisterPage: React.FC = () => {
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const data = err.response?.data;
-        // Zod validation errors come as array
-        if (data?.errors && Array.isArray(data.errors)) {
-          setError(data.errors.map((e: { message: string }) => e.message).join(' · '));
+        // Backend validation errors come in error.details array
+        if (data?.error?.details && Array.isArray(data.error.details)) {
+          setError(data.error.details.map((e: { message: string }) => e.message).join(' · '));
         } else {
-          setError(data?.message || data?.error || 'Registration failed. Please try again.');
+          setError(data?.message || 'Registration failed. Please try again.');
         }
       } else {
         setError('Something went wrong. Please try again.');

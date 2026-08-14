@@ -73,7 +73,7 @@ export const DashboardOverview: React.FC = () => {
     );
 
     try {
-      const updated = await habitService.toggleComplete(habit.id);
+      const updated = await habitService.toggleComplete(habit);
       if (nextCompleted) {
         success('Habit completed! ✓', `"${habit.name}" marked done for today.`);
       }
