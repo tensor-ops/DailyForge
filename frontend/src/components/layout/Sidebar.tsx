@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Plus,
   Beaker,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/brand/Logo';
@@ -58,6 +59,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: '/analytics', label: 'Analytics', icon: BarChart3 },
       { path: '/analytics?tab=growth', label: 'Growth', icon: TrendingUp },
       { path: '/analytics?tab=momentum', label: 'Momentum', icon: Flame },
+      { path: '/analytics?tab=milestones', label: 'Milestones', icon: Trophy },
       { path: '/forge-lab', label: 'Forge Lab', icon: Beaker },
     ],
   },
