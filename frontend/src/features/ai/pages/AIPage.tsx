@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PageHeader } from '@/components/common/PageHeader';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Badge } from '@/components/ui/Badge';
-import { aiService } from '@/services/aiService';
-import { AIInsight, AIChatMessage } from '@/types/ai';
-import { Bot, Sparkles, Send } from 'lucide-react';
-
+import { useLocation } from 'react-router-dom';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { PageHeader } from '@/components/ui/PageHeader';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { aiService } from '@/services/aiService';
+import { analyticsService } from '@/services/analyticsService';
+import { AIChatMessage } from '@/types/ai';
+import { Bot, Sparkles, Send } from 'lucide-react';
+import { ForgeInsightsDashboard } from '../components/ForgeInsightsDashboard';
 
 export const AIPage: React.FC = () => {
   useDocumentTitle('DailyForge — AI Coach');
-  const [insights, setInsights] = useState<AIInsight[]>([]);
+  
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentTab = searchParams.get('tab') || 'overview';
+
+  const [behaviorData, setBehaviorData] = useState<any>(null);
   const [messages, setMessages] = useState<AIChatMessage[]>([
     {
       id: 'msg_welcome',
@@ -32,11 +37,15 @@ export const AIPage: React.FC = () => {
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadInsights = async () => {
-      const res = await aiService.getInsights();
-      setInsights(res);
+    const loadBehavior = async () => {
+      try {
+        const res = await analyticsService.getBehaviorAnalytics('30d');
+        setBehaviorData(res);
+      } catch (err) {
+        console.error(err);
+      }
     };
-    loadInsights();
+    loadBehavior();
   }, []);
 
   useEffect(() => {
@@ -68,64 +77,30 @@ export const AIPage: React.FC = () => {
     }
   };
 
+  // 1. Conditionally render the ForgeInsights Dashboard if tab is not coach
+  if (currentTab !== 'coach') {
+    return <ForgeInsightsDashboard behaviorData={behaviorData} />;
+  }
+
+  // 2. Otherwise render the Coach Chat Interface
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl mx-auto text-left selection:bg-primary/20 select-none animate-fade-in">
       <PageHeader
-        title="AI Habit Coach 🤖"
+        title="AI Habit Coach"
         description="Your personal behavioral intelligence system analyzing consistency, energy cycles, and habit loops."
-        badge={
-          <Badge variant="ai" size="md">
-            <Sparkles className="h-3 w-3 mr-1" /> Neural Engine Active
-          </Badge>
+        actions={
+          <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full uppercase tracking-wider">
+            Neural Engine Active
+          </span>
         }
       />
 
-      {/* AI INSIGHTS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {insights.map((item) => (
-          <Card
-            key={item.id}
-            variant="ai"
-            className="p-5 flex flex-col justify-between space-y-4 bg-card/80"
-          >
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Badge
-                  variant={item.type === 'pattern' ? 'ai' : item.type === 'recommendation' ? 'info' : 'success'}
-                  size="sm"
-                >
-                  {item.type.toUpperCase()}
-                </Badge>
-                <span className="text-[10px] text-muted-foreground">
-                  {Math.round(item.confidence * 100)}% Confidence
-                </span>
-              </div>
-              <h3 className="text-sm font-semibold text-foreground leading-tight">
-                {item.headline}
-              </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {item.explanation}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between pt-2 border-t border-border/50 text-[11px] text-muted-foreground">
-              <span>{item.timestamp}</span>
-              {item.actionLabel && (
-                <button className="text-ai font-semibold hover:underline flex items-center gap-1">
-                  {item.actionLabel} &rarr;
-                </button>
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
-
       {/* AI CHAT INTERFACE */}
-      <Card className="p-0 bg-card border-border overflow-hidden flex flex-col h-[520px]">
+      <Card className="p-0 bg-card border-border overflow-hidden flex flex-col h-[520px] rounded-[14px]">
         {/* Chat Header */}
-        <div className="p-4 border-b border-border bg-surface flex items-center justify-between">
+        <div className="p-4 border-b border-border/80 bg-[#101622] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-ai/15 text-ai flex items-center justify-center">
+            <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
               <Bot className="h-5 w-5" />
             </div>
             <div>
@@ -133,7 +108,7 @@ export const AIPage: React.FC = () => {
                 Habit Coach Assistant
                 <span className="h-2 w-2 rounded-full bg-success inline-block" />
               </h3>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground font-semibold">
                 Trained on behavioral science & habit data
               </p>
             </div>
@@ -141,7 +116,7 @@ export const AIPage: React.FC = () => {
         </div>
 
         {/* Messages List */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-surface-sunken/40">
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#080C14]">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -150,15 +125,15 @@ export const AIPage: React.FC = () => {
               }`}
             >
               <div
-                className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-sm leading-relaxed ${
+                className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs font-semibold leading-relaxed text-left ${
                   msg.sender === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-br-none'
-                    : 'bg-card border border-border text-foreground rounded-bl-none shadow-sm'
+                    ? 'bg-primary text-slate-100 rounded-br-none'
+                    : 'bg-[#101622] border border-[#1D293D] text-slate-200 rounded-bl-none shadow-sm'
                 }`}
               >
                 <p>{msg.content}</p>
               </div>
-              <span className="text-[10px] text-muted-foreground px-2 pt-1">
+              <span className="text-[10px] text-muted-foreground px-2 pt-1 font-semibold">
                 {msg.timestamp}
               </span>
 
@@ -169,7 +144,7 @@ export const AIPage: React.FC = () => {
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(prompt)}
-                      className="text-xs px-2.5 py-1 rounded-full border border-ai/30 bg-ai/5 text-ai hover:bg-ai/15 transition-colors"
+                      className="text-[10px] px-2.5 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary hover:bg-primary/15 transition-colors font-bold cursor-pointer"
                     >
                       {prompt}
                     </button>
@@ -181,7 +156,7 @@ export const AIPage: React.FC = () => {
 
           {isTyping && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground p-2">
-              <Sparkles className="h-3.5 w-3.5 text-ai animate-spin" />
+              <Sparkles className="h-3.5 w-3.5 text-primary animate-spin" />
               <span>AI Coach is analyzing habit patterns...</span>
             </div>
           )}
@@ -195,7 +170,7 @@ export const AIPage: React.FC = () => {
             e.preventDefault();
             handleSendMessage();
           }}
-          className="p-3 bg-surface border-t border-border flex items-center gap-2"
+          className="p-3 bg-[#101622] border-t border-border flex items-center gap-2"
         >
           <Input
             placeholder="Ask your habit coach about habits, timing, motivation..."
@@ -203,15 +178,14 @@ export const AIPage: React.FC = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             className="flex-1"
           />
-          <Button
+          <button
             type="submit"
-            variant="ai"
-            size="md"
             disabled={!inputMessage.trim() || isTyping}
-            rightIcon={<Send className="h-4 w-4" />}
+            className="bg-primary hover:bg-primary-hover text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
           >
-            Send
-          </Button>
+            <span>Send</span>
+            <Send className="h-3.5 w-3.5" />
+          </button>
         </form>
       </Card>
     </div>
