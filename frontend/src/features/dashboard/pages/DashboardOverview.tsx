@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -10,6 +10,7 @@ import { AnalyticsSummary } from '@/types/analytics';
 import { BehaviorAnalytics } from '@/types/behavior';
 import { Flame, CheckCircle2, TrendingUp, Sparkles, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { TodayDashboard } from './TodayDashboard';
 
 // Subcomponents
 import { MetricCard } from '../components/MetricCard';
@@ -34,6 +35,10 @@ export const DashboardOverview: React.FC = () => {
   const { user } = useAuth();
   const { success } = useToast();
   const { onOpenCreateHabit } = useOutletContext<{ onOpenCreateHabit: () => void }>() || {};
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentTab = searchParams.get('tab') || 'overview';
 
   const [habits, setHabits] = useState<Habit[]>([]);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsSummary | null>(null);
@@ -133,6 +138,10 @@ export const DashboardOverview: React.FC = () => {
   const consistencyScore = behaviorData?.consistencyIndex || 84;
   const avgCompletionRate = behaviorData?.executionRate.rate || 91;
   const forgeScore = behaviorData?.forgeScore || 742;
+
+  if (currentTab === 'today') {
+    return <TodayDashboard onOpenCreateHabit={onOpenCreateHabit} />;
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20">
