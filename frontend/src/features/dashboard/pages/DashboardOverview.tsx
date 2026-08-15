@@ -12,6 +12,7 @@ import { Flame, CheckCircle2, TrendingUp, Sparkles, Plus } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { TodayDashboard } from './TodayDashboard';
 import { PlannerDashboard } from './PlannerDashboard';
+import { GoalsDashboard } from './GoalsDashboard';
 
 // Subcomponents
 import { MetricCard } from '../components/MetricCard';
@@ -146,6 +147,10 @@ export const DashboardOverview: React.FC = () => {
 
   if (currentTab === 'planner' || currentTab === 'calendar') {
     return <PlannerDashboard />;
+  }
+
+  if (currentTab === 'goals') {
+    return <GoalsDashboard />;
   }
 
   return (
