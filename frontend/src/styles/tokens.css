@@ -50,52 +50,52 @@
 }
 
 .dark {
-  /* DARK THEME TOKENS (Sleek Linear/Vercel Aesthetic) */
-  --color-background: 10 11 16;
-  --color-foreground: 244 244 246;
+  /* DARK THEME TOKENS (Strict absolute color reference matching Dashbrd X) */
+  --color-background: 11 15 26;       /* #0B0F1A */
+  --color-foreground: 248 250 252;    /* #F8FAFC */
   
-  --color-surface: 16 18 27;
-  --color-surface-elevated: 24 26 38;
-  --color-surface-sunken: 7 8 12;
+  --color-surface: 8 12 20;           /* #080C14 (Sidebar / Dark background) */
+  --color-surface-elevated: 19 27 41;  /* #131B29 */
+  --color-surface-sunken: 8 12 20;    /* #080C14 */
   
-  --color-card: 18 20 30;
-  --color-card-hover: 25 28 42;
+  --color-card: 16 22 34;             /* #101622 */
+  --color-card-hover: 21 29 44;       /* #151D2C */
   
-  --color-border: 33 37 54;
-  --color-border-subtle: 23 26 38;
-  --color-border-strong: 50 56 80;
+  --color-border: 29 41 61;           /* #1D293D */
+  --color-border-subtle: 23 34 53;    /* #172235 */
+  --color-border-strong: 29 41 61;    /* #1D293D */
   
-  --color-muted: 25 28 40;
-  --color-muted-foreground: 144 153 170;
+  --color-muted: 21 29 44;            /* #151D2C */
+  --color-muted-foreground: 148 163 184; /* #94A3B8 */
   
-  --color-primary: 99 102 241;
+  --color-primary: 37 99 235;         /* #2563EB (Electric Blue) */
   --color-primary-foreground: 255 255 255;
-  --color-primary-hover: 79 70 229;
-  --color-primary-muted: 30 33 60;
+  --color-primary-hover: 29 78 216;   /* #1D4ED8 */
+  --color-primary-muted: 16 42 106;   /* Dark navy-blue shade */
   
-  --color-secondary: 27 30 44;
-  --color-secondary-foreground: 226 232 240;
-  --color-secondary-hover: 36 40 58;
+  --color-secondary: 19 27 41;        /* #131B29 */
+  --color-secondary-foreground: 203 213 225; /* #CBD5E1 */
+  --color-secondary-hover: 21 29 44;  /* #151D2C */
   
-  --color-success: 16 185 129;
+  --color-success: 16 185 129;        /* #10B981 (Emerald) */
   --color-success-foreground: 255 255 255;
   --color-success-surface: 6 36 26;
   
-  --color-warning: 245 158 11;
+  --color-warning: 245 158 11;        /* #F59E0B (Forge Orange) */
   --color-warning-foreground: 255 255 255;
   --color-warning-surface: 46 32 8;
   
-  --color-danger: 244 63 94;
+  --color-danger: 239 68 68;          /* #EF4444 */
   --color-danger-foreground: 255 255 255;
   --color-danger-surface: 45 14 20;
   
-  --color-info: 14 165 233;
+  --color-info: 59 130 246;           /* #3B82F6 */
   --color-info-foreground: 255 255 255;
   --color-info-surface: 10 32 48;
   
-  --color-ai: 139 92 246;
+  --color-ai: 34 211 238;             /* #22D3EE (Cyan) */
   --color-ai-foreground: 255 255 255;
-  --color-ai-surface: 30 20 54;
-  --color-ai-glow: 139 92 246;
-  --color-ai-border: 62 45 105;
+  --color-ai-surface: 19 27 41;       /* #131B29 */
+  --color-ai-glow: 34 211 238;        /* #22D3EE */
+  --color-ai-border: 29 41 61;        /* #1D293D */
 }

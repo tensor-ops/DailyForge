@@ -39,7 +39,7 @@ export const ForgeScoreCard: React.FC<ForgeScoreCardProps> = ({
   weekDelta,
   isLoading = false,
 }) => {
-  const chartData = [{ value: score, fill: '#6366F1' }];
+  const chartData = [{ value: score, fill: '#3B82F6' }];
 
   if (isLoading) {
     return (
@@ -83,18 +83,20 @@ export const ForgeScoreCard: React.FC<ForgeScoreCardProps> = ({
             />
           </RadialBarChart>
         </ResponsiveContainer>
-        {/* Center label */}
+        {/* Center label with orange highlight */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-3xl font-extrabold text-foreground tracking-tight">{score}</span>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-primary mt-0.5">
-            Forge Score
-          </span>
+          <div className="flex flex-col items-center justify-center border border-warning/30 p-4 rounded-full bg-[#080C14] shadow-md shadow-warning/5 h-24 w-24">
+            <span className="text-2xl font-extrabold text-foreground tracking-tight leading-none">{score}</span>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-blue-500 mt-1">
+              Forge
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Sub metrics */}
       <div className="space-y-2 border-t border-border pt-3">
-        <SubMetric label="Consistency" value={consistency} color="#6366F1" />
+        <SubMetric label="Consistency" value={consistency} color="#3B82F6" />
         <SubMetric label="Completion" value={completion} color="#10B981" />
         <SubMetric label="Streak Ratio" value={streak} color="#F59E0B" />
         <div className="flex items-center justify-between pt-1">

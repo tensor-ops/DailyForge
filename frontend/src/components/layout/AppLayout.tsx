@@ -119,6 +119,7 @@ export const AppLayout: React.FC = () => {
         <TopBar
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenCreateHabit={() => setIsCreateModalOpen(true)}
         />
 
         {/* Content Outlet */}

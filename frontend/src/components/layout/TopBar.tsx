@@ -15,15 +15,20 @@ import {
   LogOut,
   User as UserIcon,
   Settings as SettingsIcon,
-  Sparkles,
+  Plus,
 } from 'lucide-react';
 
 interface TopBarProps {
   onOpenMobileMenu: () => void;
   onOpenSearch?: () => void;
+  onOpenCreateHabit?: () => void;
 }
 
-export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }) => {
+export const TopBar: React.FC<TopBarProps> = ({
+  onOpenMobileMenu,
+  onOpenSearch,
+  onOpenCreateHabit,
+}) => {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const { info } = useToast();
@@ -35,17 +40,17 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
       case '/dashboard':
         return 'Dashboard';
       case '/habits':
-        return 'Habit Management';
+        return 'My Habits';
       case '/analytics':
-        return 'Analytics & Trends';
+        return 'Analytics';
       case '/ai-insights':
-        return 'AI Habit Coach';
+        return 'Insights';
       case '/profile':
-        return 'My Profile';
+        return 'Profile';
       case '/settings':
         return 'Settings';
       default:
-        return 'Overview';
+        return 'Today';
     }
   };
 
@@ -55,8 +60,14 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
     navigate('/login');
   };
 
+  const formattedDate = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
-    <header className="sticky top-0 z-20 h-16 w-full glass-nav flex items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-20 h-16 w-full glass-nav flex items-center justify-between px-4 sm:px-6 border-b border-border/80">
       {/* Left section: Mobile menu trigger + Breadcrumb */}
       <div className="flex items-center gap-3">
         <button
@@ -68,37 +79,45 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs sm:text-sm font-medium text-muted-foreground hidden sm:inline-block">
-            DailyForge /
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground hidden sm:inline-block">
+            DailyForge
           </span>
-          <h2 className="text-sm sm:text-base font-semibold text-foreground tracking-tight">
+          <span className="text-xs text-muted-foreground hidden sm:inline-block">/</span>
+          <h2 className="text-xs sm:text-sm font-bold text-foreground tracking-tight uppercase">
             {getPageTitle(location.pathname)}
           </h2>
         </div>
       </div>
 
-      {/* Center / Right controls */}
+      {/* Center section: Current Date */}
+      <div className="hidden md:block text-xs font-bold text-muted-foreground uppercase tracking-widest bg-[#080C14] px-3.5 py-1.5 rounded-full border border-border/40">
+        {formattedDate}
+      </div>
+
+      {/* Right controls */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Quick Search Bar trigger */}
+        {/* Quick Search trigger */}
         <button
           onClick={onOpenSearch}
           className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-surface text-xs text-muted-foreground hover:text-foreground hover:border-border-strong transition-all"
         >
           <Search className="h-3.5 w-3.5" />
-          <span>Quick search...</span>
-          <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border/80 ml-2">
+          <span>Search...</span>
+          <kbd className="text-[9px] font-mono bg-muted px-1.5 py-0.5 rounded border border-border/80 ml-2">
             ⌘K
           </kbd>
         </button>
 
-        {/* AI Quick Status Pill */}
-        <button
-          onClick={() => navigate('/ai-insights')}
-          className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-ai/30 bg-ai/10 text-ai text-xs font-medium hover:bg-ai/15 transition-colors"
-        >
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>AI Active</span>
-        </button>
+        {/* Primary CTA: + Add Habit */}
+        {onOpenCreateHabit && (
+          <button
+            onClick={onOpenCreateHabit}
+            className="flex items-center gap-1 bg-primary hover:bg-primary-hover text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg transition-colors select-none"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add Habit</span>
+          </button>
+        )}
 
         {/* Theme Switcher */}
         <Dropdown
@@ -146,7 +165,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
           aria-label="Notifications"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-background" />
+          <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
         </button>
 
         <div className="h-5 w-px bg-border mx-0.5 hidden sm:block" />
@@ -162,8 +181,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
                   <span className="text-xs font-semibold text-foreground leading-tight">
                     {user.name}
                   </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    {user.overallCompletionRate}% consistency
+                  <span className="text-[9px] text-muted-foreground">
+                    Consistency OS
                   </span>
                 </div>
               </div>
@@ -194,7 +213,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, onOpenSearch }
         ) : (
           <button
             onClick={() => navigate('/login')}
-            className="text-xs font-medium text-primary hover:underline"
+            className="text-xs font-semibold text-primary hover:underline"
           >
             Sign in
           </button>

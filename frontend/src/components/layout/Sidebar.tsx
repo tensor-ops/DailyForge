@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/brand/Logo';
+import { Avatar } from '@/components/ui/Avatar';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -143,10 +144,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     to={item.path}
                     className={({ isActive }) =>
                       cn(
-                        'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative',
+                        'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative border border-transparent',
                         isActive
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/40',
+                          ? 'bg-primary/[0.12] border-blue-500/15 text-foreground'
+                          : 'hover:text-foreground hover:bg-muted/40 text-muted-foreground',
                         isCollapsed && 'justify-center px-0'
                       )
                     }
@@ -160,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             isActive
                               ? item.isAi
                                 ? 'text-ai'
-                                : 'text-primary'
+                                : 'text-blue-500'
                               : 'text-muted-foreground group-hover:text-foreground'
                           )}
                           size={18}
@@ -199,14 +200,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User / Collapse Footer */}
-      <div className="p-3 border-t border-border/70 space-y-2">
+      <div className="p-3 border-t border-border/70 space-y-3">
         {/* Streak Preview */}
         {!isCollapsed && user && (
           <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-sunken border border-border/60 text-xs">
-            <span className="text-muted-foreground flex items-center gap-1.5">
+            <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
               <Flame className="h-4 w-4 text-warning fill-warning" /> Current Streak
             </span>
             <span className="font-bold text-foreground">{user.currentStreak} Days</span>
+          </div>
+        )}
+
+        {/* User profile card */}
+        {user && (
+          <div className={cn(
+            "p-2 rounded-xl bg-card border border-border flex items-center gap-2.5 transition-all select-none",
+            isCollapsed ? "justify-center" : "px-3"
+          )}>
+            <Avatar name={user.name} size="sm" />
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0 text-left">
+                <p className="text-xs font-bold text-foreground truncate">
+                  {user.name}
+                </p>
+                <p className="text-[10px] text-muted-foreground font-semibold truncate uppercase tracking-wider">
+                  Consistency OS
+                </p>
+              </div>
+            )}
           </div>
         )}
 
