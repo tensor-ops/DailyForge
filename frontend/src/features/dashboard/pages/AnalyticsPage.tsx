@@ -10,6 +10,7 @@ import { MetricCard } from '@/components/ui/MetricCard';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { GrowthDashboard } from './GrowthDashboard';
+import { MomentumDashboard } from './MomentumDashboard';
 import {
   Sparkles,
   Zap,
@@ -69,6 +70,10 @@ export const AnalyticsPage: React.FC = () => {
 
   if (currentTab === 'growth') {
     return <GrowthDashboard />;
+  }
+
+  if (currentTab === 'momentum') {
+    return <MomentumDashboard />;
   }
 
   // Baseline building check
