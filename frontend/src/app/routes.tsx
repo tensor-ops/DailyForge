@@ -7,7 +7,10 @@ import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { DashboardOverview } from '@/features/dashboard/pages/DashboardOverview';
 import { HabitsPage } from '@/features/habits/pages/HabitsPage';
-import { AnalyticsPage } from '@/features/analytics/pages/AnalyticsPage';
+import { AnalyticsPage } from '@/features/dashboard/pages/AnalyticsPage';
+import { ForgeLabPage } from '@/features/dashboard/pages/ForgeLabPage';
+import { HabitDetailPage } from '@/features/dashboard/pages/HabitDetailPage';
+import { GoalDetailPage } from '@/features/dashboard/pages/GoalDetailPage';
 import { AIPage } from '@/features/ai/pages/AIPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
@@ -96,7 +99,10 @@ export const AppRoutes: React.FC = () => {
       >
         <Route path="dashboard" element={<DashboardOverview />} />
         <Route path="habits" element={<HabitsPage />} />
+        <Route path="habits/:id" element={<HabitDetailPage />} />
+        <Route path="goals/:id" element={<GoalDetailPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="forge-lab" element={<ForgeLabPage />} />
         <Route path="ai-insights" element={<AIPage />} />
         <Route path="profile" element={<ProfilePage />} />
         <Route path="settings" element={<SettingsPage />} />

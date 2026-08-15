@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/utils/cn';
 import {
   LayoutDashboard,
@@ -8,7 +8,6 @@ import {
   Target,
   BarChart3,
   TrendingUp,
-  Trophy,
   Activity,
   Bot,
   Sparkles,
@@ -17,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
+  Beaker,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/brand/Logo';
@@ -46,26 +46,26 @@ export const NAV_GROUPS: NavGroup[] = [
     groupName: 'Main',
     items: [
       { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/dashboard?tab=today', label: 'Today', icon: Activity },
       { path: '/habits', label: 'My Habits', icon: CheckCircle2, badge: '5' },
-      { path: '/dashboard', label: 'Today', icon: Activity },
-      { path: '/dashboard', label: 'Calendar', icon: CalendarIcon },
-      { path: '/dashboard', label: 'Goals', icon: Target },
+      { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
+      { path: '/dashboard?tab=goals', label: 'Goals', icon: Target },
     ],
   },
   {
-    groupName: 'Insights',
+    groupName: 'Performance',
     items: [
       { path: '/analytics', label: 'Analytics', icon: BarChart3 },
-      { path: '/analytics', label: 'Progress', icon: TrendingUp },
-      { path: '/dashboard', label: 'Achievements', icon: Trophy },
-      { path: '/dashboard', label: 'Forge Score', icon: Sparkles },
+      { path: '/analytics?tab=growth', label: 'Growth', icon: TrendingUp },
+      { path: '/analytics?tab=momentum', label: 'Momentum', icon: Flame },
+      { path: '/forge-lab', label: 'Forge Lab', icon: Beaker },
     ],
   },
   {
     groupName: 'Intelligence',
     items: [
       { path: '/ai-insights', label: 'Forge Insights', icon: Sparkles, isAi: true },
-      { path: '/ai-insights', label: 'AI Coach', icon: Bot, isAi: true, badge: 'AI' },
+      { path: '/ai-insights?tab=coach', label: 'AI Coach', icon: Bot, isAi: true, badge: 'AI' },
     ],
   },
   {
@@ -85,6 +85,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenCreateHabit,
 }) => {
   const { user } = useAuth();
+  const location = useLocation();
+
+  const currentPath = location.pathname + location.search;
+  const checkActive = (path: string) => {
+    if (path === '/dashboard') {
+      return currentPath === '/dashboard' || currentPath === '/dashboard/';
+    }
+    return currentPath === path;
+  };
 
   return (
     <aside
@@ -138,11 +147,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="space-y-0.5">
               {group.items.map((item) => {
                 const Icon = item.icon;
+                const isActive = checkActive(item.path);
                 return (
                   <NavLink
                     key={item.label}
                     to={item.path}
-                    className={({ isActive }) =>
+                    className={() =>
                       cn(
                         'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative border border-transparent',
                         isActive
@@ -153,43 +163,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }
                     title={isCollapsed ? item.label : undefined}
                   >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          className={cn(
-                            'h-4.5 w-4.5 shrink-0 transition-colors',
-                            isActive
-                              ? item.isAi
-                                ? 'text-ai'
-                                : 'text-blue-500'
-                              : 'text-muted-foreground group-hover:text-foreground'
-                          )}
-                          size={18}
-                        />
-                        
-                        {!isCollapsed && (
-                          <div className="flex items-center justify-between flex-1">
-                            <span className="truncate">{item.label}</span>
-                            {item.badge && (
-                              <span
-                                className={cn(
-                                  'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
-                                  item.isAi
-                                    ? 'bg-ai/15 text-ai border border-ai/30'
-                                    : 'bg-muted text-muted-foreground'
-                                )}
-                              >
-                                {item.badge}
-                              </span>
+                    <Icon
+                      className={cn(
+                        'h-4.5 w-4.5 shrink-0 transition-colors',
+                        isActive
+                          ? item.isAi
+                            ? 'text-ai'
+                            : 'text-blue-500'
+                          : 'text-muted-foreground group-hover:text-foreground'
+                      )}
+                      size={18}
+                    />
+                    
+                    {!isCollapsed && (
+                      <div className="flex items-center justify-between flex-1">
+                        <span className="truncate">{item.label}</span>
+                        {item.badge && (
+                          <span
+                            className={cn(
+                              'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
+                              item.isAi
+                                ? 'bg-ai/15 text-ai border border-ai/30'
+                                : 'bg-muted text-muted-foreground'
                             )}
-                          </div>
+                          >
+                            {item.badge}
+                          </span>
                         )}
+                      </div>
+                    )}
 
-                        {/* Active pill indicator */}
-                        {isActive && (
-                          <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary" />
-                        )}
-                      </>
+                    {/* Active pill indicator */}
+                    {isActive && (
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-primary" />
                     )}
                   </NavLink>
                 );
@@ -201,13 +207,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* User / Collapse Footer */}
       <div className="p-3 border-t border-border/70 space-y-3">
-        {/* Streak Preview */}
+        {/* Momentum Card */}
         {!isCollapsed && user && (
-          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-sunken border border-border/60 text-xs">
-            <span className="text-muted-foreground flex items-center gap-1.5 font-medium">
-              <Flame className="h-4 w-4 text-warning fill-warning" /> Current Streak
+          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0B0F1A] border border-[#1D293D] text-xs">
+            <span className="text-muted-foreground flex items-center gap-1.5 font-bold uppercase tracking-wider text-[9px] select-none">
+              <Flame className="h-4 w-4 text-warning fill-warning" /> Momentum
             </span>
-            <span className="font-bold text-foreground">{user.currentStreak} Days</span>
+            <div className="text-right select-none font-semibold leading-tight">
+              <span className="font-extrabold text-foreground">84</span>
+              <span className="text-[9px] text-[#10B981] font-bold block">+12% this week</span>
+            </div>
           </div>
         )}
 

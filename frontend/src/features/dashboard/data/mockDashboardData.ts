@@ -29,7 +29,7 @@ export const mockGoals: MockGoal[] = [
   {
     id: 'g1',
     title: 'Complete 30-day DSA challenge',
-    progress: 80,
+    progress: 82,
     target: '30 days',
     current: '24',
     deadline: 'Aug 25',
@@ -47,7 +47,7 @@ export const mockGoals: MockGoal[] = [
   {
     id: 'g3',
     title: 'Read 5 books this quarter',
-    progress: 40,
+    progress: 41,
     target: '5 books',
     current: '2',
     deadline: 'Sep 15',

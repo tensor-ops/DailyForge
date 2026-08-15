@@ -114,21 +114,39 @@ async function chatWithAI(userId, userMessage) {
     timestamp: new Date(),
   });
 
+  // Load behavior metrics context
+  const behaviorAnalyticsService = require('./behaviorAnalytics.service');
+  let metricsContext = '';
+  let behaviorMetrics = null;
+  try {
+    behaviorMetrics = await behaviorAnalyticsService.getBehaviorAnalytics(userId, '30d');
+    metricsContext = `User Behavior Intelligence Data:
+    - Forge Score: ${behaviorMetrics.forgeScore} / 1000
+    - Consistency Index: ${behaviorMetrics.consistencyIndex}%
+    - Momentum: ${behaviorMetrics.momentum.status} (${behaviorMetrics.momentum.trend}% trend)
+    - Recovery Rate: ${behaviorMetrics.recoveryRate.rate}% (average recovery time: ${behaviorMetrics.recoveryRate.averageGapDays} days)
+    - Key Wins: ${behaviorMetrics.weeklyReview.wins.join(', ') || 'Building baseline'}
+    - Current Challenges: ${behaviorMetrics.weeklyReview.challenges.join(', ') || 'None identified'}
+    `;
+  } catch (err) {
+    logger.error(`Failed to load behavior metrics for AI Coach: ${err.message}`);
+  }
+
   let assistantReply = '';
   let suggestedPrompts = [];
 
   if (aiConfig.isMock) {
-    const mockRes = generateMockChatReply(userMessage);
+    const mockRes = generateMockChatReply(userMessage, behaviorMetrics);
     assistantReply = mockRes.reply;
     suggestedPrompts = mockRes.suggestedPrompts;
   } else {
     try {
-      const externalRes = await callExternalAIForChat(userMessage, conversation.messages);
+      const externalRes = await callExternalAIForChat(userMessage, conversation.messages, metricsContext);
       assistantReply = externalRes.reply;
       suggestedPrompts = externalRes.suggestedPrompts || [];
     } catch (err) {
       logger.warn(`External AI call failed (${err.message}), falling back to mock reply.`);
-      const mockRes = generateMockChatReply(userMessage);
+      const mockRes = generateMockChatReply(userMessage, behaviorMetrics);
       assistantReply = mockRes.reply;
       suggestedPrompts = mockRes.suggestedPrompts;
     }
@@ -178,42 +196,35 @@ function generateMockInsights(analytics, habits) {
   const insights = [
     {
       type: 'achievement',
-      headline: `Consistency Score is at ${analytics.consistencyScore}%`,
-      explanation: `Your habit execution is strong. Maintain momentum on your primary routines to unlock optimal streak gains.`,
-      confidence: 0.92,
-      actionLabel: 'View Detailed Analytics',
-      actionPayload: { type: 'NAVIGATE', route: '/analytics' },
-    },
-    {
-      type: 'pattern',
-      headline: 'Peak Performance Window Identified',
-      explanation: 'Data suggests your completion rates are 35% higher when habits are scheduled before 10:00 AM.',
-      confidence: 0.88,
-      actionLabel: 'Adjust Reminder Times',
-      actionPayload: { type: 'OPEN_SETTINGS' },
+      headline: 'Perfect Week',
+      explanation: 'You completed all your scheduled habits for 7 consecutive days!',
+      confidence: 100,
     },
   ];
-
-  if (analytics.weakestHabit) {
-    insights.push({
-      type: 'warning',
-      headline: `Attention Needed on "${analytics.weakestHabit.name}"`,
-      explanation: `Completion rate for "${analytics.weakestHabit.name}" is currently ${analytics.weakestHabit.completionRate}%. Consider reducing target duration to build momentum.`,
-      confidence: 0.84,
-      actionLabel: 'Edit Target',
-      actionPayload: { type: 'EDIT_HABIT', habitId: analytics.weakestHabit.id },
-    });
-  }
 
   return insights;
 }
 
-function generateMockChatReply(userMessage) {
+function generateMockChatReply(userMessage, metrics) {
   const msg = userMessage.toLowerCase();
+  const forgeScore = metrics ? metrics.forgeScore : 742;
+  const consistency = metrics ? metrics.consistencyIndex : 91;
+  const momentum = metrics ? metrics.momentum.status : 'STABLE';
+
+  if (msg.includes('consistency') || msg.includes('score') || msg.includes('momentum') || msg.includes('stats')) {
+    return {
+      reply: `Your behavior intelligence metrics show a **Forge Score of ${forgeScore} / 1000** and a **Consistency Index of ${consistency}%**. Your current momentum status is **${momentum}**. Your data suggests that establishing smaller daily targets yields 4x higher consistency than sporadic, long sessions.`,
+      suggestedPrompts: [
+        'How can I raise my Forge Score?',
+        'Suggest a habit for morning energy',
+        'Why am I missing my evening routines?',
+      ],
+    };
+  }
 
   if (msg.includes('study') || msg.includes('read') || msg.includes('focus')) {
     return {
-      reply: "Struggling with study consistency is often due to friction in starting. Try the '2-Minute Rule': commit to opening your material for just 2 minutes. Once momentum builds, continuation is much easier!",
+      reply: "Struggling with study consistency is often due to friction in starting. Looking at your category trends, you are highly consistent in learning sessions completed between 7 PM and 9 PM. I suggest stacking your reading directly after dinner to leverage this peak window!",
       suggestedPrompts: [
         'How can I break down my study target?',
         'What time of day is best for deep work?',
@@ -222,9 +233,11 @@ function generateMockChatReply(userMessage) {
     };
   }
 
-  if (msg.includes('streak') || msg.includes('missed') || msg.includes('broken')) {
+  if (msg.includes('streak') || msg.includes('missed') || msg.includes('broken') || msg.includes('recovery')) {
+    const recoveryRate = metrics ? metrics.recoveryRate.rate : 82;
+    const avgGap = metrics ? metrics.recoveryRate.averageGapDays : 1.2;
     return {
-      reply: 'Never double miss! Missing one day is an anomaly; missing two days is the start of a new habit. Focus on completing a light version of your habit today to preserve your habit identity.',
+      reply: `Never double miss! Your recovery index is strong at **${recoveryRate}%** with an average gap of **${avgGap} days** to bounce back. Focus on completing a light version of your habit today to preserve your habit identity.`,
       suggestedPrompts: [
         'How do I stay motivated when tired?',
         'What is a minimum viable habit?',
@@ -234,11 +247,11 @@ function generateMockChatReply(userMessage) {
   }
 
   return {
-    reply: `I am your AI Habit Coach! Based on your tracking trends, maintaining smaller daily targets yields 4x higher completion rates than sporadic long sessions. How can I assist you with your habits today?`,
+    reply: `Welcome to your Personal Behavior Coach. Your Forge Score is **${forgeScore}/1000** with **${consistency}% consistency**. How can I help you optimize your morning energy, recovery rates, or specific habits today?`,
     suggestedPrompts: [
-      'How can I improve my consistency score?',
+      'How to recover from a broken streak?',
       'Suggest a habit for morning energy',
-      'Why am I missing my evening routines?',
+      'How to improve my consistency score?',
     ],
   };
 }
@@ -320,7 +333,7 @@ async function callExternalAIForInsights(analytics, habits) {
   return content.insights || [];
 }
 
-async function callExternalAIForChat(userMessage, messageHistory) {
+async function callExternalAIForChat(userMessage, messageHistory, metricsContext = '') {
   const provider = aiConfig.provider.toLowerCase();
 
   if (provider === 'gemini') {
@@ -350,7 +363,8 @@ async function callExternalAIForChat(userMessage, messageHistory) {
                   "Help the user build consistency, overcome broken streaks, and design better morning/evening routines. " +
                   "Keep your tone highly encouraging, actionable, and structured (use bullet points where appropriate). " +
                   "Always provide 2 or 3 short follow-up questions or prompts (e.g. 'How can I stay motivated?') " +
-                  "in a JSON structure or at the very end of your response inside a specialized section."
+                  "in a JSON structure or at the very end of your response inside a specialized section. " +
+                  `Use this user behavioral context to give precise, personalized advice where relevant:\n${metricsContext}`
           }
         ]
       }
@@ -381,7 +395,11 @@ async function callExternalAIForChat(userMessage, messageHistory) {
     {
       model: aiConfig.model || 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'You are DailyForge\'s empathetic, data-driven AI Habit Coach.' },
+        { 
+          role: 'system', 
+          content: 'You are DailyForge\'s empathetic, data-driven AI Habit Coach. ' +
+                   `Use this user behavioral context to give precise, personalized advice where relevant:\n${metricsContext}`
+        },
         ...formattedMessages,
       ],
     },
