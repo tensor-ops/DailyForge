@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { analyticsService } from '@/services/analyticsService';
 import { BehaviorAnalytics } from '@/types/behavior';
@@ -8,6 +9,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { ChartCard } from '@/components/ui/ChartCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { GrowthDashboard } from './GrowthDashboard';
 import {
   Sparkles,
   Zap,
@@ -32,6 +34,10 @@ type AnalyticsRange = '7d' | '30d' | '90d' | '1y' | 'all';
 export const AnalyticsPage: React.FC = () => {
   useDocumentTitle('DailyForge — Performance Intelligence');
   const { error } = useToast();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentTab = searchParams.get('tab') || 'overview';
+
   const [range, setRange] = useState<AnalyticsRange>('30d');
   const [behaviorData, setBehaviorData] = useState<BehaviorAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,6 +65,10 @@ export const AnalyticsPage: React.FC = () => {
         <p>Parsing behavior signals...</p>
       </div>
     );
+  }
+
+  if (currentTab === 'growth') {
+    return <GrowthDashboard />;
   }
 
   // Baseline building check
