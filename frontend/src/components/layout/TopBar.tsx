@@ -45,6 +45,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         return 'Analytics';
       case '/ai-insights':
         return 'Insights';
+      case '/forge-lab':
+        return 'Forge Lab';
       case '/profile':
         return 'Profile';
       case '/settings':
