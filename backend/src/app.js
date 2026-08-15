@@ -14,6 +14,10 @@ const habitRoutes = require('./routes/habit.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const aiRoutes = require('./routes/ai.routes');
 const goalRoutes = require('./routes/goal.routes');
+const taskRoutes = require('./routes/task.routes');
+const plannerRoutes = require('./routes/planner.routes');
+const recommendationRoutes = require('./routes/recommendation.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
 
 const app = express();
 
@@ -110,6 +114,10 @@ app.use('/api/v1/habits', habitRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/goals', goalRoutes);
+app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/planner', plannerRoutes);
+app.use('/api/v1/recommendations', recommendationRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 // Fallback 404 & Global Error Handling
 app.use(notFoundHandler);

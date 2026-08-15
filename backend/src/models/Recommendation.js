@@ -1,0 +1,62 @@
+const mongoose = require('mongoose');
+
+const RecommendationSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    type: {
+      type: String,
+      enum: ['scheduling', 'difficulty', 'capacity', 'habit', 'goal', 'focus'],
+      required: true,
+    },
+    title: {
+      type: String,
+      required: [true, 'Recommendation title is required'],
+      trim: true,
+    },
+    description: {
+      type: String,
+      default: '',
+    },
+    reason: {
+      type: String,
+      default: '',
+    },
+    evidence: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+    confidence: {
+      type: Number,
+      default: 0.8,
+      min: 0,
+      max: 1,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'accepted', 'rejected', 'expired'],
+      default: 'pending',
+      index: true,
+    },
+    respondedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+RecommendationSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  obj.id = obj._id.toString();
+  delete obj.__v;
+  return obj;
+};
+
+module.exports = mongoose.model('Recommendation', RecommendationSchema);
