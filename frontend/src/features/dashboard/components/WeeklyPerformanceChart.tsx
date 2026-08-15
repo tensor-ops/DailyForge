@@ -17,7 +17,7 @@ import { DateRangeSelector } from '@/components/ui/DateRangeSelector';
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#101622] border border-[#1D293D] rounded-xl px-3.5 py-2.5 shadow-xl text-xs space-y-1">
+    <div className="bg-card border border-border rounded-xl px-3.5 py-2.5 shadow-xl text-xs space-y-1">
       <p className="text-muted-foreground font-semibold mb-1">{label}</p>
       {payload.map((p) => (
         <div key={p.name} className="flex items-center justify-between gap-4">
@@ -87,12 +87,12 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
     data.length > 0 ? Math.round(data.reduce((s, d) => s + d.completion, 0) / data.length) : 0;
 
   return (
-    <div className="bg-[#101622] border border-[#1D293D] rounded-2xl p-5 flex flex-col gap-4 h-full">
+    <div className="bg-card border border-border rounded-2xl p-5 flex flex-col gap-4 h-full">
       {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Weekly Performance</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">Your consistency and completion over time</p>
+          <h3 className="text-sm font-semibold text-foreground">Consistency Trend</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">Your habit consistency over time</p>
         </div>
         <DateRangeSelector
           value={range}
@@ -125,8 +125,8 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
                   <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="consistencyGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#64748B" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#64748B" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#22D3EE" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(29, 41, 61, 0.3)" vertical={false} />
@@ -153,11 +153,11 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
                 type="monotone"
                 dataKey="consistency"
                 name="Consistency"
-                stroke="#64748B"
+                stroke="#22D3EE"
                 strokeWidth={1.8}
                 fill="url(#consistencyGrad)"
                 dot={{ r: 0 }}
-                activeDot={{ r: 4, fill: '#64748B', stroke: '#fff', strokeWidth: 1.5 }}
+                activeDot={{ r: 4, fill: '#22D3EE', stroke: '#fff', strokeWidth: 1.5 }}
               />
               {/* Completion Series */}
               <Area

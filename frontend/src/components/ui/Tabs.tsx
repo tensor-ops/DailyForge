@@ -20,7 +20,7 @@ export const Tabs: React.FC<TabsProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('flex border-b border-[#1D293D]/70 gap-5 text-xs font-bold text-muted-foreground select-none text-left', className)}>
+    <div className={cn('flex border-b border-border/70 gap-5 text-xs font-bold text-muted-foreground select-none text-left', className)}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -31,7 +31,7 @@ export const Tabs: React.FC<TabsProps> = ({
             className={cn(
               'pb-3 border-b-2 transition-colors cursor-pointer focus:outline-none relative top-[1px]',
               isActive
-                ? 'border-[#2563EB] text-[#F8FAFC] font-extrabold'
+                ? 'border-primary text-foreground font-extrabold'
                 : 'border-transparent hover:text-foreground'
             )}
           >

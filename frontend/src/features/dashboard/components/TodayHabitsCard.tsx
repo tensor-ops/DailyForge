@@ -28,7 +28,7 @@ export const TodayHabitsCard: React.FC<TodayHabitsCardProps> = ({
   onCreateHabit,
 }) => {
   return (
-    <div className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <div className="bg-card border border-border rounded-card p-5 flex flex-col gap-4 h-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -55,15 +55,15 @@ export const TodayHabitsCard: React.FC<TodayHabitsCardProps> = ({
         </div>
       ) : habits.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-10 text-center">
-          <div className="h-12 w-12 rounded-2xl bg-[#080C14] flex items-center justify-center text-xl">🎯</div>
+          <div className="h-12 w-12 rounded-2xl bg-surface-sunken flex items-center justify-center text-xl">🎯</div>
           <div>
-            <p className="text-xs font-bold text-slate-200">No habits today.</p>
+            <p className="text-xs font-bold text-foreground">No habits today.</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Create one to start consistent habits.</p>
           </div>
           {onCreateHabit && (
             <button
               onClick={onCreateHabit}
-              className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold bg-primary text-slate-100 rounded-lg hover:bg-primary-hover transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-bold bg-primary text-foreground rounded-lg hover:bg-primary-hover transition-colors"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Create Habit</span>
@@ -85,7 +85,7 @@ export const TodayHabitsCard: React.FC<TodayHabitsCardProps> = ({
               {habits.map((habit) => (
                 <tr 
                   key={habit.id}
-                  className="group hover:bg-[#151D2C]/40 transition-colors"
+                  className="group hover:bg-muted/40 transition-colors"
                 >
                   {/* Status Checkbox Column */}
                   <td className="py-3">
@@ -95,8 +95,8 @@ export const TodayHabitsCard: React.FC<TodayHabitsCardProps> = ({
                       className={cn(
                         "h-5 w-5 rounded border flex items-center justify-center transition-all cursor-pointer",
                         habit.completedToday
-                          ? "bg-success border-success text-slate-100"
-                          : "border-[#1D293D] hover:border-primary bg-[#080C14] text-transparent hover:text-primary/20"
+                          ? "bg-success border-success text-foreground"
+                          : "border-border hover:border-primary bg-surface-sunken text-transparent hover:text-primary/20"
                       )}
                     >
                       <Check className="h-3 w-3 stroke-[3]" />
@@ -109,7 +109,7 @@ export const TodayHabitsCard: React.FC<TodayHabitsCardProps> = ({
                       onClick={() => onToggle(habit)}
                       className={cn(
                         "text-xs font-semibold cursor-pointer transition-colors block truncate max-w-[120px] sm:max-w-[180px]",
-                        habit.completedToday ? "text-muted-foreground/60 line-through" : "text-slate-200"
+                        habit.completedToday ? "text-muted-foreground/60 line-through" : "text-foreground"
                       )}
                     >
                       {habit.name}

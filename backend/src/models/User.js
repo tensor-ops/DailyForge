@@ -36,6 +36,11 @@ const UserSchema = new mongoose.Schema(
         enum: ['light', 'dark', 'system'],
         default: 'dark',
       },
+      accentTheme: {
+        type: String,
+        enum: ['midnight', 'arctic', 'indigo', 'emerald', 'ember', 'rose'],
+        default: 'midnight',
+      },
       emailNotifications: {
         type: Boolean,
         default: true,

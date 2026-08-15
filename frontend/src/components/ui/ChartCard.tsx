@@ -18,7 +18,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({
   className,
 }) => {
   return (
-    <Card className={cn('bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 text-left select-none', className)}>
+    <Card className={cn('bg-card border border-border rounded-card p-5 flex flex-col gap-4 text-left select-none', className)}>
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-foreground">{title}</h3>

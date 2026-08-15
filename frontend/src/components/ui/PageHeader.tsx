@@ -17,13 +17,13 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   className,
 }) => {
   return (
-    <div className={cn('border-b border-[#1D293D]/70 pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-left select-none', className)}>
+    <div className={cn('border-b border-border/70 pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-left select-none', className)}>
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F8FAFC]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
           {title}
         </h1>
         {description && (
-          <p className="text-xs sm:text-sm text-[#94A3B8] font-semibold">
+          <p className="text-xs sm:text-sm text-muted-foreground font-semibold">
             {description}
           </p>
         )}

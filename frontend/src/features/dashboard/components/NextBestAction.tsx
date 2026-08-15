@@ -33,7 +33,7 @@ export const NextBestAction: React.FC<NextBestActionProps> = ({
     : defaultActions;
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <Card className="bg-card border border-border rounded-card p-5 flex flex-col gap-4 h-full">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Next Best Action</h3>
@@ -49,7 +49,7 @@ export const NextBestAction: React.FC<NextBestActionProps> = ({
         "p-3 rounded-xl border flex items-center gap-2.5 text-xs font-semibold select-none",
         isOverloaded
           ? "bg-warning/10 border-warning/20 text-warning"
-          : "bg-primary/5 border-primary/10 text-slate-200"
+          : "bg-primary/5 border-primary/10 text-foreground"
       )}>
         {isOverloaded ? (
           <>
@@ -73,13 +73,13 @@ export const NextBestAction: React.FC<NextBestActionProps> = ({
       {/* Actions priority list */}
       <div className="space-y-3">
         {actions.map((act) => (
-          <div key={act.id} className="flex items-center gap-3.5 p-3 rounded-xl border border-border/5 bg-[#131B29] hover:border-border/15 transition-all">
+          <div key={act.id} className="flex items-center gap-3.5 p-3 rounded-xl border border-border/5 bg-surface-elevated hover:border-border/15 transition-all">
             <span className="text-lg font-black text-muted-foreground/35 select-none">{act.number}</span>
             <div className="min-w-0 flex-1">
-              <h4 className="text-xs font-extrabold text-slate-200 leading-none truncate">{act.title}</h4>
+              <h4 className="text-xs font-extrabold text-foreground leading-none truncate">{act.title}</h4>
               <p className="text-[10px] text-muted-foreground mt-1 font-medium">{act.reason}</p>
             </div>
-            <span className="text-[10px] font-bold text-slate-400 bg-muted px-2 py-0.5 rounded-md shrink-0 flex items-center gap-1 border border-white/5">
+            <span className="text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-md shrink-0 flex items-center gap-1 border border-white/5">
               <Calendar className="h-3 w-3 text-primary shrink-0" />
               <span>{act.bestTime}</span>
             </span>

@@ -60,20 +60,20 @@ export const HabitDetailPage: React.FC = () => {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl bg-[#101622] hover:bg-[#131B29] border border-[#1D293D] text-slate-300 transition-colors cursor-pointer"
+          className="p-2 rounded-xl bg-card hover:bg-surface-elevated border border-border text-slate-300 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div>
           <span className="text-[10px] font-bold text-primary uppercase tracking-widest">{habit.category}</span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 mt-0.5">{habit.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-foreground mt-0.5">{habit.name}</h1>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Main statistics cards */}
         <div className="md:col-span-2 space-y-5">
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-5">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-5">
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Performance Snapshot</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
@@ -98,7 +98,7 @@ export const HabitDetailPage: React.FC = () => {
           </Card>
 
           {/* Miss reason breakdown log */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Friction Analysis</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Top causes of skipped schedules</p>
@@ -123,11 +123,11 @@ export const HabitDetailPage: React.FC = () => {
         {/* Sidebar suggestions */}
         <div className="space-y-5">
           {/* Risk Level */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col justify-between h-[150px]">
+          <Card className="bg-card border border-border rounded-card p-5 flex flex-col justify-between h-[150px]">
             <div>
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Stability Risk</span>
               <h3 className={`text-xl font-extrabold tracking-tight mt-1 ${
-                risk === 'HIGH' ? 'text-danger animate-pulse' : 'text-slate-200'
+                risk === 'HIGH' ? 'text-danger animate-pulse' : 'text-foreground'
               }`}>
                 {risk === 'HIGH' ? 'DECLINING' : 'STABLE'}
               </h3>
@@ -139,12 +139,12 @@ export const HabitDetailPage: React.FC = () => {
           </Card>
 
           {/* Suggested adjustment schedule */}
-          <Card className="bg-[#101622] border border-cyan-500/20 rounded-[14px] p-5 space-y-3">
+          <Card className="bg-card border border-cyan-500/20 rounded-card p-5 space-y-3">
             <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
               <Sparkles className="h-4 w-4 text-cyan-400" />
               <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">AI Suggestion</h4>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed font-medium font-semibold">
+            <p className="text-xs text-foreground leading-relaxed font-medium font-semibold">
               Based on your peaks, completing this habit in the <strong className="text-cyan-400">Evening</strong> window improves completion odds by <strong className="text-cyan-400">18%</strong>.
             </p>
           </Card>

@@ -72,7 +72,7 @@ export const AIPage: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // Simulate specialized Coach response for struggle queries to align with specifications
+      // Simulate specialized Coach response for struggle queries
       if (messageText.toLowerCase().includes('struggling with reading')) {
         setTimeout(() => {
           const coachMsg: AIChatMessage = {
@@ -117,9 +117,9 @@ export const AIPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 items-start">
         {/* Left Side: Coach Chat Interface */}
         <div className="lg:col-span-3 space-y-4">
-          <Card className="p-0 bg-[#101622] border border-[#1D293D] overflow-hidden flex flex-col h-[520px] rounded-[14px]">
+          <div className="bg-card border border-border overflow-hidden flex flex-col h-[520px] rounded-card shadow-card">
             {/* Chat Header */}
-            <div className="p-4 border-b border-[#1D293D]/80 bg-[#101622] flex items-center justify-between">
+            <div className="p-4 border-b border-border bg-surface flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
                   <Bot className="h-5 w-5" />
@@ -130,14 +130,14 @@ export const AIPage: React.FC = () => {
                     <span className="h-2 w-2 rounded-full bg-success inline-block animate-pulse" />
                   </h3>
                   <p className="text-[10px] text-muted-foreground font-semibold">
-                    Trained on behavioral science & habit data
+                    Trained on behavioral science &amp; habit data
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Messages List */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#080C14]">
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-background">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -148,8 +148,8 @@ export const AIPage: React.FC = () => {
                   <div
                     className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs font-semibold leading-relaxed text-left ${
                       msg.sender === 'user'
-                        ? 'bg-primary text-slate-100 rounded-br-none'
-                        : 'bg-[#101622] border border-[#1D293D] text-slate-200 rounded-bl-none shadow-sm'
+                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                        : 'bg-card border border-border text-foreground rounded-bl-none shadow-sm'
                     }`}
                   >
                     <p>{msg.content}</p>
@@ -171,12 +171,12 @@ export const AIPage: React.FC = () => {
             </div>
 
             {/* Quick Actions Pills */}
-            <div className="p-3 border-t border-[#1D293D]/40 bg-[#101622]/40 flex flex-wrap gap-1.5 select-none">
+            <div className="p-3 border-t border-border/40 bg-surface/40 flex flex-wrap gap-1.5 select-none">
               {quickActions.map((action) => (
                 <button
                   key={action}
                   onClick={() => handleSendMessage(action)}
-                  className="text-[10px] px-2.5 py-1.5 rounded-xl border border-[#1D293D] bg-[#080C14] hover:bg-[#131B29] text-slate-300 font-bold transition-all cursor-pointer"
+                  className="text-[10px] px-2.5 py-1.5 rounded-xl border border-border bg-surface hover:bg-muted text-muted-foreground hover:text-foreground font-bold transition-all cursor-pointer"
                 >
                   {action}
                 </button>
@@ -189,7 +189,7 @@ export const AIPage: React.FC = () => {
                 e.preventDefault();
                 handleSendMessage();
               }}
-              className="p-3 bg-[#101622] border-t border-[#1D293D]/80 flex items-center gap-2"
+              className="p-3 bg-surface border-t border-border flex items-center gap-2"
             >
               <Input
                 placeholder="Ask your coach: 'Why am I struggling with reading?'"
@@ -200,49 +200,49 @@ export const AIPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={!inputMessage.trim() || isTyping}
-                className="bg-primary hover:bg-primary-hover text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
+                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <span>Send</span>
                 <Send className="h-3.5 w-3.5" />
               </button>
             </form>
-          </Card>
+          </div>
         </div>
 
         {/* Right Side: Context Panel */}
         <div className="space-y-5">
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
-            <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
+          <Card className="rounded-card p-5 space-y-4">
+            <div className="flex items-center gap-1.5 border-b border-border/50 pb-2">
               <Star className="h-4 w-4 text-primary fill-primary" />
-              <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Context Panel</h3>
+              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Context Panel</h3>
             </div>
             
-            <div className="space-y-4 text-xs font-semibold text-slate-300">
+            <div className="space-y-4 text-xs font-semibold text-foreground">
               {/* Today's Habits Progress */}
-              <div className="flex items-center justify-between p-2.5 bg-[#131B29] border border-border/5 rounded-xl">
+              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
                 <div>
                   <span className="text-[10px] text-muted-foreground block">Today</span>
-                  <span className="text-slate-100 font-extrabold">{completedCount} / {totalCount} habits</span>
+                  <span className="text-foreground font-extrabold">{completedCount} / {totalCount} habits</span>
                 </div>
                 <div className="h-10 w-10">
-                  <ProgressRing value={progressPercent} size={40} strokeWidth={4} color="#2563EB" />
+                  <ProgressRing value={progressPercent} size={40} strokeWidth={4} color="rgb(var(--color-primary))" />
                 </div>
               </div>
 
               {/* Momentum Status */}
-              <div className="flex items-center justify-between p-2.5 bg-[#131B29] border border-border/5 rounded-xl">
+              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-bold">Momentum</span>
-                  <span className="text-slate-100 font-extrabold">{momentumScore} index</span>
+                  <span className="text-foreground font-extrabold">{momentumScore} index</span>
                 </div>
                 <Flame className="h-5 w-5 text-warning fill-warning" />
               </div>
 
               {/* Top Priority */}
-              <div className="flex items-center justify-between p-2.5 bg-[#131B29] border border-border/5 rounded-xl">
+              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
                 <div>
                   <span className="text-[10px] text-muted-foreground block font-bold">Top Priority</span>
-                  <span className="text-slate-100 font-extrabold">DSA Practice</span>
+                  <span className="text-foreground font-extrabold">DSA Practice</span>
                 </div>
                 <Target className="h-5 w-5 text-primary" />
               </div>
@@ -250,18 +250,18 @@ export const AIPage: React.FC = () => {
           </Card>
 
           {/* Next Best Action / Smart Recommendation */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
-            <div className="flex items-center gap-1.5 border-b border-[#1D293D]/40 pb-2">
+          <Card variant="ai" className="rounded-card p-5 space-y-3">
+            <div className="flex items-center gap-1.5 border-b border-ai-border/30 pb-2">
               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
               <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Next Best Action</h4>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed font-semibold text-left">
+            <p className="text-xs text-foreground leading-relaxed font-semibold text-left">
               Postpone Reading to 8:30 PM. Moving this routine avoids schedule overlaps and increases success likelihood by 18%.
             </p>
           </Card>
 
           {/* AI Rules Disclaimer */}
-          <div className="p-3 rounded-xl border border-border/10 bg-primary/5 text-[10px] text-muted-foreground leading-relaxed font-medium text-left">
+          <div className="p-3 rounded-xl border border-border bg-primary/5 text-[10px] text-muted-foreground leading-relaxed font-medium text-left">
             * Coach recommendations suggest optimizations based on historical completion trends. No diagnostic claims are made.
           </div>
         </div>

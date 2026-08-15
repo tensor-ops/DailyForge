@@ -72,7 +72,7 @@ export const GrowthDashboard: React.FC = () => {
         title="Long-Term Growth Progression"
         description="Compounding consistency, execution, reliability, and recovery over time"
         actions={
-          <div className="flex bg-[#101622] p-1 border border-[#1D293D] rounded-xl text-xs font-bold text-slate-300 w-max shrink-0">
+          <div className="flex bg-card p-1 border border-border rounded-xl text-xs font-bold text-muted-foreground w-max shrink-0">
             {([
               { id: '30d', label: '30D' },
               { id: '90d', label: '90D' },
@@ -85,7 +85,7 @@ export const GrowthDashboard: React.FC = () => {
                 className={cn(
                   'px-3 py-1.5 rounded-lg uppercase tracking-wide cursor-pointer transition-colors focus:outline-none',
                   range === opt.id
-                    ? 'bg-[#2563EB] text-slate-100 font-extrabold'
+                    ? 'bg-primary text-foreground font-extrabold'
                     : 'hover:text-foreground hover:bg-muted/30'
                 )}
               >
@@ -119,32 +119,32 @@ export const GrowthDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left main: Before vs Now Comparison */}
         <div className="lg:col-span-2 space-y-5">
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Before vs Now</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Performance metrics shift since your baseline establishment</p>
             </div>
             
-            <div className="space-y-4 text-xs font-semibold text-slate-300">
-              <div className="flex justify-between items-center p-3 bg-[#131B29] border border-border/5 rounded-xl">
+            <div className="space-y-4 text-xs font-semibold text-muted-foreground">
+              <div className="flex justify-between items-center p-3 bg-surface-elevated border border-border/60 rounded-xl">
                 <span>Consistency</span>
-                <span className="text-slate-100 font-extrabold">72% → <strong className="text-success font-extrabold text-sm pl-1">84%</strong></span>
+                <span className="text-foreground font-extrabold">72% → <strong className="text-success font-extrabold text-sm pl-1">84%</strong></span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-[#131B29] border border-border/5 rounded-xl">
+              <div className="flex justify-between items-center p-3 bg-surface-elevated border border-border/60 rounded-xl">
                 <span>Execution</span>
-                <span className="text-slate-100 font-extrabold">76% → <strong className="text-success font-extrabold text-sm pl-1">89%</strong></span>
+                <span className="text-foreground font-extrabold">76% → <strong className="text-success font-extrabold text-sm pl-1">89%</strong></span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-[#131B29] border border-border/5 rounded-xl">
+              <div className="flex justify-between items-center p-3 bg-surface-elevated border border-border/60 rounded-xl">
                 <span>Recovery Rate</span>
-                <span className="text-slate-100 font-extrabold">61% → <strong className="text-success font-extrabold text-sm pl-1">82%</strong></span>
+                <span className="text-foreground font-extrabold">61% → <strong className="text-success font-extrabold text-sm pl-1">82%</strong></span>
               </div>
             </div>
           </Card>
 
           {/* Category Growth breakdown */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground">Category Growth Margin</h3>
-            <div className="space-y-3 text-xs font-semibold text-slate-300">
+            <div className="space-y-3 text-xs font-semibold text-muted-foreground">
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span>Learning / Study</span>
@@ -162,7 +162,7 @@ export const GrowthDashboard: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span>Career / Work</span>
-                  <span className="text-[#F59E0B] font-bold">+9%</span>
+                  <span className="text-warning font-bold">+9%</span>
                 </div>
                 <ProgressBar value={9 * 9} accent="orange" />
               </div>
@@ -173,16 +173,16 @@ export const GrowthDashboard: React.FC = () => {
         {/* Right side: Personal records & growth insight card */}
         <div className="space-y-5">
           {/* Personal Records */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
               <Award className="h-4.5 w-4.5 text-warning animate-pulse" />
               <h3 className="text-xs font-bold text-warning uppercase tracking-wider">Personal Records</h3>
             </div>
             
-            <div className="space-y-3.5 text-xs font-semibold text-slate-300">
+            <div className="space-y-3.5 text-xs font-semibold text-muted-foreground">
               <div>
                 <span className="text-[10px] text-muted-foreground block">Best Week</span>
-                <span className="text-slate-100 font-extrabold">96% Completion Rate</span>
+                <span className="text-foreground font-extrabold">96% Completion Rate</span>
               </div>
               <div>
                 <span className="text-[10px] text-muted-foreground block">Longest Streak</span>
@@ -194,7 +194,7 @@ export const GrowthDashboard: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] text-muted-foreground block">Best Recovery</span>
-                <span className="text-slate-200">1 day return interval</span>
+                <span className="text-foreground">1 day return interval</span>
               </div>
               <div>
                 <span className="text-[10px] text-muted-foreground block">Best Completion Day</span>
@@ -204,12 +204,12 @@ export const GrowthDashboard: React.FC = () => {
           </Card>
 
           {/* Growth Insight */}
-          <Card className="bg-primary/5 border border-primary/20 rounded-[14px] p-5 space-y-3">
+          <Card className="bg-primary/5 border border-primary/20 rounded-card p-5 space-y-3">
             <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
               <Sparkles className="h-4 w-4 text-primary animate-pulse" />
               <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Growth Insight</h4>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed font-semibold">
+            <p className="text-xs text-foreground leading-relaxed font-semibold">
               Your strongest improvement has been consistency. Moving Reading and DSA Practice to their optimal windows reduced weekly friction by 32%.
             </p>
           </Card>

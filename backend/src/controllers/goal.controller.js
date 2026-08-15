@@ -1,6 +1,6 @@
 const Goal = require('../models/Goal');
 const Habit = require('../models/Habit');
-const { successResponse, errorResponse } = require('../utils/response');
+const { sendSuccess: successResponse, sendError: errorResponse } = require('../utils/response');
 const logger = require('../utils/logger');
 
 /**

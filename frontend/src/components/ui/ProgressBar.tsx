@@ -13,16 +13,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   className,
 }) => {
   const barColors = {
-    blue: 'bg-[#2563EB]',
-    green: 'bg-[#10B981]',
-    orange: 'bg-[#F59E0B]',
-    cyan: 'bg-[#22D3EE]',
+    blue: 'bg-primary',
+    green: 'bg-success',
+    orange: 'bg-warning',
+    cyan: 'bg-ai',
   };
 
   const clamped = Math.max(0, Math.min(100, value));
 
   return (
-    <div className={cn('h-2 w-full bg-[#151D2C] rounded-full overflow-hidden select-none', className)}>
+    <div className={cn('h-2 w-full bg-muted rounded-full overflow-hidden select-none', className)}>
       <div
         className={cn('h-full rounded-full transition-all duration-500', barColors[accent])}
         style={{ width: `${clamped}%` }}

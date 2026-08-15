@@ -1,101 +1,283 @@
+/* ============================================================
+   DAILY FORGE — DESIGN SYSTEM TOKENS
+   Semantic CSS variables for full Light/Dark/Accent theme support
+   ============================================================ */
+
+/* ============================================================
+   LIGHT MODE (Default / :root)
+   ============================================================ */
 :root {
-  /* LIGHT THEME TOKENS */
-  --color-background: 248 250 252;
-  --color-foreground: 15 23 42;
-  
-  --color-surface: 255 255 255;
+  /* Backgrounds */
+  --color-background: 245 247 251;     /* #F5F7FB — App background */
+  --color-foreground: 17 24 39;        /* #111827 — Primary text */
+
+  /* Surfaces */
+  --color-surface: 255 255 255;        /* #FFFFFF — Cards, panels */
   --color-surface-elevated: 255 255 255;
-  --color-surface-sunken: 241 245 249;
-  
+  --color-surface-sunken: 241 245 249; /* #F1F5F9 */
+
+  /* Cards */
   --color-card: 255 255 255;
   --color-card-hover: 248 250 252;
-  
-  --color-border: 226 232 240;
+
+  /* Borders */
+  --color-border: 229 234 242;         /* #E5EAF2 */
   --color-border-subtle: 241 245 249;
   --color-border-strong: 203 213 225;
-  
+
+  /* Muted */
   --color-muted: 241 245 249;
-  --color-muted-foreground: 100 116 139;
-  
-  --color-primary: 79 70 229;
+  --color-muted-foreground: 100 116 139; /* #64748B */
+
+  /* Primary */
+  --color-primary: 37 99 235;          /* #2563EB */
   --color-primary-foreground: 255 255 255;
-  --color-primary-hover: 67 56 202;
-  --color-primary-muted: 238 242 255;
-  
+  --color-primary-hover: 29 78 216;    /* #1D4ED8 */
+  --color-primary-muted: 239 246 255;  /* #EFF6FF */
+
+  /* Secondary */
   --color-secondary: 241 245 249;
-  --color-secondary-foreground: 30 41 59;
-  --color-secondary-hover: 226 232 240;
-  
-  --color-success: 16 185 129;
+  --color-secondary-foreground: 71 85 105; /* #475569 */
+  --color-secondary-hover: 229 234 242;
+
+  /* Semantic: Success */
+  --color-success: 5 150 105;          /* #059669 */
   --color-success-foreground: 255 255 255;
-  --color-success-surface: 236 253 245;
-  
-  --color-warning: 245 158 11;
+  --color-success-surface: 236 253 245; /* #ECFDF5 */
+
+  /* Semantic: Warning */
+  --color-warning: 217 119 6;          /* #D97706 */
   --color-warning-foreground: 255 255 255;
   --color-warning-surface: 254 243 199;
-  
-  --color-danger: 239 68 68;
+
+  /* Semantic: Danger */
+  --color-danger: 220 38 38;           /* #DC2626 */
   --color-danger-foreground: 255 255 255;
   --color-danger-surface: 254 242 242;
-  
-  --color-info: 14 165 233;
+
+  /* Semantic: Info */
+  --color-info: 8 145 178;             /* #0891B2 */
   --color-info-foreground: 255 255 255;
   --color-info-surface: 240 249 255;
-  
-  --color-ai: 124 58 237;
+
+  /* AI */
+  --color-ai: 8 145 178;
   --color-ai-foreground: 255 255 255;
-  --color-ai-surface: 245 243 255;
-  --color-ai-glow: 124 58 237;
-  --color-ai-border: 221 214 254;
+  --color-ai-surface: 241 245 249;
+  --color-ai-glow: 8 145 178;
+  --color-ai-border: 229 234 242;
+
+  /* Inputs */
+  --color-input: 255 255 255;
+  --color-input-border: 216 222 233;   /* #D8DEE9 */
+
+  /* Sidebar */
+  --color-sidebar: 255 255 255;
+  --color-sidebar-hover: 239 246 255;  /* soft primary bg */
+  --color-sidebar-active: 239 246 255;
+  --color-sidebar-active-text: 37 99 235;
+
+  /* Chart */
+  --color-chart-primary: 37 99 235;    /* #2563EB */
+  --color-chart-secondary: 96 165 250; /* #60A5FA */
+  --color-chart-accent: 8 145 178;     /* #0891B2 */
+  --color-chart-grid: 226 232 240;     /* #E2E8F0 */
+  --color-chart-text: 100 116 139;     /* #64748B */
+  --color-chart-tooltip-bg: 255 255 255;
+  --color-chart-tooltip-border: 229 234 242;
+
+  /* Accent Theme (defaults to Midnight palette adapted for light) */
+  --color-accent: 37 99 235;
+  --color-accent-soft: 239 246 255;
 }
 
+/* ============================================================
+   DARK MODE
+   ============================================================ */
 .dark {
-  /* DARK THEME TOKENS (Strict absolute color reference matching Dashbrd X) */
-  --color-background: 11 15 26;       /* #0B0F1A */
-  --color-foreground: 248 250 252;    /* #F8FAFC */
-  
-  --color-surface: 8 12 20;           /* #080C14 (Sidebar / Dark background) */
+  /* Backgrounds */
+  --color-background: 8 12 20;         /* #080C14 */
+  --color-foreground: 248 250 252;     /* #F8FAFC */
+
+  /* Surfaces */
+  --color-surface: 16 22 34;           /* #101622 */
   --color-surface-elevated: 19 27 41;  /* #131B29 */
-  --color-surface-sunken: 8 12 20;    /* #080C14 */
-  
+  --color-surface-sunken: 8 12 20;
+
+  /* Cards */
   --color-card: 16 22 34;             /* #101622 */
   --color-card-hover: 21 29 44;       /* #151D2C */
-  
+
+  /* Borders */
   --color-border: 29 41 61;           /* #1D293D */
-  --color-border-subtle: 23 34 53;    /* #172235 */
-  --color-border-strong: 29 41 61;    /* #1D293D */
-  
-  --color-muted: 21 29 44;            /* #151D2C */
+  --color-border-subtle: 23 34 53;
+  --color-border-strong: 29 41 61;
+
+  /* Muted */
+  --color-muted: 21 29 44;
   --color-muted-foreground: 148 163 184; /* #94A3B8 */
-  
-  --color-primary: 37 99 235;         /* #2563EB (Electric Blue) */
+
+  /* Primary */
+  --color-primary: 59 130 246;         /* #3B82F6 */
   --color-primary-foreground: 255 255 255;
-  --color-primary-hover: 29 78 216;   /* #1D4ED8 */
-  --color-primary-muted: 16 42 106;   /* Dark navy-blue shade */
-  
-  --color-secondary: 19 27 41;        /* #131B29 */
+  --color-primary-hover: 29 78 216;
+  --color-primary-muted: 16 42 106;
+
+  /* Secondary */
+  --color-secondary: 19 27 41;
   --color-secondary-foreground: 203 213 225; /* #CBD5E1 */
-  --color-secondary-hover: 21 29 44;  /* #151D2C */
-  
-  --color-success: 16 185 129;        /* #10B981 (Emerald) */
+  --color-secondary-hover: 21 29 44;
+
+  /* Semantic: Success */
+  --color-success: 16 185 129;        /* #10B981 */
   --color-success-foreground: 255 255 255;
   --color-success-surface: 6 36 26;
-  
-  --color-warning: 245 158 11;        /* #F59E0B (Forge Orange) */
+
+  /* Semantic: Warning */
+  --color-warning: 245 158 11;        /* #F59E0B */
   --color-warning-foreground: 255 255 255;
   --color-warning-surface: 46 32 8;
-  
+
+  /* Semantic: Danger */
   --color-danger: 239 68 68;          /* #EF4444 */
   --color-danger-foreground: 255 255 255;
   --color-danger-surface: 45 14 20;
-  
-  --color-info: 59 130 246;           /* #3B82F6 */
+
+  /* Semantic: Info */
+  --color-info: 59 130 246;
   --color-info-foreground: 255 255 255;
   --color-info-surface: 10 32 48;
-  
-  --color-ai: 34 211 238;             /* #22D3EE (Cyan) */
+
+  /* AI */
+  --color-ai: 34 211 238;             /* #22D3EE */
   --color-ai-foreground: 255 255 255;
-  --color-ai-surface: 19 27 41;       /* #131B29 */
-  --color-ai-glow: 34 211 238;        /* #22D3EE */
-  --color-ai-border: 29 41 61;        /* #1D293D */
+  --color-ai-surface: 19 27 41;
+  --color-ai-glow: 34 211 238;
+  --color-ai-border: 29 41 61;
+
+  /* Inputs */
+  --color-input: 16 22 34;
+  --color-input-border: 29 41 61;
+
+  /* Sidebar */
+  --color-sidebar: 16 22 34;          /* same as surface */
+  --color-sidebar-hover: 21 29 44;
+  --color-sidebar-active: 37 99 235;  /* primary/15 in alpha */
+  --color-sidebar-active-text: 59 130 246;
+
+  /* Chart */
+  --color-chart-primary: 59 130 246;  /* #3B82F6 */
+  --color-chart-secondary: 96 165 250;
+  --color-chart-accent: 34 211 238;   /* #22D3EE */
+  --color-chart-grid: 29 41 61;       /* #1D293D */
+  --color-chart-text: 148 163 184;    /* #94A3B8 */
+  --color-chart-tooltip-bg: 16 22 34;
+  --color-chart-tooltip-border: 29 41 61;
+
+  /* Accent */
+  --color-accent: 34 211 238;
+  --color-accent-soft: 19 27 41;
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Midnight (default dark)
+   ============================================================ */
+.accent-midnight.dark {
+  --color-primary: 59 130 246;         /* #3B82F6 */
+  --color-primary-hover: 29 78 216;
+  --color-accent: 34 211 238;          /* #22D3EE */
+  --color-ai: 34 211 238;
+  --color-chart-primary: 59 130 246;
+  --color-chart-accent: 34 211 238;
+}
+.accent-midnight:not(.dark) {
+  --color-primary: 37 99 235;          /* #2563EB */
+  --color-primary-hover: 29 78 216;
+  --color-accent: 8 145 178;           /* #0891B2 */
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Arctic Blue
+   ============================================================ */
+.accent-arctic.dark {
+  --color-primary: 37 99 235;          /* #2563EB */
+  --color-primary-hover: 29 78 216;
+  --color-accent: 6 182 212;           /* #06B6D4 */
+  --color-ai: 6 182 212;
+  --color-chart-primary: 37 99 235;
+  --color-chart-accent: 6 182 212;
+}
+.accent-arctic:not(.dark) {
+  --color-primary: 37 99 235;
+  --color-primary-hover: 29 78 216;
+  --color-accent: 6 182 212;
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Royal Indigo
+   ============================================================ */
+.accent-indigo.dark {
+  --color-primary: 99 102 241;         /* #6366F1 */
+  --color-primary-hover: 79 70 229;
+  --color-accent: 139 92 246;          /* #8B5CF6 */
+  --color-ai: 139 92 246;
+  --color-chart-primary: 99 102 241;
+  --color-chart-accent: 139 92 246;
+}
+.accent-indigo:not(.dark) {
+  --color-primary: 99 102 241;
+  --color-primary-hover: 79 70 229;
+  --color-accent: 139 92 246;
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Emerald Forge
+   ============================================================ */
+.accent-emerald.dark {
+  --color-primary: 16 185 129;         /* #10B981 */
+  --color-primary-hover: 5 150 105;
+  --color-accent: 20 184 166;          /* #14B8A6 */
+  --color-ai: 20 184 166;
+  --color-chart-primary: 16 185 129;
+  --color-chart-accent: 20 184 166;
+}
+.accent-emerald:not(.dark) {
+  --color-primary: 5 150 105;          /* #059669 */
+  --color-primary-hover: 4 120 87;
+  --color-accent: 20 184 166;
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Ember
+   ============================================================ */
+.accent-ember.dark {
+  --color-primary: 249 115 22;         /* #F97316 */
+  --color-primary-hover: 234 88 12;
+  --color-accent: 251 113 133;         /* #FB7185 */
+  --color-ai: 251 113 133;
+  --color-chart-primary: 249 115 22;
+  --color-chart-accent: 251 113 133;
+  /* NOTE: semantic colors (success, danger) remain UNCHANGED */
+}
+.accent-ember:not(.dark) {
+  --color-primary: 234 88 12;          /* darker orange for light bg */
+  --color-primary-hover: 194 65 12;
+  --color-accent: 251 113 133;
+}
+
+/* ============================================================
+   ACCENT THEME OVERRIDES — Rose Quartz
+   ============================================================ */
+.accent-rose.dark {
+  --color-primary: 225 29 72;          /* #E11D48 */
+  --color-primary-hover: 190 18 60;
+  --color-accent: 192 38 211;          /* #C026D3 */
+  --color-ai: 244 114 182;             /* #F472B6 */
+  --color-chart-primary: 225 29 72;
+  --color-chart-accent: 192 38 211;
+}
+.accent-rose:not(.dark) {
+  --color-primary: 225 29 72;
+  --color-primary-hover: 190 18 60;
+  --color-accent: 192 38 211;
 }

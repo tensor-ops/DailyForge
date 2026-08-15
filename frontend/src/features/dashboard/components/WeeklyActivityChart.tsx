@@ -34,7 +34,7 @@ export const WeeklyActivityChart: React.FC<WeeklyActivityChartProps> = ({ comple
   }
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <Card className="bg-card border border-border rounded-card p-5 flex flex-col gap-4 h-full">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Weekly Activity</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Habits and tasks completed by day</p>

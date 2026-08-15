@@ -79,7 +79,7 @@ export const Logo: React.FC<LogoProps> = ({
           className={cn(
             "font-extrabold text-foreground tracking-tight transition-colors",
             isCompact ? "text-sm" : "text-lg",
-            theme === 'light' ? 'text-slate-900' : theme === 'dark' ? 'text-slate-50' : ''
+            theme === 'light' ? 'text-slate-900' : theme === 'dark' ? 'text-foreground' : ''
           )}
         >
           DailyForge

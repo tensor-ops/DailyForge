@@ -8,6 +8,7 @@ const updateProfileSchema = z.object({
     preferences: z
       .object({
         theme: z.enum(['light', 'dark', 'system']).optional(),
+        accentTheme: z.enum(['midnight', 'arctic', 'indigo', 'emerald', 'ember', 'rose']).optional(),
         emailNotifications: z.boolean().optional(),
         dailyReminderTime: z.string().optional(),
         aiInsightsEnabled: z.boolean().optional(),

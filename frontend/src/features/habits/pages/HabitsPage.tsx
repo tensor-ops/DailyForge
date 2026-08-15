@@ -190,10 +190,10 @@ export const HabitsPage: React.FC = () => {
               <button
                 key={f.id}
                 onClick={() => setFilterType(f.id)}
-                className={`px-3 py-1.5 rounded-lg transition-all ${
+                className={`px-3 py-1.5 rounded-lg transition-all border ${
                   filterType === f.id
-                    ? 'bg-primary text-slate-100'
-                    : 'bg-[#101622] border border-[#1D293D] text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary border-primary text-primary-foreground'
+                    : 'bg-card border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {f.label}
@@ -202,12 +202,12 @@ export const HabitsPage: React.FC = () => {
           </div>
 
           {/* Grid / List Layout Switcher */}
-          <div className="flex items-center bg-[#101622] p-1 border border-[#1D293D] rounded-xl text-slate-400 self-end sm:self-auto">
+          <div className="flex items-center bg-surface-sunken p-1 border border-border rounded-xl text-muted-foreground self-end sm:self-auto">
             <button
               onClick={() => setViewMode('grid')}
               className={cn(
                 'p-1.5 rounded-lg transition-all cursor-pointer',
-                viewMode === 'grid' ? 'bg-[#1D293D] text-slate-100' : 'hover:text-foreground'
+                viewMode === 'grid' ? 'bg-muted text-foreground' : 'hover:text-foreground'
               )}
               aria-label="Grid view"
             >
@@ -217,7 +217,7 @@ export const HabitsPage: React.FC = () => {
               onClick={() => setViewMode('table')}
               className={cn(
                 'p-1.5 rounded-lg transition-all cursor-pointer',
-                viewMode === 'table' ? 'bg-[#1D293D] text-slate-100' : 'hover:text-foreground'
+                viewMode === 'table' ? 'bg-muted text-foreground' : 'hover:text-foreground'
               )}
               aria-label="Table view"
             >
@@ -236,7 +236,7 @@ export const HabitsPage: React.FC = () => {
                 'px-3 py-1 rounded-full text-[11px] font-bold transition-all border cursor-pointer',
                 selectedCategory === cat
                   ? 'bg-primary/10 border-primary text-primary'
-                  : 'bg-[#101622] border-[#1D293D] text-muted-foreground hover:text-foreground'
+                  : 'bg-card border-border text-muted-foreground hover:text-foreground'
               )}
             >
               {cat === 'all' ? 'All Categories' : cat}
@@ -273,15 +273,16 @@ export const HabitsPage: React.FC = () => {
             return (
               <Card
                 key={habit.id}
-                className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col justify-between gap-4 hover:border-primary/30 transition-all group"
+                variant="interactive"
+                className="p-5 flex flex-col justify-between gap-4 hover:border-primary/30 group"
               >
                 <div className="space-y-3 text-left">
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className="text-[10px] bg-muted px-2 py-0.5 rounded border border-white/5 text-slate-300 font-bold">
+                      <span className="text-[10px] bg-muted px-2 py-0.5 rounded border border-border text-muted-foreground font-bold">
                         {habit.category}
                       </span>
-                      <h3 className="text-base font-extrabold text-slate-100 leading-tight mt-1.5">
+                      <h3 className="text-base font-extrabold text-foreground leading-tight mt-1.5">
                         {habit.name}
                       </h3>
                     </div>
@@ -290,7 +291,7 @@ export const HabitsPage: React.FC = () => {
                         e.stopPropagation();
                         setDeleteTarget(habit);
                       }}
-                      className="text-muted-foreground hover:text-[#EF4444] p-1 rounded transition-colors cursor-pointer"
+                      className="text-muted-foreground hover:text-danger p-1 rounded transition-colors cursor-pointer"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -300,11 +301,11 @@ export const HabitsPage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3 text-xs font-semibold pt-1">
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Reliability</span>
-                      <span className="text-slate-200">{reliability}%</span>
+                      <span className="text-foreground">{reliability}%</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Consistency</span>
-                      <span className="text-slate-200">{habit.completionRate || 80}%</span>
+                      <span className="text-foreground">{habit.completionRate || 80}%</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Current Streak</span>
@@ -324,17 +325,17 @@ export const HabitsPage: React.FC = () => {
                       <span className="text-[10px] text-muted-foreground block">Stability Risk</span>
                       <span className={cn(
                         "font-bold",
-                        risk === 'HIGH' ? 'text-danger' : 'text-slate-400'
+                        risk === 'HIGH' ? 'text-danger' : 'text-muted-foreground'
                       )}>{risk}</span>
                     </div>
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Best Time</span>
-                      <span className="text-slate-400">7:30 PM</span>
+                      <span className="text-muted-foreground">7:30 PM</span>
                     </div>
                   </div>
 
                   <div className="space-y-1 pt-1">
-                    <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                    <div className="flex justify-between text-[10px] font-bold text-muted-foreground">
                       <span>Progress</span>
                       <span>{habit.completionRate || 80}%</span>
                     </div>
@@ -344,7 +345,7 @@ export const HabitsPage: React.FC = () => {
 
                 <button
                   onClick={() => navigate(`/habits/${habit.id}`)}
-                  className="w-full bg-[#131B29] border border-border/5 hover:border-border/20 text-slate-300 text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer group-hover:bg-[#151D2C]"
+                  className="w-full bg-surface-elevated border border-border hover:border-border-strong text-muted-foreground hover:text-foreground text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer"
                 >
                   <span>Detailed Analytics</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -355,7 +356,7 @@ export const HabitsPage: React.FC = () => {
         </div>
       ) : (
         /* Table Mode View */
-        <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5">
+        <Card className="p-5">
           <div className="overflow-x-auto">
             <table className="w-full text-xs font-semibold text-left border-collapse min-w-[700px]">
               <thead>
@@ -383,22 +384,22 @@ export const HabitsPage: React.FC = () => {
 
                   return (
                     <tr key={habit.id} className="hover:bg-muted/10 transition-all cursor-pointer" onClick={() => navigate(`/habits/${habit.id}`)}>
-                      <td className="py-3 pl-2 text-slate-100 font-extrabold">{habit.name}</td>
+                      <td className="py-3 pl-2 text-foreground font-extrabold">{habit.name}</td>
                       <td className="py-3">
-                        <span className="text-[10px] bg-muted px-2 py-0.5 rounded border border-white/5 text-slate-300">
+                        <span className="text-[10px] bg-muted px-2 py-0.5 rounded border border-border text-muted-foreground">
                           {habit.category}
                         </span>
                       </td>
-                      <td className="py-3 text-slate-200">{reliability}%</td>
-                      <td className="py-3 text-slate-200">{habit.completionRate || 80}%</td>
+                      <td className="py-3 text-foreground">{reliability}%</td>
+                      <td className="py-3 text-foreground">{habit.completionRate || 80}%</td>
                       <td className="py-3 text-warning">🔥 {habit.currentStreak}d</td>
                       <td className={`py-3 ${friction === 'HIGH' ? 'text-warning' : 'text-success'}`}>{friction}</td>
-                      <td className={`py-3 ${risk === 'HIGH' ? 'text-danger' : 'text-slate-400'}`}>{risk}</td>
+                      <td className={`py-3 ${risk === 'HIGH' ? 'text-danger' : 'text-muted-foreground'}`}>{risk}</td>
                       <td className="py-3 text-muted-foreground">7:30 PM</td>
                       <td className="py-3 text-right pr-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => setDeleteTarget(habit)}
-                          className="text-muted-foreground hover:text-[#EF4444] p-1.5 rounded transition-colors cursor-pointer"
+                          className="text-muted-foreground hover:text-danger p-1.5 rounded transition-colors cursor-pointer"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -421,7 +422,7 @@ export const HabitsPage: React.FC = () => {
       >
         <div className="space-y-4 pt-2">
           {deleteTarget && (
-            <div className="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20 text-sm font-medium text-[#EF4444]">
+            <div className="p-3 rounded-lg bg-danger/10 border border-danger/20 text-sm font-medium text-danger">
               Deleting: &quot;{deleteTarget.name}&quot;
             </div>
           )}
@@ -430,14 +431,14 @@ export const HabitsPage: React.FC = () => {
             <button
               onClick={() => setDeleteTarget(null)}
               disabled={isDeleting}
-              className="px-3.5 py-2 bg-[#151D2C] hover:bg-[#1D293D] text-slate-300 rounded-xl text-xs font-bold cursor-pointer transition-colors"
+              className="px-3.5 py-2 bg-muted hover:bg-muted/80 border border-border text-muted-foreground rounded-xl text-xs font-bold cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleDeleteHabit}
               disabled={isDeleting}
-              className="px-3.5 py-2 bg-[#EF4444] hover:bg-[#EF4444]/80 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
+              className="px-3.5 py-2 bg-danger hover:bg-danger/80 text-danger-foreground rounded-xl text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
             >
               {isDeleting ? 'Deleting...' : 'Confirm Delete'}
             </button>

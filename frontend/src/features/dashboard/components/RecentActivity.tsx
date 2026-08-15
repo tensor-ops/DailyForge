@@ -22,7 +22,6 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities, comp
     { id: '4', type: 'achievement', title: 'Achievement unlocked: 7 Day Streak', time: 'Yesterday' }
   ];
 
-  // If habits were completed, we can dynamically prefix a log for feedback!
   const listToRender = [...defaultActivities];
   if (completedCount > 0) {
     listToRender.unshift({
@@ -36,21 +35,21 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ activities, comp
   const displayedList = activities || listToRender.slice(0, 4);
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <Card className="p-5 flex flex-col gap-4 h-full">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Recent Activity</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Live logs from your productivity nodes</p>
       </div>
 
-      <div className="space-y-4 my-auto relative pl-4 border-l border-border/10 ml-2">
+      <div className="space-y-4 my-auto relative pl-4 border-l border-border/40 ml-2">
         {displayedList.map((act) => (
           <div key={act.id} className="relative space-y-0.5">
-            <span className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border border-[#1D293D] bg-[#0B0F1A] flex items-center justify-center text-[8px] font-bold">
-              {act.type === 'habit' && <Check className="h-2 w-2 text-[#10B981]" />}
-              {act.type === 'streak' && <Flame className="h-2.5 w-2.5 text-[#F59E0B] fill-[#F59E0B]" />}
-              {act.type === 'achievement' && <Trophy className="h-2 w-2 text-[#2563EB]" />}
+            <span className="absolute -left-6 top-1 h-3.5 w-3.5 rounded-full border border-border bg-surface-sunken flex items-center justify-center text-[8px] font-bold">
+              {act.type === 'habit' && <Check className="h-2 w-2 text-success" />}
+              {act.type === 'streak' && <Flame className="h-2.5 w-2.5 text-warning fill-warning" />}
+              {act.type === 'achievement' && <Trophy className="h-2 w-2 text-primary" />}
             </span>
-            <h4 className="text-xs font-bold text-slate-200 leading-none">{act.title}</h4>
+            <h4 className="text-xs font-bold text-foreground leading-none">{act.title}</h4>
             <p className="text-[10px] text-muted-foreground">{act.time}</p>
           </div>
         ))}

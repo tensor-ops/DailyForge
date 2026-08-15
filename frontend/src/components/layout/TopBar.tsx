@@ -92,7 +92,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       </div>
 
       {/* Center section: Current Date */}
-      <div className="hidden md:block text-xs font-bold text-muted-foreground uppercase tracking-widest bg-[#080C14] px-3.5 py-1.5 rounded-full border border-border/40">
+      <div className="hidden md:block text-xs font-bold text-muted-foreground uppercase tracking-widest bg-surface-sunken px-3.5 py-1.5 rounded-full border border-border/40">
         {formattedDate}
       </div>
 

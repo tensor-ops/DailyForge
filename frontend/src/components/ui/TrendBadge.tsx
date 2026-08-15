@@ -21,8 +21,8 @@ export const TrendBadge: React.FC<TrendBadgeProps> = ({
         neutral
           ? 'bg-muted text-muted-foreground'
           : positive
-          ? 'bg-[#10B981]/15 text-[#10B981]'
-          : 'bg-[#EF4444]/15 text-[#EF4444]',
+          ? 'bg-success/15 text-success'
+          : 'bg-danger/15 text-danger',
         className
       )}
     >

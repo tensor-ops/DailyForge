@@ -27,15 +27,15 @@ export const ForgeScoreCard: React.FC<ForgeScoreCardProps> = ({
   ];
 
   const breakdown = [
-    { name: 'Consistency', value: `${consistency || 84}%`, color: 'bg-[#2563EB]' },
-    { name: 'Completion', value: `${completion || 91}%`, color: 'bg-[#3B82F6]' },
-    { name: 'Streak Ratio', value: `${streak || 76}%`, color: 'bg-[#F59E0B]' },
+    { name: 'Consistency', value: `${consistency || 84}%`, color: 'bg-primary' },
+    { name: 'Completion', value: `${completion || 91}%`, color: 'bg-primary' },
+    { name: 'Streak Ratio', value: `${streak || 76}%`, color: 'bg-warning' },
     { name: 'Difficulty', value: `${difficulty}%`, color: 'bg-slate-500' },
-    { name: 'Recovery', value: `${recovery}%`, color: 'bg-[#60A5FA]' },
+    { name: 'Recovery', value: `${recovery}%`, color: 'bg-primary' },
   ];
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <Card className="bg-card border border-border rounded-card p-5 flex flex-col gap-4 h-full">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Forge Score</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Composite system rating</p>
@@ -80,7 +80,7 @@ export const ForgeScoreCard: React.FC<ForgeScoreCardProps> = ({
                 <span className={`h-2 w-2 rounded-full shrink-0 ${item.color}`} />
                 <span className="text-muted-foreground truncate">{item.name}</span>
               </div>
-              <span className="text-slate-200 font-mono">{item.value}</span>
+              <span className="text-foreground font-mono">{item.value}</span>
             </div>
           ))}
         </div>

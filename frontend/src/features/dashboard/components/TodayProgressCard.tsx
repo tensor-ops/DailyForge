@@ -17,7 +17,7 @@ export const TodayProgressCard: React.FC<TodayProgressCardProps> = ({
   const remaining = Math.max(0, total - completed);
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col items-center justify-between h-full text-center">
+    <Card className="bg-card border border-border rounded-card p-5 flex flex-col items-center justify-between h-full text-center">
       <div className="w-full text-left">
         <h3 className="text-sm font-semibold text-foreground">Today&apos;s Progress</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Your habit completion index</p>

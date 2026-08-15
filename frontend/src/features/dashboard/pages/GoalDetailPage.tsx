@@ -55,20 +55,20 @@ export const GoalDetailPage: React.FC = () => {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(-1)}
-          className="p-2 rounded-xl bg-[#101622] hover:bg-[#131B29] border border-[#1D293D] text-slate-300 transition-colors cursor-pointer"
+          className="p-2 rounded-xl bg-card hover:bg-surface-elevated border border-border text-slate-300 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
         <div>
           <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active Goal</span>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100 mt-0.5">{goal.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-foreground mt-0.5">{goal.name}</h1>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Main statistics cards */}
         <div className="md:col-span-2 space-y-5">
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-5">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-5">
             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Goal Status Snapshot</h3>
             <div className="grid grid-cols-2 gap-4 text-xs font-semibold">
               <div className="space-y-1">
@@ -96,7 +96,7 @@ export const GoalDetailPage: React.FC = () => {
           </Card>
 
           {/* Supporting habits list */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Supporting Habits</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Linked habits feeding consistency to this target</p>
@@ -108,7 +108,7 @@ export const GoalDetailPage: React.FC = () => {
                   return (
                     <div 
                       key={habitId.toString()}
-                      className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-xs font-semibold flex items-center justify-between gap-4"
+                      className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-xs font-semibold flex items-center justify-between gap-4"
                     >
                       <span className="text-slate-300 truncate font-extrabold">
                         {matchingHabit?.name || 'Linked Habit node'}
@@ -131,10 +131,10 @@ export const GoalDetailPage: React.FC = () => {
         {/* Sidebar suggestions */}
         <div className="space-y-5">
           {/* Velocity Progress Card */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col justify-between h-[150px]">
+          <Card className="bg-card border border-border rounded-card p-5 flex flex-col justify-between h-[150px]">
             <div>
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Velocity Margin</span>
-              <h3 className="text-xl font-extrabold tracking-tight mt-1 text-slate-200">
+              <h3 className="text-xl font-extrabold tracking-tight mt-1 text-foreground">
                 {velocity > 0 ? `+${velocity}%` : `${velocity}%`}
               </h3>
             </div>

@@ -260,7 +260,7 @@ export const RegisterPage: React.FC = () => {
           <div className="w-full pb-6 border-b border-border/10">
             <div className="flex items-center justify-between max-w-sm mx-auto relative">
               {/* Progress Line */}
-              <div className="absolute top-4 left-4 right-4 h-0.5 bg-[#151D2C] -z-0">
+              <div className="absolute top-4 left-4 right-4 h-0.5 bg-muted -z-0">
                 <div 
                   className="h-full bg-primary transition-all duration-300"
                   style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
@@ -278,8 +278,8 @@ export const RegisterPage: React.FC = () => {
                         isCompleted 
                           ? "bg-primary border-primary text-white" 
                           : isActive
-                          ? "bg-[#101622] border-primary text-primary ring-4 ring-primary/10"
-                          : "bg-[#101622] border-[#1D293D] text-slate-500"
+                          ? "bg-card border-primary text-primary ring-4 ring-primary/10"
+                          : "bg-card border-border text-foreground0"
                       )}
                     >
                       {isCompleted ? <Check className="h-4 w-4" /> : s.num}
@@ -310,10 +310,10 @@ export const RegisterPage: React.FC = () => {
         {step === 1 && (
           <div className="space-y-4 animate-fade-in">
             <div className="space-y-1.5 text-left">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-50">
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 Create your Daily Forge
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Build better days, one decision at a time.
               </p>
             </div>
@@ -327,7 +327,7 @@ export const RegisterPage: React.FC = () => {
                 leftIcon={<User className="h-4 w-4" />}
                 required
                 disabled={isSubmitting}
-                className="bg-[#101622] border-[#1D293D] text-slate-100"
+                className="bg-card border-border text-foreground"
               />
 
               <Input
@@ -339,7 +339,7 @@ export const RegisterPage: React.FC = () => {
                 leftIcon={<Mail className="h-4 w-4" />}
                 required
                 disabled={isSubmitting}
-                className="bg-[#101622] border-[#1D293D] text-slate-100"
+                className="bg-card border-border text-foreground"
               />
 
               <div className="space-y-2">
@@ -361,14 +361,14 @@ export const RegisterPage: React.FC = () => {
                   }
                   required
                   disabled={isSubmitting}
-                  className="bg-[#101622] border-[#1D293D] text-slate-100"
+                  className="bg-card border-border text-foreground"
                 />
 
                 {/* Password strength checklist */}
                 {password && (
-                  <div className="p-3 bg-[#101622] border border-border/5 rounded-lg space-y-2.5">
+                  <div className="p-3 bg-card border border-border/5 rounded-lg space-y-2.5">
                     <div className="space-y-1">
-                      <div className="h-1 w-full bg-[#151D2C] rounded-full overflow-hidden">
+                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                         <div 
                           className={cn(
                             "h-full transition-all duration-300",
@@ -422,7 +422,7 @@ export const RegisterPage: React.FC = () => {
                 }
                 required
                 disabled={isSubmitting}
-                className="bg-[#101622] border-[#1D293D] text-slate-100"
+                className="bg-card border-border text-foreground"
               />
 
               <Button
@@ -437,7 +437,7 @@ export const RegisterPage: React.FC = () => {
               </Button>
             </form>
 
-            <div className="text-center text-xs text-slate-400 pt-2 border-t border-border/10">
+            <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border/10">
               Already have an account?{' '}
               <Link to="/login" className="text-primary font-bold hover:text-primary-hover transition-colors">
                 Sign in
@@ -450,10 +450,10 @@ export const RegisterPage: React.FC = () => {
         {step === 2 && (
           <div className="space-y-4 animate-fade-in">
             <div className="space-y-1.5 text-left">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-50">
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 What are you currently focused on?
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 We&apos;ll use this to personalize your experience.
               </p>
             </div>
@@ -476,17 +476,17 @@ export const RegisterPage: React.FC = () => {
                     className={cn(
                       "flex flex-col text-left p-4 rounded-xl border transition-all select-none focus:outline-none min-h-[110px] justify-between cursor-pointer",
                       isSelected 
-                        ? "border-primary bg-primary/10 shadow-md ring-2 ring-primary/20 text-slate-100" 
-                        : "border-[#1D293D] bg-[#101622] text-slate-400 hover:border-primary/50 hover:bg-[#151D2C]"
+                        ? "border-primary bg-primary/10 shadow-md ring-2 ring-primary/20 text-foreground" 
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted"
                     )}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <IconComponent className={cn("h-6 w-6 shrink-0", isSelected ? "text-primary" : "text-slate-400")} />
+                      <IconComponent className={cn("h-6 w-6 shrink-0", isSelected ? "text-primary" : "text-muted-foreground")} />
                       {isSelected && <Check className="h-4.5 w-4.5 text-primary" />}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-100">{opt.title}</h4>
-                      <p className="text-[10px] text-slate-400/80 leading-normal mt-0.5">{opt.desc}</p>
+                      <h4 className="text-xs font-bold text-foreground">{opt.title}</h4>
+                      <p className="text-[10px] text-muted-foreground/80 leading-normal mt-0.5">{opt.desc}</p>
                     </div>
                   </button>
                 );
@@ -515,10 +515,10 @@ export const RegisterPage: React.FC = () => {
         {step === 3 && (
           <div className="space-y-4 animate-fade-in">
             <div className="space-y-1.5 text-left">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-50">
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 How much can you commit each day?
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Consistency matters more than intensity.
               </p>
             </div>
@@ -535,19 +535,19 @@ export const RegisterPage: React.FC = () => {
                       "w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer focus:outline-none",
                       isSelected 
                         ? "border-primary bg-primary/10 ring-2 ring-primary/20"
-                        : "border-[#1D293D] bg-[#101622] text-slate-400 hover:border-primary/50 hover:bg-[#151D2C]"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted"
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={cn("h-4.5 w-4.5 rounded-full border flex items-center justify-center shrink-0", isSelected ? "border-primary" : "border-[#1D293D]")}>
+                      <div className={cn("h-4.5 w-4.5 rounded-full border flex items-center justify-center shrink-0", isSelected ? "border-primary" : "border-border")}>
                         {isSelected && <div className="h-2 w-2 rounded-full bg-primary" />}
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-slate-100">{opt.title}</h4>
+                        <h4 className="text-xs font-bold text-foreground">{opt.title}</h4>
                         <p className="text-[10px] text-slate-450 mt-0.5">{opt.text}</p>
                       </div>
                     </div>
-                    <Clock className="h-4.5 w-4.5 text-slate-400/50" />
+                    <Clock className="h-4.5 w-4.5 text-muted-foreground/50" />
                   </button>
                 );
               })}
@@ -573,10 +573,10 @@ export const RegisterPage: React.FC = () => {
         {step === 4 && (
           <div className="space-y-4 animate-fade-in">
             <div className="space-y-1.5 text-left">
-              <h2 className="text-2xl font-extrabold tracking-tight text-slate-50">
+              <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 What would you like to improve?
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Select the core targets Daily Forge should assist you with.
               </p>
             </div>
@@ -598,8 +598,8 @@ export const RegisterPage: React.FC = () => {
                     className={cn(
                       "px-4 py-2.5 rounded-full border text-xs font-bold transition-all cursor-pointer focus:outline-none flex items-center gap-1.5 select-none",
                       isSelected
-                        ? "border-primary bg-primary text-slate-50 hover:bg-primary-hover shadow-sm"
-                        : "border-[#1D293D] bg-[#101622] text-slate-400 hover:border-primary/50"
+                        ? "border-primary bg-primary text-foreground hover:bg-primary-hover shadow-sm"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/50"
                     )}
                   >
                     <span>{goalName}</span>
@@ -637,7 +637,7 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             <div className="space-y-1.5 text-center">
-              <h2 className="text-2xl font-extrabold text-slate-50 tracking-tight">
+              <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
                 Your Forge is Ready
               </h2>
               <p className="text-xs text-muted-foreground">
@@ -646,7 +646,7 @@ export const RegisterPage: React.FC = () => {
             </div>
 
             {/* System Configuration Box */}
-            <div className="bg-[#101622] border border-[#1D293D] rounded-xl p-5 space-y-4">
+            <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <div className="space-y-2 border-b border-border/10 pb-3">
                 <span className="text-[10px] font-bold text-primary tracking-widest uppercase">System Profile</span>
                 <p className="text-xs text-slate-350 leading-relaxed font-semibold">
@@ -654,7 +654,7 @@ export const RegisterPage: React.FC = () => {
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {focusAreas.map((f) => (
-                    <span key={f} className="text-[9px] font-bold bg-[#151D2C] text-slate-300 border border-border/5 px-2 py-0.5 rounded">
+                    <span key={f} className="text-[9px] font-bold bg-muted text-slate-300 border border-border/5 px-2 py-0.5 rounded">
                       {f}
                     </span>
                   ))}
@@ -668,12 +668,12 @@ export const RegisterPage: React.FC = () => {
                 <span className="text-[10px] font-bold text-cyan-400 tracking-widest uppercase">Objectives Configured</span>
                 <p className="text-xs text-slate-350 flex items-center justify-between">
                   <span>Consistency Focus:</span>
-                  <span className="font-bold text-slate-100">{goals.slice(0, 3).join(', ')}</span>
+                  <span className="font-bold text-foreground">{goals.slice(0, 3).join(', ')}</span>
                 </p>
                 <div className="bg-success/5 border border-success/15 rounded-lg p-2.5 mt-2 flex items-center justify-between">
                   <div>
                     <span className="text-[9px] font-extrabold text-success tracking-wide uppercase">First Objective</span>
-                    <h5 className="text-xs font-bold text-slate-100 mt-0.5">Complete your first day</h5>
+                    <h5 className="text-xs font-bold text-foreground mt-0.5">Complete your first day</h5>
                   </div>
                   <span className="text-xs font-mono font-bold text-success/80">0 / 3 tasks</span>
                 </div>
@@ -687,7 +687,7 @@ export const RegisterPage: React.FC = () => {
                 localStorage.removeItem('daily_forge_onboarding_draft');
                 navigate('/dashboard');
               }}
-              className="w-full h-10 mt-3 font-semibold text-slate-50 bg-gradient-to-r from-primary to-indigo-600 hover:from-primary-hover hover:to-indigo-700 shadow-md flex items-center justify-center gap-1.5 select-none active:scale-[0.98] transition-transform"
+              className="w-full h-10 mt-3 font-semibold text-foreground bg-gradient-to-r from-primary to-indigo-600 hover:from-primary-hover hover:to-indigo-700 shadow-md flex items-center justify-center gap-1.5 select-none active:scale-[0.98] transition-transform"
             >
               <span>Enter Your Dashboard</span>
               <ArrowRight className="h-4 w-4" />

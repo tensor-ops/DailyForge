@@ -64,10 +64,10 @@ export const LoginPage: React.FC = () => {
       <div className="space-y-6">
         {/* Hero Section */}
         <div className="space-y-1.5 text-left">
-          <h2 className="text-2xl font-extrabold tracking-tight text-slate-50">
+          <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
             Welcome back.
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-muted-foreground">
             Continue forging your best self.
           </p>
         </div>
@@ -88,7 +88,6 @@ export const LoginPage: React.FC = () => {
             leftIcon={<Mail className="h-4 w-4" />}
             required
             disabled={isSubmitting}
-            className="bg-[#101622] border-[#1D293D] focus:ring-primary/50 text-slate-100"
           />
 
           <div className="space-y-1.5 relative">
@@ -111,16 +110,16 @@ export const LoginPage: React.FC = () => {
               }
               required
               disabled={isSubmitting}
-              className="bg-[#101622] border-[#1D293D] focus:ring-primary/50 text-slate-100 pr-10"
+              className="bg-surface border-border focus:ring-primary/50 text-foreground pr-10"
             />
           </div>
 
           <div className="flex items-center justify-between text-xs font-medium">
-            <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-slate-200 transition-colors">
+            <label className="flex items-center gap-2 cursor-pointer text-muted-foreground hover:text-foreground transition-colors">
               <input 
                 type="checkbox" 
                 defaultChecked 
-                className="rounded border-[#1D293D] bg-[#101622] text-primary focus:ring-0 focus:ring-offset-0" 
+                className="rounded border-border bg-surface text-primary focus:ring-0 focus:ring-offset-0" 
               />
               <span>Remember me</span>
             </label>
@@ -151,7 +150,7 @@ export const LoginPage: React.FC = () => {
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border/10" />
             </div>
-            <span className="relative bg-[#0B0F1A] px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+            <span className="relative bg-background px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
               or continue with
             </span>
           </div>
@@ -159,7 +158,7 @@ export const LoginPage: React.FC = () => {
           <button
             type="button"
             onClick={() => success('Google Sign-In', 'This is a visual demo slot for Google OAuth.')}
-            className="w-full flex items-center justify-center gap-2 h-10 rounded-lg border border-border/10 bg-[#101622]/60 hover:bg-[#101622] hover:border-border/30 text-xs font-semibold text-slate-200 transition-all select-none active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 h-10 rounded-lg border border-border bg-surface/60 hover:bg-surface hover:border-border-strong text-xs font-semibold text-foreground transition-all select-none active:scale-[0.98]"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -185,7 +184,7 @@ export const LoginPage: React.FC = () => {
         </button>
 
         {/* Register Redirect */}
-        <div className="text-center text-xs text-slate-400 pt-2">
+        <div className="text-center text-xs text-muted-foreground pt-2">
           New to Daily Forge?{' '}
           <Link to="/register" className="text-primary font-bold hover:text-primary-hover transition-colors">
             Create your account &rarr;

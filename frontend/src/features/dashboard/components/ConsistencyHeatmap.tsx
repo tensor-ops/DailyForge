@@ -21,14 +21,14 @@ export const ConsistencyHeatmap: React.FC = () => {
       case 2: return 'bg-primary/50 border border-primary/20'; // Med: dark blue
       case 3: return 'bg-primary border border-primary/30'; // High: bright blue
       case 4: return 'bg-cyan-500 border border-cyan-400/20'; // Excellent: cyan/emerald
-      default: return 'bg-[#151D2C]/40 border border-border/10'; // None
+      default: return 'bg-muted/40 border border-border/10'; // None
     }
   };
 
   const days = ['M', '', 'W', '', 'F', '', 'S'];
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full justify-between">
+    <Card className="bg-card border border-border rounded-card p-5 flex flex-col gap-4 h-full justify-between">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Consistency Heatmap</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Visual matrix of the last 12 weeks</p>
@@ -64,7 +64,7 @@ export const ConsistencyHeatmap: React.FC = () => {
       {/* Grid Legend */}
       <div className="flex items-center justify-end gap-1.5 text-[9px] text-muted-foreground font-semibold">
         <span>Less consistent</span>
-        <div className="h-2.5 w-2.5 rounded-[2px] bg-[#151D2C]/40 border border-border/10" />
+        <div className="h-2.5 w-2.5 rounded-[2px] bg-muted/40 border border-border/10" />
         <div className="h-2.5 w-2.5 rounded-[2px] bg-blue-900/40" />
         <div className="h-2.5 w-2.5 rounded-[2px] bg-primary/50" />
         <div className="h-2.5 w-2.5 rounded-[2px] bg-primary" />

@@ -50,7 +50,7 @@ export const PlannerDashboard: React.FC = () => {
 
       {/* Controller: Day/Week/Month Switcher */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="flex bg-[#101622] p-1 border border-[#1D293D] rounded-xl text-xs font-bold text-slate-300 w-max shrink-0">
+        <div className="flex bg-card p-1 border border-border rounded-xl text-xs font-bold text-slate-300 w-max shrink-0">
           {([
             { id: 'day', label: 'Day' },
             { id: 'week', label: 'Week' },
@@ -61,7 +61,7 @@ export const PlannerDashboard: React.FC = () => {
               onClick={() => setViewMode(v.id)}
               className={cn(
                 'px-3.5 py-1.5 rounded-lg uppercase tracking-wide cursor-pointer transition-colors focus:outline-none',
-                viewMode === v.id ? 'bg-primary text-slate-100 font-extrabold' : 'hover:text-foreground hover:bg-muted/30'
+                viewMode === v.id ? 'bg-primary text-foreground font-extrabold' : 'hover:text-foreground hover:bg-muted/30'
               )}
             >
               {v.label}
@@ -71,11 +71,11 @@ export const PlannerDashboard: React.FC = () => {
 
         {/* Date navigations */}
         <div className="flex items-center gap-3 text-xs font-semibold text-slate-300">
-          <button onClick={() => handleAction('Prev week')} className="p-1.5 rounded-lg bg-[#101622] border border-[#1D293D] hover:bg-[#131B29] cursor-pointer">
+          <button onClick={() => handleAction('Prev week')} className="p-1.5 rounded-lg bg-card border border-border hover:bg-surface-elevated cursor-pointer">
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <span className="text-slate-200 uppercase tracking-wider text-[10px] font-bold">Aug 15 — Aug 21, 2026</span>
-          <button onClick={() => handleAction('Next week')} className="p-1.5 rounded-lg bg-[#101622] border border-[#1D293D] hover:bg-[#131B29] cursor-pointer">
+          <span className="text-foreground uppercase tracking-wider text-[10px] font-bold">Aug 15 — Aug 21, 2026</span>
+          <button onClick={() => handleAction('Next week')} className="p-1.5 rounded-lg bg-card border border-border hover:bg-surface-elevated cursor-pointer">
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
@@ -85,7 +85,7 @@ export const PlannerDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Left Side Calendar Blocks */}
         <div className="lg:col-span-2 space-y-4">
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div className="flex justify-between items-center border-b border-border/10 pb-3">
               <h3 className="text-sm font-semibold text-foreground">Time Blocks ({viewMode.toUpperCase()})</h3>
               <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Aug 15</span>
@@ -95,15 +95,15 @@ export const PlannerDashboard: React.FC = () => {
               {blocks.map((block) => (
                 <div
                   key={block.id}
-                  className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-xs font-semibold flex items-center justify-between gap-4 hover:border-[#1D293D] transition-colors relative group"
+                  className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-xs font-semibold flex items-center justify-between gap-4 hover:border-border transition-colors relative group"
                 >
                   <div className="flex items-center gap-3">
                     <span className={cn(
                       "w-1 h-8 rounded-full",
-                      block.category === 'Fitness' ? 'bg-[#10B981]' : block.category === 'Study' ? 'bg-[#2563EB]' : 'bg-[#F59E0B]'
+                      block.category === 'Fitness' ? 'bg-success' : block.category === 'Study' ? 'bg-primary' : 'bg-warning'
                     )} />
                     <div className="text-left">
-                      <h4 className="text-slate-100 font-bold leading-none">{block.name}</h4>
+                      <h4 className="text-foreground font-bold leading-none">{block.name}</h4>
                       <p className="text-[10px] text-muted-foreground mt-1">{block.time} ({block.duration})</p>
                     </div>
                   </div>
@@ -135,18 +135,18 @@ export const PlannerDashboard: React.FC = () => {
         {/* Right Side Capacity & Smart Recommendations Panel */}
         <div className="space-y-5">
           {/* Capacity Panel Widget */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Capacity Panel</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Focus capacity validation metrics</p>
             </div>
 
             <div className="space-y-2 text-xs font-semibold">
-              <div className="flex justify-between items-center text-slate-200">
+              <div className="flex justify-between items-center text-foreground">
                 <span>Available Capacity</span>
                 <span>{availableCapacity}</span>
               </div>
-              <div className="flex justify-between items-center text-slate-200">
+              <div className="flex justify-between items-center text-foreground">
                 <span>Planned Schedule</span>
                 <span className="text-warning">{plannedCapacity}</span>
               </div>
@@ -166,7 +166,7 @@ export const PlannerDashboard: React.FC = () => {
                   <span className="text-[10px] text-warning font-bold">Recommendation: Move Reading → Tomorrow</span>
                   <button
                     onClick={handleShiftReading}
-                    className="bg-[#101622] hover:bg-warning/20 text-warning border border-warning/20 px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors"
+                    className="bg-card hover:bg-warning/20 text-warning border border-warning/20 px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors"
                   >
                     Apply
                   </button>
@@ -176,24 +176,24 @@ export const PlannerDashboard: React.FC = () => {
           </Card>
 
           {/* Smart Scheduling windows */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
               <Sparkles className="h-4.5 w-4.5 text-primary animate-pulse" />
               <h3 className="text-xs font-bold text-primary uppercase tracking-wider">Optimal Windows</h3>
             </div>
             
             <div className="space-y-3 text-xs font-semibold">
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-left flex justify-between items-center">
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-left flex justify-between items-center">
                 <div>
                   <span className="text-[10px] text-primary block uppercase">DSA Practice</span>
-                  <span className="text-slate-200 font-bold">7:30 PM - 9:00 PM</span>
+                  <span className="text-foreground font-bold">7:30 PM - 9:00 PM</span>
                 </div>
                 <span className="text-[9px] bg-success/15 border border-success/20 text-success px-1.5 py-0.5 rounded-full font-bold">92% peak</span>
               </div>
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-left flex justify-between items-center">
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-left flex justify-between items-center">
                 <div>
                   <span className="text-[10px] text-primary block uppercase">Exercise</span>
-                  <span className="text-slate-200 font-bold">6:00 PM - 7:00 PM</span>
+                  <span className="text-foreground font-bold">6:00 PM - 7:00 PM</span>
                 </div>
                 <span className="text-[9px] bg-success/15 border border-success/20 text-success px-1.5 py-0.5 rounded-full font-bold">88% peak</span>
               </div>

@@ -40,7 +40,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   return (
     <div
       className={cn(
-        'bg-[#101622] border border-[#1D293D] rounded-[14px] p-4 flex items-center justify-between gap-4 transition-all duration-200 shadow-sm hover:bg-[#131B29]',
+        'bg-card border border-border rounded-card p-4 flex items-center justify-between gap-4 transition-all duration-200 shadow-sm hover:bg-surface-elevated',
         borderAccents[accent],
         className
       )}

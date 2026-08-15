@@ -30,7 +30,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0B0F1A] text-slate-100 flex flex-col lg:flex-row font-sans antialiased overflow-x-hidden selection:bg-primary/20">
+    <div className="min-h-screen bg-surface-sunken text-foreground flex flex-col lg:flex-row font-sans antialiased overflow-x-hidden selection:bg-primary/20">
       {/* Radial glow background */}
       <div className="absolute top-0 left-0 right-0 h-[500px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/10 via-transparent to-transparent pointer-events-none z-0" />
 
@@ -63,7 +63,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
       </div>
 
       {/* Right/Insight Column */}
-      <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] bg-[#080C14] border-l border-border/10 p-10 flex-col justify-between relative overflow-hidden shrink-0">
+      <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] bg-surface-sunken border-l border-border/10 p-10 flex-col justify-between relative overflow-hidden shrink-0">
         {/* Glow behind stats */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[350px] w-[350px] rounded-full bg-primary/5 blur-[100px] pointer-events-none" />
 
@@ -91,7 +91,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
 
               {/* Stats Cards */}
               <div className="grid grid-cols-2 gap-3.5">
-                <div className="bg-[#101622] border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
+                <div className="bg-card border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-warning uppercase">
                     <Flame className="h-3.5 w-3.5 fill-warning" />
                     <span>Streak</span>
@@ -100,7 +100,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                   <div className="text-[10px] text-muted-foreground">Keep the momentum</div>
                 </div>
 
-                <div className="bg-[#101622] border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
+                <div className="bg-card border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary uppercase">
                     <CheckCircle className="h-3.5 w-3.5" />
                     <span>Consistency</span>
@@ -109,7 +109,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                   <div className="text-[10px] text-muted-foreground">Overall completion</div>
                 </div>
 
-                <div className="bg-[#101622] border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
+                <div className="bg-card border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 uppercase">
                     <Target className="h-3.5 w-3.5" />
                     <span>Completed</span>
@@ -118,7 +118,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                   <div className="text-[10px] text-muted-foreground">Tasks accomplished</div>
                 </div>
 
-                <div className="bg-[#101622] border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
+                <div className="bg-card border border-border/10 rounded-xl p-4 space-y-1 hover:border-border/30 transition-colors shadow-sm">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-purple-400 uppercase">
                     <Award className="h-3.5 w-3.5" />
                     <span>Goals Active</span>
@@ -149,7 +149,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                     <span>Consistency</span>
                     <span className="text-[10px] font-bold text-primary">87%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-[#151D2C] rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: '87%' }} />
                   </div>
                 </div>
@@ -159,7 +159,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                     <span>Focus Alignment</span>
                     <span className="text-[10px] font-bold text-indigo-400">78%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-[#151D2C] rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-indigo-500 rounded-full" style={{ width: '78%' }} />
                   </div>
                 </div>
@@ -169,7 +169,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
                     <span>Progress Target</span>
                     <span className="text-[10px] font-bold text-cyan-400">60%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-[#151D2C] rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-full" style={{ width: '60%' }} />
                   </div>
                 </div>

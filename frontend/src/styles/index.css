@@ -7,8 +7,17 @@
 @layer base {
   * {
     @apply border-border;
+    /* Smooth theme transitions on color-bearing properties */
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
   }
-  
+
+  /* Disable transitions on SVG paths to prevent chart jank */
+  svg path, svg circle, svg rect, svg line {
+    transition: none;
+  }
+
   html {
     color-scheme: light dark;
     -webkit-tap-highlight-color: transparent;
@@ -47,7 +56,7 @@
   }
 
   .glass-nav {
-    background: rgb(var(--color-background) / 0.82);
+    background: rgb(var(--color-surface) / 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid rgb(var(--color-border) / 0.7);
@@ -72,5 +81,24 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
+  }
+
+  /* Semantic card utility classes */
+  .df-card {
+    @apply bg-card border border-border rounded-[14px] shadow-card;
+  }
+
+  .df-surface {
+    @apply bg-surface border border-border rounded-[14px];
+  }
+
+  .df-input {
+    background: rgb(var(--color-input));
+    border: 1px solid rgb(var(--color-input-border));
+    color: rgb(var(--color-foreground));
+  }
+
+  .df-input::placeholder {
+    color: rgb(var(--color-muted-foreground) / 0.7);
   }
 }

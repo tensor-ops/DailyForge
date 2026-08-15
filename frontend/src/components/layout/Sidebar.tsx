@@ -100,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={cn(
-        'hidden md:flex flex-col fixed inset-y-0 left-0 z-30 bg-surface border-r border-border transition-all duration-300 ease-in-out',
+        'hidden md:flex flex-col fixed inset-y-0 left-0 z-30 bg-sidebar border-r border-border transition-all duration-300 ease-in-out',
         isCollapsed ? 'w-20' : 'w-64'
       )}
     >
@@ -158,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       cn(
                         'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative border border-transparent',
                         isActive
-                          ? 'bg-primary/[0.12] border-blue-500/15 text-foreground'
+                          ? 'bg-primary/[0.12] border-primary/15 text-foreground'
                           : 'hover:text-foreground hover:bg-muted/40 text-muted-foreground',
                         isCollapsed && 'justify-center px-0'
                       )
@@ -171,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         isActive
                           ? item.isAi
                             ? 'text-ai'
-                            : 'text-blue-500'
+                            : 'text-primary'
                           : 'text-muted-foreground group-hover:text-foreground'
                       )}
                       size={18}
@@ -211,13 +211,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 border-t border-border/70 space-y-3">
         {/* Momentum Card */}
         {!isCollapsed && user && (
-          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0B0F1A] border border-[#1D293D] text-xs">
+          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-sunken border border-border text-xs">
             <span className="text-muted-foreground flex items-center gap-1.5 font-bold uppercase tracking-wider text-[9px] select-none">
               <Flame className="h-4 w-4 text-warning fill-warning" /> Momentum
             </span>
             <div className="text-right select-none font-semibold leading-tight">
               <span className="font-extrabold text-foreground">84</span>
-              <span className="text-[9px] text-[#10B981] font-bold block">+12% this week</span>
+              <span className="text-[9px] text-success font-bold block">+12% this week</span>
             </div>
           </div>
         )}

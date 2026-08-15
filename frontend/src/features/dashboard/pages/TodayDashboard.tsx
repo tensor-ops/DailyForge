@@ -83,7 +83,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
       {/* Top Cockpit Summary Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Progress Ring */}
-        <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex items-center justify-between gap-4 md:col-span-2">
+        <Card className="bg-card border border-border rounded-card p-5 flex items-center justify-between gap-4 md:col-span-2">
           <div className="space-y-1.5 text-left">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Today&apos;s Progress</span>
             <p className="text-3xl font-extrabold text-foreground tracking-tight">{progressPercent}%</p>
@@ -97,7 +97,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
         </Card>
 
         {/* Focus Hours Metric */}
-        <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col justify-between h-full">
+        <Card className="bg-card border border-border rounded-card p-5 flex flex-col justify-between h-full">
           <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Focus Time</span>
           <div>
             <p className="text-3xl font-extrabold text-foreground tracking-tight">{focusTimeHours}h {focusTimeMinutes}m</p>
@@ -106,16 +106,16 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
         </Card>
 
         {/* Daily Capacity tracker */}
-        <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col justify-between h-full">
+        <Card className="bg-card border border-border rounded-card p-5 flex flex-col justify-between h-full">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Daily Capacity</span>
             <Clock className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-slate-200">
+            <p className="text-xs font-semibold text-foreground">
               Available: <span className="font-extrabold">4h 20m</span>
             </p>
-            <p className="text-xs font-semibold text-slate-200 mt-0.5">
+            <p className="text-xs font-semibold text-foreground mt-0.5">
               Planned: <span className="text-primary font-bold">3h 40m</span>
             </p>
             <p className="text-[10px] text-muted-foreground mt-1.5 font-semibold">
@@ -130,14 +130,14 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
         {/* Left main cockpit checklist */}
         <div className="lg:col-span-2 space-y-5">
           {/* Next Best Action Card */}
-          <Card className="bg-primary/5 border border-primary/20 rounded-[14px] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <Card className="bg-primary/5 border border-primary/20 rounded-card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1.5 text-left">
               <span className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 fill-primary" /> Next Best Action
               </span>
-              <h3 className="text-lg font-extrabold text-slate-100">DSA Practice</h3>
+              <h3 className="text-lg font-extrabold text-foreground">DSA Practice</h3>
               <p className="text-xs text-muted-foreground font-semibold">
-                High impact routine • Best scheduled window: <strong className="text-slate-200">7:30 PM</strong>
+                High impact routine • Best scheduled window: <strong className="text-foreground">7:30 PM</strong>
               </p>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto font-bold text-xs">
@@ -149,7 +149,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
               </button>
               <button
                 onClick={() => info('Schedule shifted', 'Window postponed.')}
-                className="flex-1 sm:flex-initial bg-[#101622] hover:bg-[#131B29] border border-[#1D293D] text-slate-300 px-4 py-2 rounded-xl transition-all cursor-pointer text-center"
+                className="flex-1 sm:flex-initial bg-card hover:bg-surface-elevated border border-border text-slate-300 px-4 py-2 rounded-xl transition-all cursor-pointer text-center"
               >
                 Reschedule
               </button>
@@ -157,7 +157,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
           </Card>
 
           {/* Today's interactive habits checklist */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground text-left">Today&apos;s Habits checklist</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs font-semibold text-left border-collapse min-w-[500px]">
@@ -181,13 +181,13 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
                             "h-5 w-5 rounded-md border flex items-center justify-center transition-all cursor-pointer mx-auto",
                             habit.completed
                               ? "bg-primary border-primary text-white"
-                              : "border-[#1D293D] hover:border-primary/50 text-transparent"
+                              : "border-border hover:border-primary/50 text-transparent"
                           )}
                         >
                           <Check className="h-3.5 w-3.5 stroke-[3px]" />
                         </button>
                       </td>
-                      <td className="py-3 pl-2 text-slate-100 font-extrabold">
+                      <td className="py-3 pl-2 text-foreground font-extrabold">
                         {habit.name}
                       </td>
                       <td className="py-3">
@@ -209,9 +209,9 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
         {/* Right timeline and priorities sidebar column */}
         <div className="space-y-5">
           {/* Today's Schedule timeline */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <h3 className="text-sm font-semibold text-foreground text-left">Today&apos;s Schedule</h3>
-            <div className="space-y-4 relative border-l border-[#1D293D]/60 pl-4 ml-1">
+            <div className="space-y-4 relative border-l border-border/60 pl-4 ml-1">
               {[
                 { time: '09:00 AM', event: 'DSA Practice', description: 'Study' },
                 { time: '11:00 AM', event: 'Work Sprint', description: 'Project System Design' },
@@ -221,10 +221,10 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
               ].map((item, idx) => (
                 <div key={idx} className="relative group text-xs font-semibold">
                   {/* Timeline dot */}
-                  <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border border-primary bg-[#080C14] group-hover:scale-125 transition-transform" />
+                  <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full border border-primary bg-surface-sunken group-hover:scale-125 transition-transform" />
                   <div className="text-left">
                     <span className="text-[10px] text-primary font-bold">{item.time}</span>
-                    <h4 className="text-slate-100 font-bold leading-none mt-0.5">{item.event}</h4>
+                    <h4 className="text-foreground font-bold leading-none mt-0.5">{item.event}</h4>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{item.description}</p>
                   </div>
                 </div>
@@ -233,18 +233,18 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
           </Card>
 
           {/* Daily Focus Priorities */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-3">
             <h3 className="text-sm font-semibold text-foreground text-left">Daily Focus Priorities</h3>
             <div className="space-y-2 text-xs font-semibold text-slate-300">
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-left">
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-left">
                 <span className="text-[9px] font-bold text-primary uppercase block mb-0.5">Priority 1</span>
                 Solve 3 Leetcode patterns
               </div>
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-left">
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-left">
                 <span className="text-[9px] font-bold text-primary uppercase block mb-0.5">Priority 2</span>
                 Deploy design system component library
               </div>
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl text-left">
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl text-left">
                 <span className="text-[9px] font-bold text-primary uppercase block mb-0.5">Priority 3</span>
                 Read 15 pages of Atomic Habits
               </div>
@@ -252,7 +252,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
           </Card>
 
           {/* End of Day review card */}
-          <Card className="bg-[#101622] border border-primary/20 rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-primary/20 rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">End of Day</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Conclude today&apos;s consistency review</p>
@@ -260,7 +260,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = ({ onOpenCreateHabi
             <div className="grid grid-cols-2 gap-2.5 text-xs font-semibold border-b border-border/5 pb-3">
               <div>
                 <span className="text-[10px] text-muted-foreground">Completions</span>
-                <p className="text-slate-100 font-extrabold">{completedCount} logged</p>
+                <p className="text-foreground font-extrabold">{completedCount} logged</p>
               </div>
               <div>
                 <span className="text-[10px] text-muted-foreground">Remaining</span>

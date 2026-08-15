@@ -9,13 +9,13 @@ export const AppProviders: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <ToastProvider>
               {children}
-            </AuthProvider>
-          </ToastProvider>
-        </ThemeProvider>
+            </ToastProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </BrowserRouter>
     </ErrorBoundary>
   );

@@ -89,12 +89,12 @@ export const AnalyticsPage: React.FC = () => {
 
     return (
       <div className="max-w-xl mx-auto py-12 text-left space-y-6 select-none">
-        <div className="bg-[#101622] border border-[#1D293D] rounded-2xl p-6 flex flex-col items-center text-center gap-4">
+        <div className="bg-card border border-border rounded-2xl p-6 flex flex-col items-center text-center gap-4">
           <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl border border-primary/20 animate-bounce">
             ⚙️
           </div>
           <div>
-            <h1 className="text-lg font-extrabold text-slate-100">Building Your Behavior Baseline</h1>
+            <h1 className="text-lg font-extrabold text-foreground">Building Your Behavior Baseline</h1>
             <p className="text-xs text-muted-foreground mt-1 max-w-sm">
               Complete more habits over the next few days. Daily Forge needs a short observation period to identify valid relationship patterns.
             </p>
@@ -103,7 +103,7 @@ export const AnalyticsPage: React.FC = () => {
           <div className="w-full space-y-4 pt-4 border-t border-border/10">
             <div className="space-y-1">
               <div className="flex justify-between text-[11px] font-bold">
-                <span className="text-slate-200">Habit Completions logged</span>
+                <span className="text-foreground">Habit Completions logged</span>
                 <span className="text-primary">{progress.completionsCount} / {progress.completionsTarget}</span>
               </div>
               <ProgressBar value={compsPercent} />
@@ -111,7 +111,7 @@ export const AnalyticsPage: React.FC = () => {
 
             <div className="space-y-1">
               <div className="flex justify-between text-[11px] font-bold">
-                <span className="text-slate-200">Active Days observed</span>
+                <span className="text-foreground">Active Days observed</span>
                 <span className="text-primary">{progress.daysObserved} / {progress.daysTarget} days</span>
               </div>
               <ProgressBar value={daysPercent} />
@@ -148,7 +148,7 @@ export const AnalyticsPage: React.FC = () => {
         title="Analytics"
         description="Understand the patterns behind your progress."
         actions={
-          <div className="flex bg-[#101622] p-1 border border-[#1D293D] rounded-xl text-xs font-bold text-slate-300 w-max shrink-0 select-none">
+          <div className="flex bg-card p-1 border border-border rounded-xl text-xs font-bold text-slate-300 w-max shrink-0 select-none">
             {([
               { id: '7d', label: '7D' },
               { id: '30d', label: '30D' },
@@ -162,7 +162,7 @@ export const AnalyticsPage: React.FC = () => {
                 className={cn(
                   'px-3 py-1.5 rounded-lg uppercase tracking-wide cursor-pointer transition-colors focus:outline-none',
                   range === opt.id
-                    ? 'bg-primary text-slate-100 font-extrabold'
+                    ? 'bg-primary text-foreground font-extrabold'
                     : 'hover:text-foreground hover:bg-muted/30'
                 )}
               >
@@ -254,7 +254,7 @@ export const AnalyticsPage: React.FC = () => {
           {/* Behavioral Analytics Sub-grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Habit Reliability */}
-            <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Reliability</h4>
               <div className="space-y-2">
                 {behaviorData?.habitReliability.slice(0, 3).map((h) => (
@@ -267,7 +267,7 @@ export const AnalyticsPage: React.FC = () => {
             </Card>
 
             {/* Habit Friction */}
-            <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Friction</h4>
               <div className="space-y-2">
                 {frictionList.slice(0, 3).map((f) => (
@@ -275,7 +275,7 @@ export const AnalyticsPage: React.FC = () => {
                     <span className="text-slate-300 truncate max-w-[150px]">{f.name}</span>
                     <span className={cn(
                       "font-bold",
-                      f.frictionLevel === 'HIGH' ? 'text-warning' : 'text-slate-400'
+                      f.frictionLevel === 'HIGH' ? 'text-warning' : 'text-muted-foreground'
                     )}>{f.frictionLevel}</span>
                   </div>
                 ))}
@@ -283,16 +283,16 @@ export const AnalyticsPage: React.FC = () => {
             </Card>
 
             {/* Recovery Rate */}
-            <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Recovery Rate</h4>
               <div className="text-left font-semibold text-xs text-slate-300 space-y-1">
-                <p className="text-2xl font-extrabold text-slate-100">{behaviorData?.recoveryRate.rate}%</p>
+                <p className="text-2xl font-extrabold text-foreground">{behaviorData?.recoveryRate.rate}%</p>
                 <p>Average gap days: {behaviorData?.recoveryRate.averageGapDays}d</p>
               </div>
             </Card>
 
             {/* Habit Risk */}
-            <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
               <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Risk</h4>
               <div className="space-y-2">
                 {riskList.slice(0, 3).map((r) => (
@@ -306,14 +306,14 @@ export const AnalyticsPage: React.FC = () => {
           </div>
 
           {/* Relationships Associated Habits */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Behavior Correlations</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Observed patterns between separate habits (does not imply causality)</p>
             </div>
             <div className="space-y-2 text-xs font-semibold">
-              <div className="p-3 bg-[#131B29] border border-border/5 rounded-xl flex items-center justify-between gap-4">
-                <span className="text-slate-200">Exercise ↔ DSA Practice</span>
+              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl flex items-center justify-between gap-4">
+                <span className="text-foreground">Exercise ↔ DSA Practice</span>
                 <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-full">+18 percentage points</span>
               </div>
               <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">
@@ -323,7 +323,7 @@ export const AnalyticsPage: React.FC = () => {
           </Card>
 
           {/* Performance heatmap by Hour, Day, Week */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-3">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-3">
             <h3 className="text-sm font-bold text-foreground">Time Analysis Heatmap</h3>
             <div className="grid grid-cols-7 gap-1 pt-2">
               {Array.from({ length: 28 }).map((_, i) => (
@@ -336,8 +336,8 @@ export const AnalyticsPage: React.FC = () => {
                       : i % 3 === 0
                       ? "bg-primary/45"
                       : i % 2 === 0
-                      ? "bg-[#151D2C]"
-                      : "bg-[#0B0F1A]"
+                      ? "bg-muted"
+                      : "bg-surface-sunken"
                   )}
                   title="Completed routines check shading"
                 />
@@ -349,7 +349,7 @@ export const AnalyticsPage: React.FC = () => {
         {/* Right side: peak windows, capacity, fingerprint */}
         <div className="space-y-5">
           {/* Peak Windows */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Peak Performance Windows</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Execution odds by schedule blocks</p>
@@ -371,7 +371,7 @@ export const AnalyticsPage: React.FC = () => {
           </Card>
 
           {/* Focus Capacity */}
-          <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 space-y-4">
+          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
               <h3 className="text-sm font-bold text-foreground">Capacity validation</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Workload planned vs actual focus hours</p>
@@ -389,12 +389,12 @@ export const AnalyticsPage: React.FC = () => {
           </Card>
 
           {/* Habit Fingerprint */}
-          <Card className="bg-[#101622] border border-cyan-500/20 rounded-[14px] p-5 space-y-3">
+          <Card className="bg-card border border-cyan-500/20 rounded-card p-5 space-y-3">
             <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
               <Compass className="h-4 w-4 text-cyan-400" />
               <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Habit Fingerprint</h4>
             </div>
-            <p className="text-xs text-slate-200 leading-relaxed font-semibold">
+            <p className="text-xs text-foreground leading-relaxed font-semibold">
               Early Bird Practitioner: stable morning routines, high focus capacity levels, low risk gap delay. Moderate evening friction logged due to timing delays.
             </p>
           </Card>

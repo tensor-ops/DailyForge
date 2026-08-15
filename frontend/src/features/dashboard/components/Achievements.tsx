@@ -20,7 +20,7 @@ export const Achievements: React.FC = () => {
       description: 'Forged consistency for 7 consecutive days', 
       icon: Flame, 
       unlocked: true,
-      color: 'text-[#F59E0B] bg-[#F59E0B]/10 border-[#F59E0B]/20'
+      color: 'text-warning bg-warning/10 border-warning/20'
     },
     { 
       id: 'a2', 
@@ -28,7 +28,7 @@ export const Achievements: React.FC = () => {
       description: 'Maintained 80%+ consistency for a full month', 
       icon: Trophy, 
       unlocked: true,
-      color: 'text-[#2563EB] bg-[#2563EB]/10 border-[#2563EB]/20'
+      color: 'text-primary bg-primary/10 border-primary/20'
     },
     { 
       id: 'a3', 
@@ -36,7 +36,7 @@ export const Achievements: React.FC = () => {
       description: 'Completed a habit before 08:00 AM', 
       icon: Zap, 
       unlocked: true,
-      color: 'text-cyan-400 bg-cyan-400/10 border-cyan-450/20'
+      color: 'text-ai bg-ai/10 border-ai/20'
     },
     { 
       id: 'a4', 
@@ -57,7 +57,7 @@ export const Achievements: React.FC = () => {
   ];
 
   return (
-    <Card className="bg-[#101622] border border-[#1D293D] rounded-[14px] p-5 flex flex-col gap-4 h-full">
+    <Card className="p-5 flex flex-col gap-4 h-full">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Achievements</h3>
         <p className="text-xs text-muted-foreground mt-0.5">Unlocked system milestones</p>
@@ -72,19 +72,19 @@ export const Achievements: React.FC = () => {
               className={cn(
                 "flex items-center gap-3 p-2.5 rounded-xl border transition-all select-none",
                 ach.unlocked 
-                  ? "border-border/15 bg-[#131B29] hover:border-border/25" 
-                  : "border-border/5 bg-[#101622] opacity-50"
+                  ? "border-border/40 bg-surface-elevated hover:border-border" 
+                  : "border-border/10 bg-card opacity-50"
               )}
             >
               <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center shrink-0 border", ach.color)}>
                 <Icon className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <h4 className="text-xs font-bold text-slate-200 truncate">{ach.title}</h4>
+                <h4 className="text-xs font-bold text-foreground truncate">{ach.title}</h4>
                 <p className="text-[10px] text-muted-foreground truncate">{ach.description}</p>
               </div>
               {ach.unlocked && (
-                <span className="text-[9px] font-extrabold text-[#10B981] bg-[#10B981]/15 px-1.5 py-0.5 rounded-full uppercase shrink-0">
+                <span className="text-[9px] font-extrabold text-success bg-success/15 px-1.5 py-0.5 rounded-full uppercase shrink-0">
                   Unlocked
                 </span>
               )}

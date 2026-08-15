@@ -66,6 +66,29 @@ export default {
           glow: 'rgb(var(--color-ai-glow) / <alpha-value>)',
           border: 'rgb(var(--color-ai-border) / <alpha-value>)',
         },
+        input: {
+          DEFAULT: 'rgb(var(--color-input) / <alpha-value>)',
+          border: 'rgb(var(--color-input-border) / <alpha-value>)',
+        },
+        sidebar: {
+          DEFAULT: 'rgb(var(--color-sidebar) / <alpha-value>)',
+          hover: 'rgb(var(--color-sidebar-hover) / <alpha-value>)',
+          active: 'rgb(var(--color-sidebar-active) / <alpha-value>)',
+          'active-text': 'rgb(var(--color-sidebar-active-text) / <alpha-value>)',
+        },
+        chart: {
+          primary: 'rgb(var(--color-chart-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-chart-secondary) / <alpha-value>)',
+          accent: 'rgb(var(--color-chart-accent) / <alpha-value>)',
+          grid: 'rgb(var(--color-chart-grid) / <alpha-value>)',
+          text: 'rgb(var(--color-chart-text) / <alpha-value>)',
+          'tooltip-bg': 'rgb(var(--color-chart-tooltip-bg) / <alpha-value>)',
+          'tooltip-border': 'rgb(var(--color-chart-tooltip-border) / <alpha-value>)',
+        },
+        accent: {
+          DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
+          soft: 'rgb(var(--color-accent-soft) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: [
@@ -90,7 +113,8 @@ export default {
       },
       boxShadow: {
         'subtle': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        'card': '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+        'card': '0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06)',
+        'card-light': '0 1px 4px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04)',
         'elevated': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
         'popover': '0 10px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
         'ai-glow': '0 0 20px -3px rgb(var(--color-ai) / 0.35)',
@@ -128,8 +152,8 @@ export default {
         'pulse-subtle': 'pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       borderRadius: {
-        'card': '0.75rem', // 12px
-        'panel': '1rem', // 16px
+        'card': '0.875rem', // 14px
+        'panel': '1rem',    // 16px
       },
     },
   },
