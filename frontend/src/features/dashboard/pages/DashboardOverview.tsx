@@ -8,7 +8,8 @@ import { analyticsService } from '@/services/analyticsService';
 import { Habit } from '@/types/habit';
 import { AnalyticsSummary } from '@/types/analytics';
 import { BehaviorAnalytics } from '@/types/behavior';
-import { Flame, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
+import { Flame, CheckCircle2, TrendingUp, Sparkles, Plus } from 'lucide-react';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 // Subcomponents
 import { MetricCard } from '../components/MetricCard';
@@ -124,9 +125,6 @@ export const DashboardOverview: React.FC = () => {
   const completedCount = habits.filter((h) => h.completedToday).length;
   const totalCount = habits.length;
 
-  const completionPercentage = totalCount > 0 
-    ? Math.round((completedCount / totalCount) * 100) 
-    : 78;
 
   const maxStreak = behaviorData?.habitReliability?.length 
     ? behaviorData.habitReliability.reduce((max, h) => Math.max(max, h.streak), 0) 
@@ -139,36 +137,41 @@ export const DashboardOverview: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20">
       {/* 1. Header greeting */}
-      <div className="border-b border-border/40 pb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100">
-            {getGreeting()}, {user?.name || 'Developer'} 👋
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-semibold">
-            Build consistency. Forge progress.
-          </p>
-        </div>
-        <button
-          onClick={() => setIsEnergyOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold bg-[#101622] border border-[#1D293D] text-slate-200 rounded-xl hover:bg-[#131B29] transition-all focus:outline-none w-max active:scale-[0.98] cursor-pointer"
-        >
-          <Sparkles className="h-4 w-4 text-primary shrink-0" />
-          <span>Daily Check-in</span>
-        </button>
-      </div>
+      <PageHeader
+        title={`${getGreeting()}, ${user?.name || 'Developer'} 👋`}
+        description="Build consistency. Forge progress."
+        actions={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onOpenCreateHabit}
+              className="flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Add Habit</span>
+            </button>
+            <button
+              onClick={() => setIsEnergyOpen(true)}
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#101622] hover:bg-[#131B29] border border-[#1D293D] text-slate-200 text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+            >
+              <Plus className="h-4 w-4 text-primary" />
+              <span>Add Task</span>
+            </button>
+          </div>
+        }
+      />
 
       {/* 2. Top KPI Metrics grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Current Streak"
-          value={`🔥 ${maxStreak} Days`}
-          subtext="+3 days this week"
-          icon={Flame}
-          trend="+3d"
-          accent="orange"
+          title="Forge Score"
+          value={behaviorData?.forgeScore || 742}
+          subtext="+42 this week"
+          icon={Sparkles}
+          trend="+42"
+          accent="blue"
         />
         <MetricCard
-          title="Consistency"
+          title="Consistency Index"
           value={`${consistencyScore}%`}
           subtext="+8.4% vs last week"
           icon={TrendingUp}
@@ -176,19 +179,19 @@ export const DashboardOverview: React.FC = () => {
           accent="blue"
         />
         <MetricCard
-          title="Forge Score"
-          value={forgeScore}
-          subtext="+42 this week"
-          icon={Sparkles}
-          trend="+42"
-          accent="blue"
+          title="Momentum"
+          value={behaviorData?.momentum.score || 84}
+          subtext="+12% vs last week"
+          icon={Flame}
+          trend="+12%"
+          accent="orange"
         />
         <MetricCard
-          title="Today's Progress"
-          value={`${completionPercentage}%`}
-          subtext={`${totalCount > 0 ? completedCount : 7} / ${totalCount > 0 ? totalCount : 9} habits`}
+          title="Execution Rate"
+          value={`${behaviorData?.executionRate.rate || 88}%`}
+          subtext="+4.2% vs last week"
           icon={CheckCircle2}
-          trend="+12%"
+          trend="+4.2%"
           accent="green"
         />
       </div>

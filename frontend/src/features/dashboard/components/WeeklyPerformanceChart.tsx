@@ -9,15 +9,10 @@ import {
   ResponsiveContainer,
   TooltipProps,
 } from 'recharts';
-import { AnalyticsSummary, TimeRange } from '@/types/analytics';
+import { AnalyticsSummary } from '@/types/analytics';
 import { analyticsService } from '@/services/analyticsService';
 
-const TIME_TABS: { label: string; value: TimeRange }[] = [
-  { label: 'Day', value: '7d' }, // labeled "Day | Week | Month | Year" per spec
-  { label: 'Week', value: '7d' },
-  { label: 'Month', value: '30d' },
-  { label: 'Year', value: '1y' },
-];
+import { DateRangeSelector } from '@/components/ui/DateRangeSelector';
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
@@ -47,13 +42,12 @@ interface ChartPoint {
 }
 
 export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ initialData }) => {
-  const [range, setRange] = useState<TimeRange>('7d');
+  const [range, setRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
   const [data, setData] = useState<ChartPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const processTrends = (trends: any[]): ChartPoint[] => {
     return (trends || []).map((d) => {
-      // Consistency is modeled as a slightly smoothed offset trend matching the spec
       const completionVal = d.completionRate;
       const consistencyVal = Math.max(10, Math.min(100, Math.round(completionVal * 0.85 + 10)));
       return {
@@ -68,7 +62,7 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
     const load = async () => {
       setIsLoading(true);
       try {
-        const res = await analyticsService.getAnalyticsSummary(range);
+        const res = await analyticsService.getAnalyticsSummary(range === '1y' ? '30d' : range); // fallback for seed limits
         setData(processTrends(res.dailyTrends));
       } catch {
         setData([]);
@@ -76,11 +70,10 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
         setIsLoading(false);
       }
     };
-    // Only call load if we aren't seeding from initialData, or if range changes after initial mount
     if (!initialData) {
       load();
     }
-  }, [range]);
+  }, [range, initialData]);
 
   // Seed from parent if provided
   useEffect(() => {
@@ -101,21 +94,10 @@ export const WeeklyPerformanceChart: React.FC<WeeklyPerformanceChartProps> = ({ 
           <h3 className="text-sm font-semibold text-foreground">Weekly Performance</h3>
           <p className="text-xs text-muted-foreground mt-0.5">Your consistency and completion over time</p>
         </div>
-        <div className="flex items-center gap-1 bg-[#080C14] border border-[#1D293D] p-1 rounded-xl">
-          {TIME_TABS.map((t, idx) => (
-            <button
-              key={`${t.value}-${idx}`}
-              onClick={() => setRange(t.value)}
-              className={`px-3 py-1 text-[11px] font-semibold rounded-lg transition-all ${
-                range === t.value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <DateRangeSelector
+          value={range}
+          onChange={(val) => setRange(val)}
+        />
       </div>
 
       {/* Avg statistics */}
