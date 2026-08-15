@@ -12,6 +12,9 @@ const updateProfileSchema = z.object({
         dailyReminderTime: z.string().optional(),
         aiInsightsEnabled: z.boolean().optional(),
         weeklyReportEnabled: z.boolean().optional(),
+        focusAreas: z.array(z.string()).optional(),
+        dailyCommitment: z.string().optional(),
+        goals: z.array(z.string()).optional(),
       })
       .optional(),
   }),

@@ -14,7 +14,7 @@ import { SettingsPage } from '@/features/settings/pages/SettingsPage';
 
 // Protected route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return (
@@ -31,18 +31,30 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
     return <Navigate to="/login" replace />;
   }
 
+  const isOnboardingComplete = !!(user?.preferences?.focusAreas && user.preferences.focusAreas.length > 0);
+  if (!isOnboardingComplete) {
+    return <Navigate to="/register" replace />;
+  }
+
   return <>{children}</>;
 };
 
 // Public route wrapper (redirects to dashboard if already logged in)
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return null;
   }
 
   if (isAuthenticated) {
+    const isOnboardingComplete = !!(user?.preferences?.focusAreas && user.preferences.focusAreas.length > 0);
+    if (!isOnboardingComplete) {
+      if (window.location.pathname === '/register') {
+        return <>{children}</>;
+      }
+      return <Navigate to="/register" replace />;
+    }
     return <Navigate to="/dashboard" replace />;
   }
 

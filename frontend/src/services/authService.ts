@@ -14,6 +14,13 @@ export const authService = {
     );
     const { user, token } = res.data.data;
     localStorage.setItem('ai_habit_auth_token', token);
+    localStorage.setItem('daily_forge_last_user', JSON.stringify({
+      name: user.name,
+      streakDays: user.currentStreak || 0,
+      consistency: user.overallCompletionRate || 0,
+      tasksCompleted: user.totalHabitsCount || 0,
+      activeGoals: user.preferences?.goals?.length || 0,
+    }));
     return { user, token };
   },
 
@@ -34,6 +41,13 @@ export const authService = {
     );
     const { user, token } = res.data.data;
     localStorage.setItem('ai_habit_auth_token', token);
+    localStorage.setItem('daily_forge_last_user', JSON.stringify({
+      name: user.name,
+      streakDays: user.currentStreak || 0,
+      consistency: user.overallCompletionRate || 0,
+      tasksCompleted: user.totalHabitsCount || 0,
+      activeGoals: user.preferences?.goals?.length || 0,
+    }));
     return { user, token };
   },
 

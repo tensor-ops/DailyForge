@@ -1,12 +1,33 @@
 import React from 'react';
 import { mockGoals, MockGoal } from '../data/mockDashboardData';
 import { cn } from '@/utils/cn';
+import { useAuth } from '@/hooks/useAuth';
 
 interface GoalsCardProps {
   goals?: MockGoal[];
 }
 
 export const GoalsCard: React.FC<GoalsCardProps> = ({ goals = mockGoals }) => {
+  const { user } = useAuth();
+  
+  const userGoals = user?.preferences?.goals;
+  
+  // Construct dynamic goals if user configured them during onboarding
+  const displayedGoals: MockGoal[] = (userGoals && userGoals.length > 0)
+    ? userGoals.slice(0, 3).map((gName, index) => {
+        const priorities: ('high' | 'medium' | 'low')[] = ['high', 'medium', 'low'];
+        const progressValues = [25, 10, 0];
+        return {
+          id: `onb-${index}`,
+          title: `Build Consistency: ${gName}`,
+          progress: progressValues[index] || 0,
+          target: '30 days',
+          current: index === 0 ? '7' : index === 1 ? '3' : '0',
+          deadline: 'Sep 15',
+          priority: priorities[index] || 'low',
+        };
+      })
+    : goals;
   const getPriorityBadgeClass = (priority: MockGoal['priority']) => {
     switch (priority) {
       case 'high':
@@ -28,7 +49,7 @@ export const GoalsCard: React.FC<GoalsCardProps> = ({ goals = mockGoals }) => {
       </div>
 
       <div className="space-y-4">
-        {goals.map((goal) => (
+        {displayedGoals.map((goal) => (
           <div key={goal.id} className="space-y-2 border-b border-border/40 last:border-0 pb-3 last:pb-0">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold text-foreground truncate">{goal.title}</span>

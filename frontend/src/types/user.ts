@@ -22,6 +22,9 @@ export interface UserPreferences {
   dailyReminderTime?: string;
   aiInsightsEnabled: boolean;
   weeklyReportEnabled: boolean;
+  focusAreas?: string[];
+  dailyCommitment?: string;
+  goals?: string[];
 }
 
 export interface AuthState {

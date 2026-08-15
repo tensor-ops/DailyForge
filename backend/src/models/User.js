@@ -52,6 +52,18 @@ const UserSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
+      focusAreas: {
+        type: [String],
+        default: [],
+      },
+      dailyCommitment: {
+        type: String,
+        default: '',
+      },
+      goals: {
+        type: [String],
+        default: [],
+      },
     },
     lastLoginAt: {
       type: Date,
