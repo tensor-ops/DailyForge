@@ -21,6 +21,7 @@ const dashboardRoutes = require('./routes/dashboard.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const todayRoutes = require('./routes/today.routes');
 const milestoneRoutes = require('./routes/milestone.routes');
+const forgeLabRoutes = require('./routes/experiment.routes');
 
 const app = express();
 
@@ -124,6 +125,7 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/today', todayRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/milestones', milestoneRoutes);
+app.use('/api/v1/forge-lab', forgeLabRoutes);
 
 // Fallback 404 & Global Error Handling
 app.use(notFoundHandler);
