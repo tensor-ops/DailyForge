@@ -12,8 +12,8 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { Modal } from '@/components/ui/Modal';
 import { Card } from '@/components/ui/Card';
+import { DeleteHabitModal } from '../components/DeleteHabitModal';
 import {
   Plus,
   Flame,
@@ -55,7 +55,6 @@ export const HabitsPage: React.FC = () => {
 
   // Deletion confirmation modal
   const [deleteTarget, setDeleteTarget] = useState<Habit | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchHabitsAndBehavior = async () => {
     try {
@@ -79,18 +78,15 @@ export const HabitsPage: React.FC = () => {
     return () => window.removeEventListener('habits-updated', handler);
   }, []);
 
-  const handleDeleteHabit = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
+  const handleDeleteHabit = async (target: Habit) => {
     try {
-      await habitService.deleteHabit(deleteTarget.id);
-      success('Habit deleted', `"${deleteTarget.name}" was removed.`);
-      setHabits((prev) => prev.filter((h) => h.id !== deleteTarget.id));
+      await habitService.deleteHabit(target.id);
+      success('Habit deleted', `"${target.name}" was permanently removed.`);
+      setHabits((prev) => prev.filter((h) => h.id !== target.id));
       setDeleteTarget(null);
+      window.dispatchEvent(new Event('habits-updated'));
     } catch {
       error('Deletion failed', 'Unable to delete habit.');
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -417,38 +413,13 @@ export const HabitsPage: React.FC = () => {
         </Card>
       )}
 
-      {/* Confirmation Dialog for Destructive Delete Action */}
-      <Modal
+      {/* GitHub-style Confirmation Dialog for Destructive Delete Action */}
+      <DeleteHabitModal
         isOpen={!!deleteTarget}
+        habit={deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        title="Delete Habit?"
-        description="This action cannot be undone. All streak history for this habit will be permanently deleted."
-      >
-        <div className="space-y-4 pt-2">
-          {deleteTarget && (
-            <div className="p-3 rounded-lg bg-danger/10 border border-danger/20 text-sm font-medium text-danger">
-              Deleting: &quot;{deleteTarget.name}&quot;
-            </div>
-          )}
-
-          <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-border">
-            <button
-              onClick={() => setDeleteTarget(null)}
-              disabled={isDeleting}
-              className="px-3.5 py-2 bg-muted hover:bg-muted/80 border border-border text-muted-foreground rounded-xl text-xs font-bold cursor-pointer transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDeleteHabit}
-              disabled={isDeleting}
-              className="px-3.5 py-2 bg-danger hover:bg-danger/80 text-danger-foreground rounded-xl text-xs font-bold cursor-pointer transition-colors disabled:opacity-50"
-            >
-              {isDeleting ? 'Deleting...' : 'Confirm Delete'}
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onConfirmDelete={handleDeleteHabit}
+      />
     </div>
   );
 };
