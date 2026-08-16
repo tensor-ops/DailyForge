@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" role="img" aria-labelledby="title desc">
+<title>Daily Forge</title>
+<desc>Daily Forge habit tracker logo for the selected application theme.</desc>
+<defs>
+  <linearGradient id="p" x1="0" y1="1" x2="1" y2="0">
+    <stop offset="0" stop-color="#1687FF"/><stop offset="1" stop-color="#00C2FF"/>
+  </linearGradient>
+  <linearGradient id="t" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".82"/>
+  </linearGradient>
+</defs>
+<g transform="translate(25 15)">
+  <path d="M116 204 C63 194 30 151 35 101 C40 51 80 20 126 22 C166 24 199 47 214 81"
+        fill="none" stroke="#1687FF" stroke-width="22" stroke-linecap="round"/>
+  <path d="M214 81 C230 112 226 150 206 177 C187 202 158 216 128 214"
+        fill="none" stroke="#00C2FF" stroke-width="22" stroke-linecap="round"/>
+  <path d="M48 76L66 86 M179 193L190 175"
+        stroke="#07111F" stroke-width="12" stroke-linecap="round"/>
+  <path d="M118 173 C91 157 83 133 94 108 C101 92 115 80 128 65
+           C128 84 137 94 148 104 C148 88 155 75 166 63
+           C181 84 188 104 184 124 C180 151 158 172 134 178
+           C129 179 123 177 118 173Z" fill="url(#p)"/>
+  <path d="M123 157 C110 147 108 135 114 123 C118 115 124 109 131 101
+           C131 112 137 118 143 123 C145 133 139 145 123 157Z"
+        fill="#00C2FF"/>
+  <path d="M91 139 L116 163 L166 106"
+        fill="none" stroke="#FFFFFF" stroke-width="15"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="197" cy="45" r="5" fill="#1687FF"/>
+  <circle cx="214" cy="57" r="3" fill="#00C2FF"/>
+</g>
+<g transform="translate(285 62)">
+  <text x="0" y="66" font-family="Inter,Arial,sans-serif" font-size="72"
+        font-weight="800" letter-spacing="-2.5" fill="url(#t)">DAILY</text>
+  <text x="0" y="139" font-family="Inter,Arial,sans-serif" font-size="72"
+        font-weight="900" font-style="italic" letter-spacing="-2"
+        fill="#1687FF">FORGE</text>
+  <line x1="3" y1="166" x2="56" y2="166"
+        stroke="#1687FF" stroke-width="4" stroke-linecap="round"/>
+  <text x="69" y="172" font-family="Inter,Arial,sans-serif" font-size="18"
+        font-weight="600" letter-spacing="4" fill="#00C2FF">
+    BUILD BETTER. EVERY DAY.
+  </text>
+</g>
+</svg>
