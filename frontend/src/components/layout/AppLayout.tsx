@@ -5,11 +5,8 @@ import { TopBar } from './TopBar';
 import { MobileNav } from './MobileNav';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { useToast } from '@/hooks/useToast';
-import { habitService } from '@/services/habitService';
-import { HabitCategory } from '@/types/habit';
 import { Search } from 'lucide-react';
+import { CreateHabitModal } from '@/features/habits/components/CreateHabitModal';
 
 export const AppLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -17,60 +14,7 @@ export const AppLayout: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Quick Create Habit Form State
-  const [habitName, setHabitName] = useState('');
-  const [habitCategory, setHabitCategory] = useState<HabitCategory>('Health');
-  const [habitDescription, setHabitDescription] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
-
-  const { success, error } = useToast();
   const navigate = useNavigate();
-
-  const handleCreateHabitSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!habitName.trim()) {
-      error('Habit name required', 'Please enter a name for your habit.');
-      return;
-    }
-
-    setIsCreating(true);
-    try {
-      await habitService.createHabit({
-        name: habitName,
-        category: habitCategory,
-        description: habitDescription,
-        icon: getCategoryIcon(habitCategory),
-        frequency: 'daily',
-        startDate: new Date().toISOString().split('T')[0],
-      });
-
-      success('Habit created! ✓', `"${habitName}" added to your daily tracker.`);
-      setHabitName('');
-      setHabitDescription('');
-      setIsCreateModalOpen(false);
-      
-      // Dispatch custom event so pages can refresh if needed
-      window.dispatchEvent(new Event('habits-updated'));
-    } catch {
-      error('Creation failed', 'Could not create habit. Please try again.');
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const getCategoryIcon = (cat: HabitCategory) => {
-    switch (cat) {
-      case 'Health': return '💧';
-      case 'Fitness': return '⚡';
-      case 'Study': return '🧠';
-      case 'Work': return '💼';
-      case 'Personal': return '📖';
-      case 'Finance': return '💰';
-      case 'Mindfulness': return '✨';
-      default: return '🎯';
-    }
-  };
 
   // Keyboard shortcut listener for Command + K
   React.useEffect(() => {
@@ -129,64 +73,10 @@ export const AppLayout: React.FC = () => {
       </div>
 
       {/* CREATE HABIT MODAL */}
-      <Modal
+      <CreateHabitModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        title="Create New Habit"
-        description="Establish a new routine with clear intention and frequency."
-      >
-        <form onSubmit={handleCreateHabitSubmit} className="space-y-4 pt-2">
-          <Input
-            label="Habit Name"
-            placeholder="e.g., Morning 20m Yoga & Mobility"
-            value={habitName}
-            onChange={(e) => setHabitName(e.target.value)}
-            required
-            autoFocus
-          />
-
-          <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Category
-            </label>
-            <select
-              value={habitCategory}
-              onChange={(e) => setHabitCategory(e.target.value as HabitCategory)}
-              className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-            >
-              <option value="Health">Health 💧</option>
-              <option value="Fitness">Fitness ⚡</option>
-              <option value="Study">Study 🧠</option>
-              <option value="Work">Work 💼</option>
-              <option value="Personal">Personal 📖</option>
-              <option value="Finance">Finance 💰</option>
-              <option value="Mindfulness">Mindfulness ✨</option>
-              <option value="Other">Other 🎯</option>
-            </select>
-          </div>
-
-          <Input
-            label="Description / Motivation"
-            placeholder="e.g., Start with sun salutations to elevate focus"
-            value={habitDescription}
-            onChange={(e) => setHabitDescription(e.target.value)}
-          />
-
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setIsCreateModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" size="sm" isLoading={isCreating}>
-              Create Habit
-            </Button>
-          </div>
-        </form>
-      </Modal>
+      />
 
       {/* QUICK COMMAND / SEARCH MODAL */}
       <Modal

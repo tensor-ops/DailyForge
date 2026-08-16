@@ -1,5 +1,5 @@
 import { apiClient } from './api';
-import { Habit, CreateHabitInput, HabitFilterOptions } from '@/types/habit';
+import { Habit, CreateHabitInput, HabitFilterOptions, HabitAnalytics } from '@/types/habit';
 
 export const habitService = {
   async getHabits(options?: Partial<HabitFilterOptions>): Promise<Habit[]> {
@@ -20,6 +20,11 @@ export const habitService = {
 
   async getHabitById(id: string): Promise<Habit> {
     const res = await apiClient.get<{ success: boolean; data: Habit }>(`/habits/${id}`);
+    return res.data.data;
+  },
+
+  async getHabitAnalytics(id: string): Promise<HabitAnalytics> {
+    const res = await apiClient.get<{ success: boolean; data: HabitAnalytics }>(`/habits/${id}/analytics`);
     return res.data.data;
   },
 
@@ -51,6 +56,10 @@ export const habitService = {
       : `/habits/${habitId}/complete`;
     const res = await apiClient.delete<{ success: boolean; data: Habit }>(endpoint);
     return res.data.data;
+  },
+
+  async logHabitMiss(habitId: string, reason: string, notes?: string, date?: string): Promise<void> {
+    await apiClient.post(`/habits/${habitId}/miss`, { reason, notes, date });
   },
 
   async toggleComplete(habit: Habit): Promise<Habit> {

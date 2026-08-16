@@ -7,6 +7,7 @@ const {
   createHabitSchema,
   updateHabitSchema,
   completeHabitSchema,
+  logMissSchema,
 } = require('../validators/habit.validator');
 
 router.use(authenticate);
@@ -15,11 +16,13 @@ router.get('/', habitController.getHabits);
 router.post('/', validate(createHabitSchema), habitController.createHabit);
 
 router.get('/:id', habitController.getHabitById);
+router.get('/:id/analytics', habitController.getHabitAnalytics);
 router.patch('/:id', validate(updateHabitSchema), habitController.updateHabit);
 router.delete('/:id', habitController.deleteHabit);
 router.patch('/:id/archive', habitController.archiveHabit);
 
 router.post('/:habitId/complete', validate(completeHabitSchema), habitController.completeHabit);
 router.delete('/:habitId/complete/:date?', habitController.uncompleteHabit);
+router.post('/:habitId/miss', validate(logMissSchema), habitController.logHabitMiss);
 
 module.exports = router;

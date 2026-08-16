@@ -1,5 +1,11 @@
 const mongoose = require('mongoose');
-const { HABIT_CATEGORIES, HABIT_FREQUENCIES } = require('../constants/habit.constants');
+const {
+  HABIT_CATEGORIES,
+  HABIT_FREQUENCIES,
+  HABIT_TRACKING_TYPES,
+  HABIT_DIFFICULTIES,
+  HABIT_FRICTION_LEVELS,
+} = require('../constants/habit.constants');
 
 const HabitSchema = new mongoose.Schema(
   {
@@ -30,6 +36,11 @@ const HabitSchema = new mongoose.Schema(
       type: String,
       default: 'target',
     },
+    trackingType: {
+      type: String,
+      enum: HABIT_TRACKING_TYPES,
+      default: 'binary',
+    },
     frequency: {
       type: String,
       enum: HABIT_FREQUENCIES,
@@ -47,9 +58,43 @@ const HabitSchema = new mongoose.Schema(
       type: String,
       default: 'times',
     },
+    preferredTime: {
+      type: String,
+      default: '',
+    },
+    timeWindowStart: {
+      type: String,
+      default: '',
+    },
+    timeWindowEnd: {
+      type: String,
+      default: '',
+    },
+    reminderEnabled: {
+      type: Boolean,
+      default: false,
+    },
     reminderTime: {
       type: String,
       default: '',
+    },
+    reminderDays: {
+      type: [Number],
+      default: [],
+    },
+    difficulty: {
+      type: String,
+      enum: HABIT_DIFFICULTIES,
+      default: 'moderate',
+    },
+    expectedFriction: {
+      type: String,
+      enum: HABIT_FRICTION_LEVELS,
+      default: 'medium',
+    },
+    checklistItems: {
+      type: [String],
+      default: [],
     },
     startDate: {
       type: String,
@@ -92,6 +137,7 @@ const HabitSchema = new mongoose.Schema(
 
 HabitSchema.index({ userId: 1, isArchived: 1 });
 HabitSchema.index({ userId: 1, category: 1 });
+HabitSchema.index({ userId: 1, frequency: 1 });
 
 HabitSchema.methods.toJSON = function () {
   const obj = this.toObject();

@@ -270,6 +270,9 @@ export const HabitsPage: React.FC = () => {
             const friction = frictionObj?.frictionLevel || 'Low';
             const risk = riskObj?.riskLevel || 'Low';
 
+            const bestTime = habit.preferredTime || (habit.totalCompletions > 2 ? '7:15 PM' : 'Building...');
+            const progress = habit.completionRate || 80;
+
             return (
               <Card
                 key={habit.id}
@@ -330,16 +333,16 @@ export const HabitsPage: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-[10px] text-muted-foreground block">Best Time</span>
-                      <span className="text-muted-foreground">7:30 PM</span>
+                      <span className="text-muted-foreground">{bestTime}</span>
                     </div>
                   </div>
 
                   <div className="space-y-1 pt-1">
                     <div className="flex justify-between text-[10px] font-bold text-muted-foreground">
                       <span>Progress</span>
-                      <span>{habit.completionRate || 80}%</span>
+                      <span>{progress}%</span>
                     </div>
-                    <ProgressBar value={habit.completionRate || 80} />
+                    <ProgressBar value={progress} />
                   </div>
                 </div>
 
@@ -381,6 +384,7 @@ export const HabitsPage: React.FC = () => {
                   const reliability = reliabilityObj?.reliability || habit.completionRate || 80;
                   const friction = frictionObj?.frictionLevel || 'Low';
                   const risk = riskObj?.riskLevel || 'Low';
+                  const bestTime = habit.preferredTime || (habit.totalCompletions > 2 ? '7:15 PM' : 'Building...');
 
                   return (
                     <tr key={habit.id} className="hover:bg-muted/10 transition-all cursor-pointer" onClick={() => navigate(`/habits/${habit.id}`)}>
@@ -395,7 +399,7 @@ export const HabitsPage: React.FC = () => {
                       <td className="py-3 text-warning">🔥 {habit.currentStreak}d</td>
                       <td className={`py-3 ${friction === 'HIGH' ? 'text-warning' : 'text-success'}`}>{friction}</td>
                       <td className={`py-3 ${risk === 'HIGH' ? 'text-danger' : 'text-muted-foreground'}`}>{risk}</td>
-                      <td className="py-3 text-muted-foreground">7:30 PM</td>
+                      <td className="py-3 text-muted-foreground">{bestTime}</td>
                       <td className="py-3 text-right pr-2" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => setDeleteTarget(habit)}

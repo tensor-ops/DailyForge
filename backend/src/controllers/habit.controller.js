@@ -28,6 +28,24 @@ async function getHabitById(req, res, next) {
   }
 }
 
+async function getHabitAnalytics(req, res, next) {
+  try {
+    const analytics = await habitService.getHabitAnalytics(req.params.id, req.user._id);
+    return sendSuccess(res, analytics, 'Habit analytics retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function logHabitMiss(req, res, next) {
+  try {
+    const miss = await habitService.logHabitMiss(req.params.habitId, req.user._id, req.body);
+    return sendSuccess(res, miss, 'Habit miss recorded successfully', 201);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function updateHabit(req, res, next) {
   try {
     const habit = await habitService.updateHabit(req.params.id, req.user._id, req.body);
@@ -80,6 +98,8 @@ module.exports = {
   createHabit,
   getHabits,
   getHabitById,
+  getHabitAnalytics,
+  logHabitMiss,
   updateHabit,
   deleteHabit,
   archiveHabit,

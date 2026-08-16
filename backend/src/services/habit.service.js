@@ -1,6 +1,8 @@
 const Habit = require('../models/Habit');
 const HabitCompletion = require('../models/HabitCompletion');
+const HabitMiss = require('../models/HabitMiss');
 const { calculateHabitStats } = require('./streak.service');
+const { getHabitDetailedAnalytics } = require('./habitAnalytics.service');
 const { NotFoundError, AuthorizationError, ConflictError } = require('../utils/errors');
 const { formatDate } = require('../utils/dates');
 
@@ -92,6 +94,36 @@ async function getHabitById(habitId, userId) {
   return formatHabitResponse(habit, stats);
 }
 
+async function getHabitAnalytics(habitId, userId) {
+  return await getHabitDetailedAnalytics(habitId, userId);
+}
+
+async function logHabitMiss(habitId, userId, { reason, notes = '', date = null }) {
+  const habit = await Habit.findById(habitId);
+  if (!habit) {
+    throw new NotFoundError('Habit not found');
+  }
+  if (habit.userId.toString() !== userId.toString()) {
+    throw new AuthorizationError('You do not have access to this habit');
+  }
+
+  const dateStr = date || formatDate(new Date());
+
+  const miss = await HabitMiss.findOneAndUpdate(
+    { habitId, date: dateStr },
+    {
+      habitId,
+      userId,
+      date: dateStr,
+      reason,
+      notes,
+    },
+    { upsert: true, new: true }
+  );
+
+  return miss;
+}
+
 async function updateHabit(habitId, userId, updateData) {
   const habit = await Habit.findById(habitId);
   if (!habit) {
@@ -119,6 +151,7 @@ async function deleteHabit(habitId, userId) {
 
   await Habit.deleteOne({ _id: habitId });
   await HabitCompletion.deleteMany({ habitId });
+  await HabitMiss.deleteMany({ habitId });
 
   return { id: habitId };
 }
@@ -195,21 +228,30 @@ function formatHabitResponse(habitObj, stats) {
     name: habitObj.name,
     description: habitObj.description || '',
     category: habitObj.category,
-    icon: habitObj.icon,
+    icon: habitObj.icon || 'target',
+    trackingType: habitObj.trackingType || 'binary',
     frequency: habitObj.frequency,
     customDays: habitObj.customDays || [],
     targetValue: habitObj.targetValue || 1,
     unit: habitObj.unit || 'times',
+    preferredTime: habitObj.preferredTime || '',
+    timeWindowStart: habitObj.timeWindowStart || '',
+    timeWindowEnd: habitObj.timeWindowEnd || '',
+    reminderEnabled: Boolean(habitObj.reminderEnabled),
     reminderTime: habitObj.reminderTime || '',
+    reminderDays: habitObj.reminderDays || [],
+    difficulty: habitObj.difficulty || 'moderate',
+    expectedFriction: habitObj.expectedFriction || 'medium',
+    checklistItems: habitObj.checklistItems || [],
     startDate: habitObj.startDate,
-    color: habitObj.color,
-    isArchived: habitObj.isArchived,
+    color: habitObj.color || '#6366f1',
+    isArchived: habitObj.isArchived || false,
     currentStreak: stats.currentStreak,
     longestStreak: stats.longestStreak,
     totalCompletions: stats.totalCompletions,
     completionRate: stats.completionRate,
     completedToday: stats.completedToday,
-    history: stats.history,
+    history: stats.history || {},
     createdAt: habitObj.createdAt ? new Date(habitObj.createdAt).toISOString() : new Date().toISOString(),
     updatedAt: habitObj.updatedAt ? new Date(habitObj.updatedAt).toISOString() : new Date().toISOString(),
   };
@@ -219,6 +261,8 @@ module.exports = {
   createHabit,
   getHabits,
   getHabitById,
+  getHabitAnalytics,
+  logHabitMiss,
   updateHabit,
   deleteHabit,
   completeHabit,

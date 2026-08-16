@@ -208,38 +208,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User / Collapse Footer */}
-      <div className="p-3 border-t border-border/70 space-y-3">
-        {/* Momentum Card */}
-        {!isCollapsed && user && (
-          <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-sunken border border-border text-xs">
-            <span className="text-muted-foreground flex items-center gap-1.5 font-bold uppercase tracking-wider text-[9px] select-none">
-              <Flame className="h-4 w-4 text-warning fill-warning" /> Momentum
-            </span>
-            <div className="text-right select-none font-semibold leading-tight">
-              <span className="font-extrabold text-foreground">84</span>
-              <span className="text-[9px] text-success font-bold block">+12% this week</span>
-            </div>
-          </div>
-        )}
-
-        {/* User profile card */}
+      <div className="p-3 border-t border-border/70 space-y-2">
+        {/* User profile link */}
         {user && (
-          <div className={cn(
-            "p-2 rounded-xl bg-card border border-border flex items-center gap-2.5 transition-all select-none",
-            isCollapsed ? "justify-center" : "px-3"
-          )}>
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              cn(
+                'p-2 rounded-xl border flex items-center gap-2.5 transition-all select-none group',
+                isActive
+                  ? 'bg-primary/[0.12] border-primary/20 text-foreground'
+                  : 'bg-surface-sunken/40 hover:bg-surface-elevated border-border/60 hover:border-border text-muted-foreground hover:text-foreground',
+                isCollapsed ? 'justify-center' : 'px-3'
+              )
+            }
+            title={isCollapsed ? user.name : 'View Profile'}
+          >
             <Avatar name={user.name} size="sm" />
             {!isCollapsed && (
               <div className="flex-1 min-w-0 text-left">
-                <p className="text-xs font-bold text-foreground truncate">
+                <p className="text-xs font-bold text-foreground truncate group-hover:text-primary transition-colors">
                   {user.name}
                 </p>
-                <p className="text-[10px] text-muted-foreground font-semibold truncate uppercase tracking-wider">
-                  Consistency OS
+                <p className="text-[10px] text-muted-foreground font-semibold truncate tracking-wide">
+                  {user.email || 'Consistency OS'}
                 </p>
               </div>
             )}
-          </div>
+          </NavLink>
         )}
 
         <div className="flex items-center justify-between">
@@ -247,7 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={onToggleCollapse}
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             className={cn(
-              'flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors',
+              'flex items-center justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors cursor-pointer',
               isCollapsed && 'w-full'
             )}
           >
