@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { MobileNav } from './MobileNav';
-import { Modal } from '@/components/ui/Modal';
-import { Input } from '@/components/ui/Input';
-import { Search } from 'lucide-react';
 import { CreateHabitModal } from '@/features/habits/components/CreateHabitModal';
+import { CommandPalette } from '@/components/dialogs/CommandPalette';
 import { HabitCategory } from '@/types/habit';
 
 export const AppLayout: React.FC = () => {
@@ -15,8 +13,6 @@ export const AppLayout: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalCategory, setCreateModalCategory] = useState<HabitCategory | undefined>(undefined);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
   const handleOpenCreateHabit = (category?: HabitCategory) => {
     setCreateModalCategory(category);
@@ -34,15 +30,6 @@ export const AppLayout: React.FC = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  const searchResults = [
-    { title: 'Dashboard', path: '/dashboard', type: 'View' },
-    { title: 'Habits Management', path: '/habits', type: 'View' },
-    { title: 'Analytics & Trends', path: '/analytics', type: 'View' },
-    { title: 'AI Habit Coach', path: '/ai-insights', type: 'AI Feature' },
-    { title: 'Profile & Consistency Score', path: '/profile', type: 'User' },
-    { title: 'Account Settings', path: '/settings', type: 'Settings' },
-  ].filter((item) => item.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -86,51 +73,12 @@ export const AppLayout: React.FC = () => {
         initialCategory={createModalCategory}
       />
 
-      {/* QUICK COMMAND / SEARCH MODAL */}
-      <Modal
+      {/* GLOBAL COMMAND PALETTE (Cmd+K) */}
+      <CommandPalette
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
-        title="Quick Navigator"
-        description="Search pages, actions, and features."
-        size="md"
-      >
-        <div className="space-y-3">
-          <Input
-            placeholder="Type a command or page name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            autoFocus
-          />
-
-          <div className="max-h-60 overflow-y-auto space-y-1 pt-1">
-            {searchResults.length > 0 ? (
-              searchResults.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => {
-                    navigate(item.path);
-                    setIsSearchModalOpen(false);
-                    setSearchQuery('');
-                  }}
-                  className="w-full flex items-center justify-between p-2 rounded-lg text-left text-xs font-semibold hover:bg-muted transition-colors cursor-pointer text-foreground"
-                >
-                  <span className="flex items-center gap-2">
-                    <Search className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span>{item.title}</span>
-                  </span>
-                  <span className="text-[10px] bg-surface-sunken px-1.5 py-0.5 rounded border border-border text-muted-foreground">
-                    {item.type}
-                  </span>
-                </button>
-              ))
-            ) : (
-              <p className="text-xs text-muted-foreground py-4 text-center">
-                No results found for &quot;{searchQuery}&quot;
-              </p>
-            )}
-          </div>
-        </div>
-      </Modal>
+        onOpenCreateHabit={() => handleOpenCreateHabit()}
+      />
     </div>
   );
 };

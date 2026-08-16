@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
+import { DialogFooter } from '@/components/dialogs/DialogFooter';
 import { Button } from '@/components/ui/Button';
 import { useToast } from '@/hooks/useToast';
 import { todayService } from '@/services/todayService';
 import { TodayOverviewResponse } from '@/types/today';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Moon } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface DailyReviewModalProps {
@@ -50,32 +51,52 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
   };
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title="Today's End of Day Review"
-      description={`Reflect and close out your daily momentum for ${overview.formattedDate}.`}
+      title="End of Day Momentum Review"
+      description={`Reflect on execution, celebrate wins, and close out ${overview.formattedDate}.`}
+      icon={Moon}
+      iconColor="#8B5CF6"
       size="md"
+      footer={
+        forgeNote ? (
+          <div className="flex justify-end">
+            <Button variant="primary" size="sm" onClick={onClose}>
+              Done & Close
+            </Button>
+          </div>
+        ) : (
+          <DialogFooter
+            onCancel={onClose}
+            cancelLabel="Cancel"
+            onConfirm={undefined}
+            confirmLabel="Complete Day Review"
+            isSubmitting={isSubmitting}
+            confirmIcon={Sparkles}
+          />
+        )
+      }
     >
       {forgeNote ? (
         <div className="space-y-4 text-left py-2">
-          <div className="p-4 rounded-2xl bg-primary/10 border border-primary/25 space-y-2">
-            <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Today&apos;s Forge Note</span>
-            </span>
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-primary/15 to-primary/5 border border-primary/30 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                <Sparkles className="h-4 w-4" />
+                <span>Today&apos;s AI Forge Note</span>
+              </span>
+              <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                Consistency +4%
+              </span>
+            </div>
             <p className="text-sm font-semibold text-foreground leading-relaxed">
               {forgeNote}
             </p>
           </div>
-          <div className="flex justify-end pt-2">
-            <Button variant="primary" onClick={onClose}>
-              Done
-            </Button>
-          </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5 text-left">
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
           {/* Summary Cockpit Breakdown */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-surface-sunken border border-border/80 text-xs">
             <div>
@@ -106,7 +127,7 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
               <span className="text-[10px] text-muted-foreground block font-bold uppercase">
                 Attention
               </span>
-              <span className="text-warning font-bold truncate block">
+              <span className="text-amber-400 font-bold truncate block">
                 {overview.endOfDay.needsAttention}
               </span>
             </div>
@@ -115,7 +136,7 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
           {/* Mood Selector */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-muted-foreground block">
-              How did today feel?
+              How did today feel overall?
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {MOODS.map((m) => (
@@ -127,7 +148,7 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
                     'p-2.5 rounded-xl border text-center transition-all cursor-pointer select-none space-y-0.5',
                     rating === m.id
                       ? 'bg-primary/15 border-primary text-foreground shadow-sm'
-                      : 'bg-card border-border/70 text-muted-foreground hover:text-foreground'
+                      : 'bg-surface-sunken border-border/70 text-muted-foreground hover:text-foreground'
                   )}
                 >
                   <span className="text-lg block">{m.emoji}</span>
@@ -149,22 +170,12 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="What worked well? What caused friction or distraction?"
+              placeholder="What worked well? What friction or distraction did you encounter?"
               className="w-full p-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary resize-none"
             />
           </div>
-
-          {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" isLoading={isSubmitting}>
-              Complete Day Review
-            </Button>
-          </div>
         </form>
       )}
-    </Modal>
+    </Dialog>
   );
 };

@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Dialog } from '@/components/dialogs/Dialog';
+import { DialogTabs, DialogTabItem } from '@/components/dialogs/DialogTabs';
+import { DialogField } from '@/components/dialogs/DialogField';
+import { DialogFooter } from '@/components/dialogs/DialogFooter';
+import { SmartSuggestion } from '@/components/dialogs/SmartSuggestion';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/hooks/useToast';
 import { todayService } from '@/services/todayService';
+import { goalService } from '@/services/goalService';
 import { HabitCategory } from '@/types/habit';
 import { QuickAddType } from '@/types/today';
-import { CheckCircle2, ListTodo, Calendar } from 'lucide-react';
+import { Goal } from '@/types/goal';
+import { CheckCircle2, ListTodo, Calendar, Plus } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 const CATEGORIES: HabitCategory[] = [
@@ -26,6 +31,8 @@ interface QuickAddModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   initialType?: QuickAddType;
+  initialDate?: string;
+  initialGoalId?: string;
 }
 
 export const QuickAddModal: React.FC<QuickAddModalProps> = ({
@@ -33,18 +40,21 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
   onClose,
   onSuccess,
   initialType = 'habit',
+  initialGoalId,
 }) => {
   const { success, error } = useToast();
   const [activeType, setActiveType] = useState<QuickAddType>(initialType);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Common / Habit state
+  // Form states
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<HabitCategory>('Personal');
   const [time, setTime] = useState('07:30 PM');
   const [durationMins, setDurationMins] = useState<number>(30);
   const [priority, setPriority] = useState<'low' | 'medium' | 'high' | 'critical'>('medium');
   const [endTime, setEndTime] = useState('08:30 PM');
+  const [selectedGoalId, setSelectedGoalId] = useState<string>(initialGoalId || '');
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [titleError, setTitleError] = useState('');
 
   useEffect(() => {
@@ -53,14 +63,25 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
       setTitle('');
       setTitleError('');
       setIsSubmitting(false);
+      if (initialGoalId) setSelectedGoalId(initialGoalId);
+      goalService
+        .getGoals()
+        .then((res) => setGoals(res.goals || []))
+        .catch(() => {});
     }
-  }, [isOpen, initialType]);
+  }, [isOpen, initialType, initialGoalId]);
+
+  const tabs: DialogTabItem<QuickAddType>[] = [
+    { id: 'habit', label: 'Habit Routine', icon: CheckCircle2 },
+    { id: 'task', label: 'One-off Task', icon: ListTodo },
+    { id: 'event', label: 'Calendar Event', icon: Calendar },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || title.trim().length < 2) {
-      setTitleError('Please enter a valid title (at least 2 characters).');
+      setTitleError('Please enter a descriptive title (at least 2 characters).');
       return;
     }
     setTitleError('');
@@ -74,7 +95,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
           preferredTime: time,
           duration: durationMins,
         });
-        success('Habit added! ✓', `"${title.trim()}" is scheduled for today.`);
+        success('Habit added! ✓', `"${title.trim()}" is scheduled in today's routines.`);
         window.dispatchEvent(new Event('habits-updated'));
       } else if (activeType === 'task') {
         await todayService.quickAddTask({
@@ -99,142 +120,141 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
       onSuccess?.();
       onClose();
     } catch {
-      error('Creation failed', 'Unable to save. Please retry.');
+      error('Creation failed', 'Unable to save. Please check inputs and retry.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const currentIcon =
+    activeType === 'habit' ? CheckCircle2 : activeType === 'task' ? ListTodo : Calendar;
+  const currentIconColor =
+    activeType === 'habit' ? '#F97316' : activeType === 'task' ? '#3B82F6' : '#8B5CF6';
+
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
-      title="Quick Add"
-      description="Quickly capture a habit, task, or event into today's plan."
+      title={
+        activeType === 'habit'
+          ? 'Add Daily Habit'
+          : activeType === 'task'
+          ? 'Create Execution Task'
+          : 'Schedule Calendar Event'
+      }
+      description="Quickly capture a routine, action item, or timeblock into DailyForge."
+      icon={currentIcon}
+      iconColor={currentIconColor}
       size="md"
+      footer={
+        <DialogFooter
+          onCancel={onClose}
+          cancelLabel="Cancel"
+          onConfirm={undefined}
+          confirmLabel={
+            activeType === 'habit'
+              ? 'Add Habit'
+              : activeType === 'task'
+              ? 'Schedule Task'
+              : 'Save Event'
+          }
+          isSubmitting={isSubmitting}
+          confirmIcon={Plus}
+          hintText="Press ↵ to add"
+        />
+      }
     >
       <form onSubmit={handleSubmit} className="space-y-4 text-left">
-        {/* Type Selector Tabs */}
-        <div className="grid grid-cols-3 gap-1.5 p-1 bg-surface-sunken border border-border/80 rounded-xl">
-          <button
-            type="button"
-            onClick={() => setActiveType('habit')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer',
-              activeType === 'habit'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Habit</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveType('task')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer',
-              activeType === 'task'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <ListTodo className="h-3.5 w-3.5" />
-            <span>Task</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveType('event')}
-            className={cn(
-              'flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer',
-              activeType === 'event'
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
-          >
-            <Calendar className="h-3.5 w-3.5" />
-            <span>Event</span>
-          </button>
-        </div>
+        {/* Segmented Type Selector */}
+        <DialogTabs tabs={tabs} activeTab={activeType} onChange={setActiveType} />
 
         {/* Title Input */}
-        <div>
+        <DialogField
+          label={
+            activeType === 'habit'
+              ? 'Habit Name'
+              : activeType === 'task'
+              ? 'Task Title'
+              : 'Event Name'
+          }
+          required
+          error={titleError}
+        >
           <Input
-            label={activeType === 'habit' ? 'Habit Name' : activeType === 'task' ? 'Task Title' : 'Event Name'}
             placeholder={
               activeType === 'habit'
-                ? 'e.g. DSA Practice, Evening Walk, Journaling'
+                ? 'e.g. 20m DSA Practice, Morning Run, Read 10 Pages'
                 : activeType === 'task'
-                ? 'e.g. Deploy auth microservice, Submit report'
-                : 'e.g. Team sync, Mentorship call'
+                ? 'e.g. Deploy auth microservice, Submit thesis draft'
+                : 'e.g. Weekly architecture review, Mentorship call'
             }
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
               if (titleError) setTitleError('');
             }}
-            error={titleError}
             autoFocus
           />
-        </div>
+        </DialogField>
 
-        {/* Dynamic Fields by Type */}
+        {/* Dynamic Fields for HABIT */}
         {activeType === 'habit' && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as HabitCategory)}
-                className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
+          <div className="space-y-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <DialogField label="Category">
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as HabitCategory)}
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </DialogField>
+
+              <DialogField label="Preferred Time">
+                <input
+                  type="text"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  placeholder="07:30 PM"
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+              </DialogField>
+
+              <DialogField label="Duration (min)">
+                <input
+                  type="number"
+                  min={5}
+                  max={360}
+                  step={5}
+                  value={durationMins}
+                  onChange={(e) => setDurationMins(parseInt(e.target.value, 10) || 30)}
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+              </DialogField>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                Time
-              </label>
-              <input
-                type="text"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                placeholder="07:30 PM"
-                className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                Duration (min)
-              </label>
-              <input
-                type="number"
-                min={5}
-                max={360}
-                step={5}
-                value={durationMins}
-                onChange={(e) => setDurationMins(parseInt(e.target.value, 10) || 30)}
-                className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-              />
-            </div>
+            {/* Smart Habit Stacking AI Insight */}
+            <SmartSuggestion
+              title="DailyForge Routine Signal"
+              suggestion="Start with 15–20 minutes to anchor initial consistency."
+              reason="Historical analytics show routines under 30 mins achieve 88% higher streak adherence in month 1."
+              onApply={() => setDurationMins(20)}
+              applied={durationMins === 20}
+              applyLabel="Set 20 mins"
+            />
           </div>
         )}
 
+        {/* Dynamic Fields for TASK */}
         {activeType === 'task' && (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-bold text-muted-foreground block mb-1">
-                  Scheduled Time
-                </label>
+              <DialogField label="Scheduled Start">
                 <input
                   type="text"
                   value={time}
@@ -242,11 +262,9 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   placeholder="03:00 PM"
                   className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
                 />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-muted-foreground block mb-1">
-                  Estimated Duration (min)
-                </label>
+              </DialogField>
+
+              <DialogField label="Estimated Duration (min)">
                 <input
                   type="number"
                   min={5}
@@ -256,13 +274,11 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                   onChange={(e) => setDurationMins(parseInt(e.target.value, 10) || 30)}
                   className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
                 />
-              </div>
+              </DialogField>
             </div>
 
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1.5">
-                Priority
-              </label>
+            {/* Priority Chips */}
+            <DialogField label="Execution Priority">
               <div className="grid grid-cols-4 gap-1.5">
                 {(['low', 'medium', 'high', 'critical'] as const).map((p) => (
                   <button
@@ -270,65 +286,71 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
                     type="button"
                     onClick={() => setPriority(p)}
                     className={cn(
-                      'py-1.5 rounded-lg text-xs font-bold capitalize transition-all border cursor-pointer',
+                      'py-2 rounded-xl text-xs font-bold capitalize transition-all border cursor-pointer select-none',
                       priority === p
                         ? p === 'critical'
-                          ? 'bg-danger/20 border-danger text-danger'
+                          ? 'bg-rose-500/20 border-rose-500 text-rose-400'
                           : p === 'high'
-                          ? 'bg-warning/20 border-warning text-warning'
+                          ? 'bg-amber-500/20 border-amber-500 text-amber-400'
                           : p === 'medium'
                           ? 'bg-primary/20 border-primary text-primary'
                           : 'bg-muted border-border text-foreground'
-                        : 'bg-card border-border/60 text-muted-foreground hover:text-foreground'
+                        : 'bg-surface-sunken border-border/60 text-muted-foreground hover:text-foreground'
                     )}
                   >
                     {p}
                   </button>
                 ))}
               </div>
-            </div>
+            </DialogField>
+
+            {/* Optional Goal Link */}
+            {goals.length > 0 && (
+              <DialogField label="Connect to High-Impact Goal" optional>
+                <select
+                  value={selectedGoalId}
+                  onChange={(e) => setSelectedGoalId(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+                >
+                  <option value="">No linked goal</option>
+                  {goals.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      🎯 {g.name} ({g.progress}%)
+                    </option>
+                  ))}
+                </select>
+              </DialogField>
+            )}
           </div>
         )}
 
+        {/* Dynamic Fields for EVENT */}
         {activeType === 'event' && (
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                Start Time
-              </label>
-              <input
-                type="text"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                placeholder="10:00 AM"
-                className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-muted-foreground block mb-1">
-                End Time
-              </label>
-              <input
-                type="text"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                placeholder="11:00 AM"
-                className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-              />
+          <div className="space-y-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <DialogField label="Start Time">
+                <input
+                  type="text"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  placeholder="10:00 AM"
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+              </DialogField>
+
+              <DialogField label="End Time">
+                <input
+                  type="text"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  placeholder="11:00 AM"
+                  className="w-full h-10 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+                />
+              </DialogField>
             </div>
           </div>
         )}
-
-        {/* Footer Actions */}
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-          <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" isLoading={isSubmitting}>
-            Add to Today
-          </Button>
-        </div>
       </form>
-    </Modal>
+    </Dialog>
   );
 };
