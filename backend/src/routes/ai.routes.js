@@ -26,11 +26,27 @@ router.get('/usage', aiFoundationController.getUsageStats);
 // Coaching Knowledge Base (RAG)
 router.get('/rag/search', aiFoundationController.searchKnowledgeBase);
 
-// --- Existing AI Coach & Insights APIs ---
+// --- Phase 2: Forge Insights, Recommendations & Daily/Weekly Reviews ---
+router.get('/insights/feed', aiFoundationController.getInsightFeed);
+router.post('/insights/:id/feedback', aiFoundationController.submitInsightFeedback);
+
+router.get('/recommendations/ranked', aiFoundationController.getRankedRecommendations);
+router.post('/recommendations/:id/action', aiFoundationController.handleRecommendationAction);
+router.post('/recommendations/:id/feedback', aiFoundationController.submitRecommendationFeedback);
+
+router.get('/brief/daily', aiFoundationController.getDailyBrief);
+router.get('/review/weekly', aiFoundationController.getWeeklyReview);
+router.get('/review/monthly', aiFoundationController.getMonthlyReview);
+
+// --- Phase 2: AI Coach Multi-Turn Interactive Agent & Action Confirmation ---
+router.post('/chat', aiFoundationController.sendChatMessage);
+router.get('/chat/history', aiFoundationController.getChatHistory);
+router.post('/actions/confirm', aiFoundationController.confirmAction);
+
+// --- Legacy fallback routes for backward compatibility ---
 router.get('/insights', aiController.getInsights);
 router.post('/insights/generate', aiLimiter, aiController.generateInsights);
 router.get('/recommendations', aiController.getRecommendations);
-router.post('/chat', aiLimiter, validate(chatSchema), aiController.chat);
 router.get('/conversations', aiController.getConversations);
 router.post('/habits/parse', aiLimiter, aiController.parseHabit);
 router.post('/goals/plan', aiLimiter, aiController.planGoal);

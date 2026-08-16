@@ -3,53 +3,96 @@ import { useLocation } from 'react-router-dom';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { aiService } from '@/services/aiService';
+import { useToast } from '@/hooks/useToast';
+import { aiFoundationService } from '@/services/aiFoundationService';
+import { habitService } from '@/services/habitService';
+import { goalService } from '@/services/goalService';
 import { analyticsService } from '@/services/analyticsService';
-import { AIChatMessage } from '@/types/ai';
-import { Bot, Sparkles, Send, Flame, Target, Star } from 'lucide-react';
+import { ChatMessage } from '@/types/aiFoundation';
 import { ForgeInsightsDashboard } from '../components/ForgeInsightsDashboard';
-import { ProgressRing } from '@/components/ui/ProgressRing';
+import {
+  Bot,
+  Sparkles,
+  Send,
+  Flame,
+  Target,
+  CheckCircle2,
+  Zap,
+  Check,
+} from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 export const AIPage: React.FC = () => {
-  useDocumentTitle('DailyForge — Forge Coach');
-  
+  useDocumentTitle('DailyForge — AI Coach & Insights');
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const currentTab = searchParams.get('tab') || 'overview';
+  const currentTab = searchParams.get('tab') || 'insights';
 
-  const [behaviorData, setBehaviorData] = useState<any>(null);
-  const [messages, setMessages] = useState<AIChatMessage[]>([
+  const { success, error, info } = useToast();
+
+  // Context Metrics Pill State
+  const [habitCount, setHabitCount] = useState(0);
+  const [goalCount, setGoalCount] = useState(0);
+  const [streakCount, setStreakCount] = useState(0);
+  const [momentumScore, setMomentumScore] = useState(82);
+
+  // Chat State
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: 'msg_welcome',
-      sender: 'assistant',
+      id: 'msg_initial',
+      role: 'assistant',
+      agentType: 'GENERAL_COACH',
       content:
-        "Hello Alex! I'm your Forge Coach. I've analyzed your daily completions, capacity check-ins, and skips. What would you like to explore next?",
-      timestamp: 'Just now',
+        "Welcome to Daily Forge Coach. I have direct access to your habits, calendar schedules, streaks, and Forge Lab experiments. What would you like to strategize today?",
+      createdAt: new Date().toISOString(),
+      suggestedQuickReplies: [
+        'Why am I struggling?',
+        'Plan my day',
+        'Improve a habit',
+        'Protect my streak',
+        'Analyze my week',
+        'Suggest an experiment',
+        'How am I progressing?',
+      ],
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   const quickActions = [
+    'Why am I struggling?',
+    'Plan my day',
+    'Improve a habit',
+    'Protect my streak',
     'Analyze my week',
-    'Plan tomorrow',
-    'Review my habits',
-    'What should I focus on?',
-    'Why is my momentum falling?',
+    'Suggest an experiment',
+    'How am I progressing?',
   ];
 
   useEffect(() => {
-    const loadBehavior = async () => {
+    // Load live context numbers for header pill
+    const loadContextPill = async () => {
       try {
-        const res = await analyticsService.getBehaviorAnalytics('30d');
-        setBehaviorData(res);
+        const [habits, goals, analytics] = await Promise.all([
+          habitService.getHabits(),
+          goalService.getGoals(),
+          analyticsService.getAnalyticsSummary('30d').catch(() => null),
+        ]);
+        setHabitCount(habits.length);
+        setGoalCount(goals.goals?.length || 0);
+        const maxStreak = Math.max(...habits.map((h) => h.currentStreak || 0), 0);
+        setStreakCount(maxStreak);
+        if (analytics?.forgeScore?.overallScore) {
+          setMomentumScore(analytics.forgeScore.overallScore);
+        }
       } catch (err) {
-        console.error(err);
+        console.error('Failed to load coach context metrics:', err);
       }
     };
-    loadBehavior();
+    loadContextPill();
   }, []);
 
   useEffect(() => {
@@ -57,215 +100,285 @@ export const AIPage: React.FC = () => {
   }, [messages, isTyping]);
 
   const handleSendMessage = async (textToSend?: string) => {
-    const messageText = textToSend || inputMessage;
-    if (!messageText.trim()) return;
+    const text = (textToSend || inputMessage).trim();
+    if (!text || isTyping) return;
 
-    const userMsg: AIChatMessage = {
-      id: 'msg_' + Math.random().toString(36).substring(2, 9),
-      sender: 'user',
-      content: messageText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    setInputMessage('');
+    const userMsg: ChatMessage = {
+      id: `user_${Date.now()}`,
+      role: 'user',
+      content: text,
+      createdAt: new Date().toISOString(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
-    setInputMessage('');
     setIsTyping(true);
 
     try {
-      // Simulate specialized Coach response for struggle queries
-      if (messageText.toLowerCase().includes('struggling with reading')) {
-        setTimeout(() => {
-          const coachMsg: AIChatMessage = {
-            id: 'msg_' + Math.random().toString(36).substring(2, 9),
-            sender: 'assistant',
-            content: "Your reading completion has fallen from 76% to 43% over the last three weeks. You also tend to complete it more often around 8–9 PM than 4 PM. Your data suggests moving Reading to an 8:30 PM schedule for 7 days to align with your peak focus capacity windows.",
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          };
-          setMessages((prev) => [...prev, coachMsg]);
-          setIsTyping(false);
-        }, 1000);
-        return;
-      }
-
-      const response = await aiService.sendMessage(messageText, messages);
-      setMessages((prev) => [...prev, response]);
-    } catch (err) {
-      console.error(err);
+      const res = await aiFoundationService.sendChatMessage(text, conversationId);
+      setConversationId(res.conversationId);
+      setMessages((prev) => [...prev, res.message]);
+    } catch {
+      error('Coach Unavailable', 'Forge Intelligence is temporarily unavailable. Please retry.');
     } finally {
       setIsTyping(false);
     }
   };
 
-  // 1. Conditionally render the ForgeInsights Dashboard if tab is not coach
+  const handleConfirmAction = async (msgId: string) => {
+    try {
+      const res = await aiFoundationService.confirmAction(msgId);
+      success('Action Executed! ✨', res.message);
+      setMessages((prev) =>
+        prev.map((m) =>
+          (m.id === msgId || (m as any)._id === msgId) && m.proposedAction
+            ? { ...m, proposedAction: { ...m.proposedAction, status: 'CONFIRMED' } }
+            : m
+        )
+      );
+    } catch {
+      error('Action Failed', 'Could not confirm execution.');
+    }
+  };
+
+  const handleCancelAction = (msgId: string) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        (m.id === msgId || (m as any)._id === msgId) && m.proposedAction
+          ? { ...m, proposedAction: { ...m.proposedAction, status: 'CANCELLED' } }
+          : m
+      )
+    );
+    info('Action Cancelled', 'No modifications made.');
+  };
+
+  const getAgentTag = (agentType?: string) => {
+    switch (agentType) {
+      case 'HABIT_COACH':
+        return { label: 'Habit Coach', color: 'bg-primary/15 border-primary/30 text-primary' };
+      case 'PLANNER_OPTIMIZER':
+        return { label: 'Planner Optimizer', color: 'bg-indigo-500/15 border-indigo-500/30 text-indigo-400' };
+      case 'GOAL_STRATEGIST':
+        return { label: 'Goal Strategist', color: 'bg-purple-500/15 border-purple-500/30 text-purple-400' };
+      case 'RECOVERY_COACH':
+        return { label: 'Recovery Coach', color: 'bg-amber-500/15 border-amber-500/30 text-amber-400' };
+      case 'MOMENTUM_ANALYST':
+        return { label: 'Momentum Analyst', color: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' };
+      case 'EXPERIMENT_SCIENTIST':
+        return { label: 'Experiment Scientist', color: 'bg-cyan-500/15 border-cyan-500/30 text-cyan-400' };
+      case 'PROGRESS_NARRATOR':
+        return { label: 'Progress Narrator', color: 'bg-rose-500/15 border-rose-500/30 text-rose-400' };
+      default:
+        return { label: 'AI Coach', color: 'bg-primary/15 border-primary/30 text-primary' };
+    }
+  };
+
   if (currentTab !== 'coach') {
-    return <ForgeInsightsDashboard behaviorData={behaviorData} />;
+    return <ForgeInsightsDashboard />;
   }
 
-  const completedCount = 7;
-  const totalCount = 9;
-  const progressPercent = Math.round((completedCount / totalCount) * 100);
-  const momentumScore = behaviorData?.momentum.score || 84;
-
-  // 2. Otherwise render the Coach Chat Cockpit
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20 select-none animate-fade-in">
+    <div className="space-y-6 max-w-5xl mx-auto text-left selection:bg-primary/20 select-none animate-fade-in pb-12">
+      {/* Header with Real Context Pill */}
       <PageHeader
-        title="Forge Coach"
-        description="Your personal performance companion."
+        title="AI Coach"
+        description="Your personal execution strategist."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 items-start">
-        {/* Left Side: Coach Chat Interface */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-card border border-border overflow-hidden flex flex-col h-[520px] rounded-card shadow-card">
-            {/* Chat Header */}
-            <div className="p-4 border-b border-border bg-surface flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
-                  <Bot className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    Forge Coach Assistant
-                    <span className="h-2 w-2 rounded-full bg-success inline-block animate-pulse" />
-                  </h3>
-                  <p className="text-[10px] text-muted-foreground font-semibold">
-                    Trained on behavioral science &amp; habit data
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Messages List */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-background">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex flex-col ${
-                    msg.sender === 'user' ? 'items-end' : 'items-start'
-                  }`}
-                >
-                  <div
-                    className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-4 text-xs font-semibold leading-relaxed text-left ${
-                      msg.sender === 'user'
-                        ? 'bg-primary text-primary-foreground rounded-br-none'
-                        : 'bg-card border border-border text-foreground rounded-bl-none shadow-sm'
-                    }`}
-                  >
-                    <p>{msg.content}</p>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground px-2 pt-1 font-semibold">
-                    {msg.timestamp}
-                  </span>
-                </div>
-              ))}
-
-              {isTyping && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground p-2">
-                  <Sparkles className="h-3.5 w-3.5 text-primary animate-spin" />
-                  <span>AI Coach is analyzing habit patterns...</span>
-                </div>
-              )}
-
-              <div ref={chatBottomRef} />
-            </div>
-
-            {/* Quick Actions Pills */}
-            <div className="p-3 border-t border-border/40 bg-surface/40 flex flex-wrap gap-1.5 select-none">
-              {quickActions.map((action) => (
-                <button
-                  key={action}
-                  onClick={() => handleSendMessage(action)}
-                  className="text-[10px] px-2.5 py-1.5 rounded-xl border border-border bg-surface hover:bg-muted text-muted-foreground hover:text-foreground font-bold transition-all cursor-pointer"
-                >
-                  {action}
-                </button>
-              ))}
-            </div>
-
-            {/* Input Bar */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              className="p-3 bg-surface border-t border-border flex items-center gap-2"
-            >
-              <Input
-                placeholder="Ask your coach: 'Why am I struggling with reading?'"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                className="flex-1"
-              />
-              <button
-                type="submit"
-                disabled={!inputMessage.trim() || isTyping}
-                className="bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
-              >
-                <span>Send</span>
-                <Send className="h-3.5 w-3.5" />
-              </button>
-            </form>
-          </div>
+      {/* Real Context Metrics Bar */}
+      <div className="p-3.5 rounded-2xl bg-surface-sunken border border-border/80 flex items-center justify-between flex-wrap gap-2 text-xs">
+        <div className="flex items-center gap-2 text-muted-foreground font-semibold">
+          <Bot className="h-4 w-4 text-primary shrink-0" />
+          <span>Active Context:</span>
         </div>
-
-        {/* Right Side: Context Panel */}
-        <div className="space-y-5">
-          <Card className="rounded-card p-5 space-y-4">
-            <div className="flex items-center gap-1.5 border-b border-border/50 pb-2">
-              <Star className="h-4 w-4 text-primary fill-primary" />
-              <h3 className="text-xs font-bold text-foreground uppercase tracking-wider">Context Panel</h3>
-            </div>
-            
-            <div className="space-y-4 text-xs font-semibold text-foreground">
-              {/* Today's Habits Progress */}
-              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
-                <div>
-                  <span className="text-[10px] text-muted-foreground block">Today</span>
-                  <span className="text-foreground font-extrabold">{completedCount} / {totalCount} habits</span>
-                </div>
-                <div className="h-10 w-10">
-                  <ProgressRing value={progressPercent} size={40} strokeWidth={4} color="rgb(var(--color-primary))" />
-                </div>
-              </div>
-
-              {/* Momentum Status */}
-              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
-                <div>
-                  <span className="text-[10px] text-muted-foreground block font-bold">Momentum</span>
-                  <span className="text-foreground font-extrabold">{momentumScore} index</span>
-                </div>
-                <Flame className="h-5 w-5 text-warning fill-warning" />
-              </div>
-
-              {/* Top Priority */}
-              <div className="flex items-center justify-between p-2.5 bg-surface-elevated border border-border/60 rounded-xl">
-                <div>
-                  <span className="text-[10px] text-muted-foreground block font-bold">Top Priority</span>
-                  <span className="text-foreground font-extrabold">DSA Practice</span>
-                </div>
-                <Target className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          {/* Next Best Action / Smart Recommendation */}
-          <Card variant="ai" className="rounded-card p-5 space-y-3">
-            <div className="flex items-center gap-1.5 border-b border-ai-border/30 pb-2">
-              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Next Best Action</h4>
-            </div>
-            <p className="text-xs text-foreground leading-relaxed font-semibold text-left">
-              Postpone Reading to 8:30 PM. Moving this routine avoids schedule overlaps and increases success likelihood by 18%.
-            </p>
-          </Card>
-
-          {/* AI Rules Disclaimer */}
-          <div className="p-3 rounded-xl border border-border bg-primary/5 text-[10px] text-muted-foreground leading-relaxed font-medium text-left">
-            * Coach recommendations suggest optimizations based on historical completion trends. No diagnostic claims are made.
-          </div>
+        <div className="flex items-center gap-3 text-foreground font-mono font-bold text-[11px] flex-wrap">
+          <span className="flex items-center gap-1">
+            <CheckCircle2 className="h-3 w-3 text-primary" />
+            <span>{habitCount} Active Habits</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Target className="h-3 w-3 text-purple-400" />
+            <span>{goalCount} Goals</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Flame className="h-3 w-3 text-amber-400" />
+            <span>{streakCount}-Day Streak</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Zap className="h-3 w-3 text-emerald-400" />
+            <span>{momentumScore} Momentum</span>
+          </span>
         </div>
       </div>
+
+      {/* Quick Action Prompt Chips */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none font-bold text-xs">
+        {quickActions.map((action, idx) => (
+          <button
+            key={idx}
+            onClick={() => handleSendMessage(action)}
+            className="px-3 py-1.5 rounded-xl bg-surface-elevated hover:bg-muted border border-border text-foreground hover:text-primary transition-all text-xs font-semibold whitespace-nowrap cursor-pointer shadow-sm active:scale-[0.98]"
+          >
+            {action}
+          </button>
+        ))}
+      </div>
+
+      {/* Chat Thread Container */}
+      <Card className="p-4 sm:p-6 min-h-[500px] flex flex-col justify-between space-y-4 border border-border/80 bg-[#090F1E]">
+        <div className="space-y-4 overflow-y-auto max-h-[58vh] pr-2">
+          {messages.map((msg, idx) => {
+            const isUser = msg.role === 'user';
+            const agentTag = getAgentTag(msg.agentType);
+
+            return (
+              <div
+                key={msg.id || idx}
+                className={cn('flex flex-col gap-1 text-xs', isUser ? 'items-end' : 'items-start')}
+              >
+                {!isUser && (
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span
+                      className={cn(
+                        'text-[9px] font-extrabold px-2 py-0.5 rounded-full border uppercase tracking-wider',
+                        agentTag.color
+                      )}
+                    >
+                      {agentTag.label}
+                    </span>
+                  </div>
+                )}
+
+                <div
+                  className={cn(
+                    'p-4 rounded-2xl max-w-[90%] sm:max-w-[80%] whitespace-pre-wrap leading-relaxed shadow-sm',
+                    isUser
+                      ? 'bg-primary text-white font-semibold rounded-br-none'
+                      : 'bg-surface-elevated border border-border/80 text-foreground rounded-bl-none'
+                  )}
+                >
+                  {msg.content}
+                </div>
+
+                {/* Evidence Drawer Capsule on message */}
+                {!isUser && msg.evidence && (
+                  <div className="p-2.5 rounded-xl bg-surface-sunken border border-border/60 max-w-[80%] text-[11px] flex items-center justify-between text-muted-foreground">
+                    <span className="font-semibold">{msg.evidence.metric}</span>
+                    <span className="font-mono font-bold text-emerald-400">{msg.evidence.difference}</span>
+                  </div>
+                )}
+
+                {/* Action Preview Card (for write operations) */}
+                {!isUser && msg.proposedAction && msg.proposedAction.status === 'PENDING' && (
+                  <div className="p-4 rounded-2xl bg-surface-sunken border-2 border-primary/30 max-w-[85%] space-y-3 mt-1 shadow-md">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider flex items-center gap-1">
+                        <Zap className="h-3.5 w-3.5" />
+                        <span>Action Proposal (Requires Confirmation)</span>
+                      </span>
+                    </div>
+
+                    <h4 className="text-xs font-bold text-foreground">
+                      {msg.proposedAction.title}
+                    </h4>
+
+                    <div className="grid grid-cols-2 gap-2 text-[11px]">
+                      <div className="p-2 rounded-lg bg-surface-elevated border border-border/70">
+                        <span className="text-[9px] text-muted-foreground block font-bold uppercase">Current</span>
+                        <span className="text-muted-foreground font-mono">{msg.proposedAction.currentValue}</span>
+                      </div>
+                      <div className="p-2 rounded-lg bg-surface-elevated border border-primary/30">
+                        <span className="text-[9px] text-primary block font-bold uppercase">Proposed</span>
+                        <span className="text-emerald-400 font-mono font-bold">{msg.proposedAction.proposedValue}</span>
+                      </div>
+                    </div>
+
+                    <p className="text-[10px] text-muted-foreground leading-snug">
+                      {msg.proposedAction.impactDescription}
+                    </p>
+
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      <button
+                        onClick={() => handleCancelAction(msg.id || (msg as any)._id)}
+                        className="px-3 py-1.5 bg-surface-elevated hover:bg-muted border border-border text-muted-foreground text-xs font-bold rounded-lg transition-all cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleConfirmAction(msg.id || (msg as any)._id)}
+                        className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-extrabold rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-sm active:scale-[0.98]"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                        <span>Confirm & Apply</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmed Action Badge */}
+                {!isUser && msg.proposedAction && msg.proposedAction.status === 'CONFIRMED' && (
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1.5 max-w-[80%]">
+                    <CheckCircle2 className="h-4 w-4 shrink-0" />
+                    <span>Action Confirmed & Synchronized with Daily Forge.</span>
+                  </div>
+                )}
+
+                {/* Suggested Quick Replies */}
+                {!isUser && msg.suggestedQuickReplies && msg.suggestedQuickReplies.length > 0 && idx === messages.length - 1 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {msg.suggestedQuickReplies.map((reply, rIdx) => (
+                      <button
+                        key={rIdx}
+                        onClick={() => handleSendMessage(reply)}
+                        className="px-2.5 py-1 rounded-lg bg-surface-sunken hover:bg-surface-elevated border border-border/80 text-[11px] text-muted-foreground hover:text-foreground font-semibold transition-all cursor-pointer"
+                      >
+                        {reply}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {isTyping && (
+            <div className="flex items-center gap-2 p-3 rounded-2xl bg-surface-elevated border border-border max-w-xs text-xs font-bold text-muted-foreground animate-pulse">
+              <Sparkles className="h-4 w-4 text-primary animate-spin" />
+              <span>Analyzing execution telemetry...</span>
+            </div>
+          )}
+
+          <div ref={chatBottomRef} />
+        </div>
+
+        {/* Input Bar */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage();
+          }}
+          className="flex items-center gap-2 pt-3 border-t border-border/60"
+        >
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Ask your execution strategist (e.g. 'Why am I missing DSA?', 'Plan tomorrow', 'Protect my streak')..."
+            className="flex-1 h-11 px-4 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+          />
+          <button
+            type="submit"
+            disabled={!inputMessage.trim() || isTyping}
+            className="h-11 px-5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+          >
+            <Send className="h-3.5 w-3.5" />
+            <span>Send</span>
+          </button>
+        </form>
+      </Card>
     </div>
   );
 };

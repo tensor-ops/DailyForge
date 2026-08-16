@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const { INSIGHT_TYPES } = require('../constants/habit.constants');
 
-const AIInsightSchema = new mongoose.Schema(
+const aiInsightSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,32 +10,76 @@ const AIInsightSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: INSIGHT_TYPES,
+      enum: [
+        'PATTERN',
+        'RECOMMENDATION',
+        'WARNING',
+        'OPPORTUNITY',
+        'CELEBRATION',
+        'EXPERIMENT',
+        'GOAL',
+        'RECOVERY',
+        'PLANNING',
+      ],
       required: true,
+      index: true,
     },
-    headline: {
+    category: {
+      type: String,
+      enum: ['CIRCADIAN', 'FRICTION', 'MOMENTUM', 'RECOVERY', 'CONSISTENCY', 'GOAL_ALIGNMENT', 'EXPERIMENTATION'],
+      default: 'CONSISTENCY',
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    summary: {
       type: String,
       required: true,
     },
-    explanation: {
-      type: String,
-      required: true,
+    isTopInsight: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
     confidence: {
-      type: Number,
-      default: 0.85,
+      type: String,
+      enum: ['INSUFFICIENT_DATA', 'EMERGING_SIGNAL', 'MODERATE_SIGNAL', 'STRONG_SIGNAL', 'EXPERIMENT_SUPPORTED'],
+      default: 'MODERATE_SIGNAL',
+    },
+    evidence: {
+      metric: String,
+      headline: String,
+      baseline: String,
+      observed: String,
+      difference: String,
+      sampleCount: Number,
+      timeRange: String,
+      breakdown: [
+        {
+          label: String,
+          value: String,
+          rate: Number,
+        },
+      ],
     },
     actionLabel: {
       type: String,
-      default: '',
+      default: null,
+    },
+    actionType: {
+      type: String,
+      enum: ['VIEW_EVIDENCE', 'TRY_IN_PLANNER', 'START_EXPERIMENT', 'ADJUST_HABIT', 'REVIEW_GOAL', 'NONE'],
+      default: 'VIEW_EVIDENCE',
     },
     actionPayload: {
       type: mongoose.Schema.Types.Mixed,
-      default: null,
+      default: {},
     },
-    expiresAt: {
-      type: Date,
-      default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    feedback: {
+      rating: { type: String, enum: ['HELPFUL', 'NOT_HELPFUL', null], default: null },
+      comment: { type: String, default: '' },
     },
   },
   {
@@ -44,11 +87,13 @@ const AIInsightSchema = new mongoose.Schema(
   }
 );
 
-AIInsightSchema.methods.toJSON = function () {
+aiInsightSchema.index({ userId: 1, isTopInsight: -1, createdAt: -1 });
+
+aiInsightSchema.methods.toJSON = function () {
   const obj = this.toObject();
   obj.id = obj._id.toString();
   delete obj.__v;
   return obj;
 };
 
-module.exports = mongoose.model('AIInsight', AIInsightSchema);
+module.exports = mongoose.model('AIInsight', aiInsightSchema);

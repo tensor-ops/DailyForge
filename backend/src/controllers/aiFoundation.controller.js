@@ -1,17 +1,16 @@
 const aiConfig = require('../ai/config/aiConfig');
-const AIProviderFactory = require('../ai/providers');
 const PersonalContextEngine = require('../ai/context/PersonalContextEngine');
-const ContextBuilder = require('../ai/context/ContextBuilder');
 const HabitSignalEngine = require('../ai/signals/HabitSignalEngine');
 const aiMemoryService = require('../ai/memory/aiMemory.service');
 const aiUsageService = require('../ai/observability/aiUsage.service');
 const retrievalService = require('../ai/rag/retrieval.service');
+const RecommendationEngine = require('../ai/recommendations/recommendationEngine.service');
+const InsightSynthesizer = require('../ai/insights/insightSynthesizer.service');
+const ChatOrchestrator = require('../ai/orchestrator/chatOrchestrator.service');
 const { sendSuccess, sendError } = require('../utils/response');
 
-/**
- * GET /api/v1/ai/status
- * Provides status of the AI provider, active models, feature flags, and current personalization coverage.
- */
+// --- Phase 1 Handlers ---
+
 async function getAIStatus(req, res, next) {
   try {
     const fullContext = await PersonalContextEngine.buildFullContext(req.user._id);
@@ -35,10 +34,6 @@ async function getAIStatus(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/context
- * Returns the structured, authentic personal context representation.
- */
 async function getPersonalContext(req, res, next) {
   try {
     const context = await PersonalContextEngine.buildFullContext(req.user._id);
@@ -48,9 +43,6 @@ async function getPersonalContext(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/context/refresh
- */
 async function refreshPersonalContext(req, res, next) {
   try {
     const context = await PersonalContextEngine.buildFullContext(req.user._id);
@@ -60,10 +52,6 @@ async function refreshPersonalContext(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/signals
- * Returns deterministic behavioral signals extracted from real habit logs.
- */
 async function getBehavioralSignals(req, res, next) {
   try {
     const signals = await HabitSignalEngine.extractSignals(req.user._id);
@@ -73,9 +61,6 @@ async function getBehavioralSignals(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/memory
- */
 async function getMemories(req, res, next) {
   try {
     const memories = await aiMemoryService.getUserMemories(req.user._id, req.query.type || null);
@@ -85,9 +70,6 @@ async function getMemories(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/memory
- */
 async function saveMemory(req, res, next) {
   try {
     const { type, key, value, source, tags, confidence } = req.body;
@@ -110,9 +92,6 @@ async function saveMemory(req, res, next) {
   }
 }
 
-/**
- * DELETE /api/v1/ai/memory/:id
- */
 async function deleteMemory(req, res, next) {
   try {
     const memory = await aiMemoryService.forget(req.user._id, req.params.id);
@@ -123,9 +102,6 @@ async function deleteMemory(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/usage
- */
 async function getUsageStats(req, res, next) {
   try {
     const stats = await aiUsageService.getUserUsageStats(req.user._id);
@@ -135,9 +111,6 @@ async function getUsageStats(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/rag/search
- */
 async function searchKnowledgeBase(req, res, next) {
   try {
     const { query, category, limit } = req.query;
@@ -152,7 +125,149 @@ async function searchKnowledgeBase(req, res, next) {
   }
 }
 
+// --- Phase 2 Handlers ---
+
+/**
+ * GET /api/v1/ai/insights/feed
+ */
+async function getInsightFeed(req, res, next) {
+  try {
+    const data = await InsightSynthesizer.getInsightFeed(req.user._id);
+    return sendSuccess(res, data, 'Insight feed retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/insights/:id/feedback
+ */
+async function submitInsightFeedback(req, res, next) {
+  try {
+    const data = await InsightSynthesizer.submitFeedback(req.user._id, req.params.id, req.body);
+    return sendSuccess(res, data, 'Insight feedback recorded');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/recommendations/ranked
+ */
+async function getRankedRecommendations(req, res, next) {
+  try {
+    const recommendations = await RecommendationEngine.getRankedRecommendations(req.user._id);
+    return sendSuccess(res, { recommendations, count: recommendations.length }, 'Recommendations retrieved');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/recommendations/:id/action
+ */
+async function handleRecommendationAction(req, res, next) {
+  try {
+    const { action } = req.body; // 'APPLY' | 'DISMISS'
+    const updated = await RecommendationEngine.handleAction(req.user._id, req.params.id, action);
+    return sendSuccess(res, updated, `Recommendation ${action.toLowerCase()}ed successfully`);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/recommendations/:id/feedback
+ */
+async function submitRecommendationFeedback(req, res, next) {
+  try {
+    const updated = await RecommendationEngine.submitFeedback(req.user._id, req.params.id, req.body);
+    return sendSuccess(res, updated, 'Recommendation feedback recorded');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/brief/daily
+ */
+async function getDailyBrief(req, res, next) {
+  try {
+    const brief = await InsightSynthesizer.getDailyBrief(req.user._id);
+    return sendSuccess(res, brief, 'Daily Forge Brief retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/review/weekly
+ */
+async function getWeeklyReview(req, res, next) {
+  try {
+    const review = await InsightSynthesizer.getWeeklyReview(req.user._id);
+    return sendSuccess(res, review, 'Weekly Forge Review retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/review/monthly
+ */
+async function getMonthlyReview(req, res, next) {
+  try {
+    const review = await InsightSynthesizer.getMonthlyReview(req.user._id);
+    return sendSuccess(res, review, 'Monthly Forge Review retrieved successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/chat
+ */
+async function sendChatMessage(req, res, next) {
+  try {
+    const { message, conversationId } = req.body;
+    if (!message || !message.trim()) {
+      return sendError(res, 'Message is required', 400);
+    }
+    const result = await ChatOrchestrator.sendMessage(req.user._id, message.trim(), conversationId);
+    return sendSuccess(res, result, 'Agent response generated successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/chat/history
+ */
+async function getChatHistory(req, res, next) {
+  try {
+    const history = await ChatOrchestrator.getHistory(req.user._id, req.query.conversationId);
+    return sendSuccess(res, history, 'Chat history retrieved');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/actions/confirm
+ */
+async function confirmAction(req, res, next) {
+  try {
+    const { messageId } = req.body;
+    if (!messageId) return sendError(res, 'messageId is required', 400);
+    const result = await ChatOrchestrator.confirmAction(req.user._id, messageId);
+    return sendSuccess(res, result, 'Action confirmed and executed');
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
+  // Phase 1
   getAIStatus,
   getPersonalContext,
   refreshPersonalContext,
@@ -162,4 +277,16 @@ module.exports = {
   deleteMemory,
   getUsageStats,
   searchKnowledgeBase,
+  // Phase 2
+  getInsightFeed,
+  submitInsightFeedback,
+  getRankedRecommendations,
+  handleRecommendationAction,
+  submitRecommendationFeedback,
+  getDailyBrief,
+  getWeeklyReview,
+  getMonthlyReview,
+  sendChatMessage,
+  getChatHistory,
+  confirmAction,
 };
