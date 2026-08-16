@@ -1,60 +1,54 @@
-const analyticsService = require('../services/analytics.service');
+const habitIntelligenceService = require('../services/habitIntelligence.service');
 const behaviorAnalyticsService = require('../services/behaviorAnalytics.service');
 const EnergyLog = require('../models/EnergyLog');
 const HabitMiss = require('../models/HabitMiss');
 const Experiment = require('../models/Experiment');
 const { formatDate } = require('../utils/dates');
-const { sendSuccess } = require('../utils/response');
-const { NotFoundError, ConflictError } = require('../utils/errors');
+const { sendSuccess, sendError } = require('../utils/response');
 
 async function getOverview(req, res, next) {
   try {
     const timeRange = req.query.range || req.query.timeRange || '30d';
-    const analytics = await analyticsService.getAnalyticsOverview(req.user._id, timeRange);
-    return sendSuccess(res, analytics, 'Analytics overview retrieved successfully');
+    const data = await habitIntelligenceService.getAnalyticsOverview(req.user._id, timeRange);
+    return sendSuccess(res, data, 'Analytics overview retrieved successfully');
   } catch (error) {
     next(error);
   }
 }
 
-async function getCompletionTrend(req, res, next) {
+async function getGrowth(req, res, next) {
+  try {
+    const timeRange = req.query.range || '90d';
+    const data = await habitIntelligenceService.getGrowthOverview(req.user._id, timeRange);
+    return sendSuccess(res, data, 'Growth intelligence retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getMomentum(req, res, next) {
   try {
     const timeRange = req.query.range || '30d';
-    const analytics = await analyticsService.getAnalyticsOverview(req.user._id, timeRange);
-    return sendSuccess(res, { dailyTrends: analytics.dailyTrends }, 'Completion trends retrieved');
+    const data = await habitIntelligenceService.getMomentumOverview(req.user._id, timeRange);
+    return sendSuccess(res, data, 'Momentum intelligence retrieved successfully');
   } catch (error) {
     next(error);
   }
 }
 
-async function getCategoryPerformance(req, res, next) {
+async function getHabitSnapshot(req, res, next) {
   try {
-    const timeRange = req.query.range || '30d';
-    const analytics = await analyticsService.getAnalyticsOverview(req.user._id, timeRange);
-    return sendSuccess(res, { categoryBreakdown: analytics.categoryBreakdown }, 'Category performance retrieved');
-  } catch (error) {
-    next(error);
-  }
-}
-
-async function getConsistency(req, res, next) {
-  try {
-    const analytics = await analyticsService.getAnalyticsOverview(req.user._id, '30d');
-    return sendSuccess(
-      res,
-      {
-        score: analytics.consistencyScore,
-        label: analytics.consistencyScore >= 80 ? 'Excellent' : analytics.consistencyScore >= 60 ? 'Good' : 'Needs Focus',
-        trend: 'up',
-      },
-      'Consistency score retrieved'
+    const data = await habitIntelligenceService.getHabitIntelligenceSnapshot(
+      req.user._id,
+      req.params.id
     );
+    if (!data) return sendError(res, 'Habit not found', 404);
+    return sendSuccess(res, data, 'Habit snapshot retrieved successfully');
   } catch (error) {
     next(error);
   }
 }
 
-// Behavioral Intelligence Core Metrics
 async function getBehaviorOverview(req, res, next) {
   try {
     const range = req.query.range || '30d';
@@ -65,7 +59,6 @@ async function getBehaviorOverview(req, res, next) {
   }
 }
 
-// Log energy check-in
 async function createEnergyLog(req, res, next) {
   try {
     const { energy, focus, mood } = req.body;
@@ -83,7 +76,6 @@ async function createEnergyLog(req, res, next) {
   }
 }
 
-// Log habit miss skip reason
 async function createHabitMiss(req, res, next) {
   try {
     const { habitId, reason, notes } = req.body;
@@ -101,7 +93,6 @@ async function createHabitMiss(req, res, next) {
   }
 }
 
-// Experiment Framework CRUD
 async function getExperiments(req, res, next) {
   try {
     const list = await Experiment.find({ userId: req.user._id }).sort({ createdAt: -1 });
@@ -115,7 +106,6 @@ async function createExperiment(req, res, next) {
   try {
     const { name, hypothesis, durationDays, baselineMetric, targetValue } = req.body;
     const startDate = formatDate(new Date());
-    
     const end = new Date();
     end.setDate(end.getDate() + (durationDays || 14));
     const endDate = formatDate(end);
@@ -146,7 +136,7 @@ async function updateExperiment(req, res, next) {
       { new: true }
     );
     if (!exp) {
-      throw new NotFoundError('Experiment not found');
+      return sendError(res, 'Experiment not found', 404);
     }
     return sendSuccess(res, exp, 'Experiment updated successfully');
   } catch (error) {
@@ -156,9 +146,9 @@ async function updateExperiment(req, res, next) {
 
 module.exports = {
   getOverview,
-  getCompletionTrend,
-  getCategoryPerformance,
-  getConsistency,
+  getGrowth,
+  getMomentum,
+  getHabitSnapshot,
   getBehaviorOverview,
   createEnergyLog,
   createHabitMiss,

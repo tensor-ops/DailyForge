@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { analyticsService } from '@/services/analyticsService';
-import { BehaviorAnalytics } from '@/types/behavior';
+import { AnalyticsOverviewResponse } from '@/types/habitIntelligence';
 import { Card } from '@/components/ui/Card';
 import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -12,13 +12,14 @@ import { ProgressBar } from '@/components/ui/ProgressBar';
 import { GrowthDashboard } from './GrowthDashboard';
 import { MomentumDashboard } from './MomentumDashboard';
 import { MilestonesDashboard } from './MilestonesDashboard';
+import { ForgeScoreModal } from '@/features/analytics/components/ForgeScoreModal';
+import { HabitDrilldownModal } from '@/features/analytics/components/HabitDrilldownModal';
 import {
   Sparkles,
   Zap,
-  TrendingUp,
-  Clock,
-  Flame,
-  Compass,
+  ArrowRight,
+  Info,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -36,370 +37,384 @@ type AnalyticsRange = '7d' | '30d' | '90d' | '1y' | 'all';
 export const AnalyticsPage: React.FC = () => {
   useDocumentTitle('DailyForge — Performance Intelligence');
   const { error } = useToast();
+  const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const currentTab = searchParams.get('tab') || 'overview';
 
   const [range, setRange] = useState<AnalyticsRange>('30d');
-  const [behaviorData, setBehaviorData] = useState<BehaviorAnalytics | null>(null);
+  const [data, setData] = useState<AnalyticsOverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchBehaviorData = async () => {
+  // Modals state
+  const [isForgeScoreModalOpen, setIsForgeScoreModalOpen] = useState(false);
+  const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
+  const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
+
+  // Active trend metric toggle
+  const [activeMetric, setActiveMetric] = useState<'completion' | 'consistency' | 'execution' | 'reliability'>('completion');
+
+  const fetchAnalyticsData = async () => {
     setLoading(true);
     try {
-      const data = await analyticsService.getBehaviorAnalytics(range === 'all' ? '30d' : range);
-      setBehaviorData(data);
-    } catch (err) {
-      error('Failed to load metrics', 'Could not load behavioral analytics.');
+      const res = await analyticsService.getAnalyticsOverview(range);
+      setData(res);
+    } catch {
+      error('Failed to load metrics', 'Could not load habit intelligence.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchBehaviorData();
-  }, [range]);
+    if (currentTab === 'overview') {
+      fetchAnalyticsData();
+    }
+  }, [range, currentTab]);
 
-  if (loading) {
-    return (
-      <div className="space-y-4 py-12 text-center text-xs font-semibold text-muted-foreground animate-pulse">
-        <div className="h-10 w-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-3" />
-        <p>Parsing behavior signals...</p>
-      </div>
-    );
-  }
-
+  // If viewing Growth, Momentum, or Milestones tabs
   if (currentTab === 'growth') {
     return <GrowthDashboard />;
   }
-
   if (currentTab === 'momentum') {
     return <MomentumDashboard />;
   }
-
   if (currentTab === 'milestones') {
     return <MilestonesDashboard />;
   }
 
-  // Baseline building check
-  if (behaviorData?.isBaselineBuilding) {
-    const progress = behaviorData.baselineProgress;
-    const compsPercent = Math.min(100, Math.round((progress.completionsCount / progress.completionsTarget) * 100));
-    const daysPercent = Math.min(100, Math.round((progress.daysObserved / progress.daysTarget) * 100));
-
+  if (loading && !data) {
     return (
-      <div className="max-w-xl mx-auto py-12 text-left space-y-6 select-none">
-        <div className="bg-card border border-border rounded-2xl p-6 flex flex-col items-center text-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl border border-primary/20 animate-bounce">
-            ⚙️
-          </div>
-          <div>
-            <h1 className="text-lg font-extrabold text-foreground">Building Your Behavior Baseline</h1>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-              Complete more habits over the next few days. Daily Forge needs a short observation period to identify valid relationship patterns.
-            </p>
-          </div>
-
-          <div className="w-full space-y-4 pt-4 border-t border-border/10">
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] font-bold">
-                <span className="text-foreground">Habit Completions logged</span>
-                <span className="text-primary">{progress.completionsCount} / {progress.completionsTarget}</span>
-              </div>
-              <ProgressBar value={compsPercent} />
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex justify-between text-[11px] font-bold">
-                <span className="text-foreground">Active Days observed</span>
-                <span className="text-primary">{progress.daysObserved} / {progress.daysTarget} days</span>
-              </div>
-              <ProgressBar value={daysPercent} />
-            </div>
-          </div>
-
-          <p className="text-[10px] text-muted-foreground/60 italic pt-2">
-            No faked AI statistics. Only transparent metrics.
-          </p>
+      <div className="space-y-6 max-w-7xl mx-auto text-left select-none animate-pulse pb-12">
+        <div className="h-10 bg-muted/20 rounded-xl w-1/3" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="h-28 bg-muted/20 rounded-2xl" />
+          <div className="h-28 bg-muted/20 rounded-2xl" />
+          <div className="h-28 bg-muted/20 rounded-2xl" />
+          <div className="h-28 bg-muted/20 rounded-2xl" />
         </div>
+        <div className="h-72 bg-muted/20 rounded-2xl" />
       </div>
     );
   }
 
-  // Loaded analytics data variables
-  const riskList = behaviorData?.habitRisk || [];
-  const frictionList = behaviorData?.habitFriction || [];
-
-  // Mock performance trend data
-  const trendData = [
-    { name: 'Mon', completion: 70, consistency: 72, execution: 68 },
-    { name: 'Tue', completion: 82, consistency: 80, execution: 85 },
-    { name: 'Wed', completion: 65, consistency: 70, execution: 60 },
-    { name: 'Thu', completion: 90, consistency: 85, execution: 88 },
-    { name: 'Fri', completion: 80, consistency: 82, execution: 78 },
-    { name: 'Sat', completion: 75, consistency: 78, execution: 72 },
-    { name: 'Sun', completion: 85, consistency: 84, execution: 81 },
-  ];
+  const { metrics, forgeScoreBreakdown, trendPoints, habitReliability, timeOfDayAnalysis, weeklyPattern, strongestDay, weakestDay, actionableInsight } = data!;
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-left select-none">
+    <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20 select-none animate-fade-in pb-12">
       {/* Header */}
       <PageHeader
         title="Analytics"
-        description="Understand the patterns behind your progress."
+        description="Understand what is working, what is slipping, and where patterns are strongest."
         actions={
-          <div className="flex bg-card p-1 border border-border rounded-xl text-xs font-bold text-slate-300 w-max shrink-0 select-none">
-            {([
-              { id: '7d', label: '7D' },
-              { id: '30d', label: '30D' },
-              { id: '90d', label: '90D' },
-              { id: '1y', label: '1Y' },
-              { id: 'all', label: 'All Time' },
-            ] as const).map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => setRange(opt.id)}
-                className={cn(
-                  'px-3 py-1.5 rounded-lg uppercase tracking-wide cursor-pointer transition-colors focus:outline-none',
-                  range === opt.id
-                    ? 'bg-primary text-foreground font-extrabold'
-                    : 'hover:text-foreground hover:bg-muted/30'
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="flex bg-card p-1 border border-border rounded-xl text-xs font-bold text-muted-foreground">
+              {(['7d', '30d', '90d', '1y', 'all'] as const).map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={cn(
+                    'px-3 py-1 rounded-lg uppercase tracking-wider transition-all cursor-pointer select-none',
+                    range === r ? 'bg-primary text-white font-extrabold shadow-sm' : 'hover:text-foreground'
+                  )}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => navigate('/analytics?tab=growth')}
+              className="flex items-center gap-1.5 px-3 py-2 bg-surface-elevated hover:bg-muted border border-border text-foreground text-xs font-bold rounded-xl transition-all cursor-pointer"
+            >
+              <span>Growth</span>
+              <ArrowRight className="h-3.5 w-3.5 text-primary" />
+            </button>
           </div>
         }
       />
 
-      {/* KPI Row */}
+      {/* 4 Primary Hero Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Forge Score"
-          value={behaviorData?.forgeScore || 742}
-          subtext="+42 this week"
+          title="Consistency Index"
+          value={`${metrics.consistency.rate}%`}
+          subtext={`+${metrics.consistency.changePts}% vs previous period`}
           icon={Sparkles}
-          trend="+42"
-          accent="blue"
+          accent="orange"
         />
         <MetricCard
-          title="Consistency"
-          value={`${behaviorData?.consistencyIndex || 84}%`}
-          subtext="+8.4% vs last week"
-          icon={TrendingUp}
-          trend="+8.4%"
-          accent="blue"
-        />
-        <MetricCard
-          title="Execution"
-          value={`${behaviorData?.executionRate.rate || 88}%`}
-          subtext="+4.2% vs last week"
-          icon={Zap}
-          trend="+4.2%"
+          title="Execution Rate"
+          value={`${metrics.execution.rate}%`}
+          subtext="Completed vs scheduled routines"
+          icon={CheckCircle2}
           accent="green"
         />
         <MetricCard
-          title="Reliability"
-          value="81%"
-          subtext="+3.6% vs last week"
-          icon={Flame}
-          trend="+3.6%"
-          accent="orange"
+          title="Reliability Index"
+          value={`${metrics.reliability.rate}%`}
+          subtext="Probability of routine completion"
+          icon={Zap}
+          accent="blue"
         />
+
+        {/* Forge Score Card with Clickable Explainer */}
+        <Card
+          onClick={() => setIsForgeScoreModalOpen(true)}
+          className="p-5 flex flex-col justify-between bg-card border border-border hover:border-primary/50 transition-all cursor-pointer group shadow-sm"
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest">
+              Forge Score
+            </span>
+            <Info className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <div>
+            <p className="text-3xl font-black text-foreground tracking-tight">
+              {metrics.forgeScore.value}
+            </p>
+            <p className="text-xs text-muted-foreground font-semibold mt-0.5">
+              +{metrics.forgeScore.changePts} pts · Composite execution power
+            </p>
+          </div>
+        </Card>
       </div>
 
-      {/* Performance trend area chart */}
+      {/* Performance Trend Area Chart with Metric Toggles */}
       <ChartCard
         title="Performance Trend"
-        description="Weekly progression for completion, consistency, and overall execution rate"
+        description="Daily routine execution, consistency, and reliability velocity"
+        actions={
+          <div className="flex bg-surface-sunken p-1 rounded-xl border border-border/80 text-[11px] font-bold text-muted-foreground">
+            {(['completion', 'consistency', 'execution', 'reliability'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setActiveMetric(m)}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg capitalize transition-all cursor-pointer select-none',
+                  activeMetric === m ? 'bg-primary text-white font-extrabold shadow-sm' : 'hover:text-foreground'
+                )}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        }
       >
-        <div className="h-[260px] text-xs">
+        <div className="h-64 w-full pt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+            <AreaChart data={trendPoints}>
               <defs>
-                <linearGradient id="compGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="consGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#22D3EE" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#22D3EE" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="execGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                <linearGradient id="analyticsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#F97316" stopOpacity={0.4} />
+                  <stop offset="95%" stopColor="#F97316" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(29, 41, 61, 0.3)" vertical={false} />
-              <XAxis dataKey="name" tick={{ fill: '#64748B', fontSize: 10 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748B', fontSize: 10 }} axisLine={false} tickLine={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
+              <XAxis dataKey="label" stroke="#94A3B8" fontSize={11} tickLine={false} />
+              <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} domain={[40, 100]} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#101622', borderColor: '#1D293D', borderRadius: '10px' }}
-                itemStyle={{ fontSize: 11 }}
-                labelStyle={{ color: '#94A3B8', fontWeight: 'bold' }}
+                contentStyle={{
+                  backgroundColor: '#0D1527',
+                  borderColor: '#334155',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                }}
               />
-              <Area type="monotone" dataKey="completion" stroke="#2563EB" strokeWidth={2} fill="url(#compGrad)" />
-              <Area type="monotone" dataKey="consistency" stroke="#22D3EE" strokeWidth={1.8} fill="url(#consGrad)" />
-              <Area type="monotone" dataKey="execution" stroke="#10B981" strokeWidth={1.8} fill="url(#execGrad)" />
+              <Area
+                type="monotone"
+                dataKey={activeMetric}
+                stroke="#F97316"
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#analyticsGradient)"
+                name={activeMetric.toUpperCase()}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </ChartCard>
 
-      {/* Main split grid: Behavioral blocks vs Time analysis and fingerprint */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Left main: Behavioral analytics & relationships */}
-        <div className="lg:col-span-2 space-y-5">
-          {/* Behavioral Analytics Sub-grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Habit Reliability */}
-            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
-              <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Reliability</h4>
-              <div className="space-y-2">
-                {behaviorData?.habitReliability.slice(0, 3).map((h) => (
-                  <div key={h.habitId} className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-slate-300 truncate max-w-[150px]">{h.name}</span>
-                    <span className="text-success">{h.reliability}%</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Habit Friction */}
-            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
-              <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Friction</h4>
-              <div className="space-y-2">
-                {frictionList.slice(0, 3).map((f) => (
-                  <div key={f.habitId} className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-slate-300 truncate max-w-[150px]">{f.name}</span>
-                    <span className={cn(
-                      "font-bold",
-                      f.frictionLevel === 'HIGH' ? 'text-warning' : 'text-muted-foreground'
-                    )}>{f.frictionLevel}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
-            {/* Recovery Rate */}
-            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
-              <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Recovery Rate</h4>
-              <div className="text-left font-semibold text-xs text-slate-300 space-y-1">
-                <p className="text-2xl font-extrabold text-foreground">{behaviorData?.recoveryRate.rate}%</p>
-                <p>Average gap days: {behaviorData?.recoveryRate.averageGapDays}d</p>
-              </div>
-            </Card>
-
-            {/* Habit Risk */}
-            <Card className="bg-card border border-border rounded-card p-5 space-y-3">
-              <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Habit Risk</h4>
-              <div className="space-y-2">
-                {riskList.slice(0, 3).map((r) => (
-                  <div key={r.habitId} className="flex justify-between items-center text-xs font-semibold">
-                    <span className="text-slate-300 truncate max-w-[150px]">{r.name}</span>
-                    <span className="text-danger font-bold">{r.riskLevel}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-
-          {/* Relationships Associated Habits */}
+      {/* Habit Reliability Table + Friction Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        {/* Habit Reliability Table (7 cols) */}
+        <div className="lg:col-span-7">
           <Card className="bg-card border border-border rounded-card p-5 space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-foreground">Behavior Correlations</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Observed patterns between separate habits (does not imply causality)</p>
-            </div>
-            <div className="space-y-2 text-xs font-semibold">
-              <div className="p-3 bg-surface-elevated border border-border/5 rounded-xl flex items-center justify-between gap-4">
-                <span className="text-foreground">Exercise ↔ DSA Practice</span>
-                <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-full">+18 percentage points</span>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-extrabold text-foreground">Habit Reliability</h3>
+                <p className="text-xs text-muted-foreground">Individual routine execution probabilities</p>
               </div>
-              <p className="text-[10px] text-muted-foreground/60 italic leading-relaxed">
-                * Note: Exercise is statisticaly <strong>Associated with</strong> DSA Practice completions. This correlation represents timing and focus overlap rather than causality.
-              </p>
+              <span className="text-[10px] text-muted-foreground font-semibold">Click to drill down</span>
             </div>
-          </Card>
 
-          {/* Performance heatmap by Hour, Day, Week */}
-          <Card className="bg-card border border-border rounded-card p-5 space-y-3">
-            <h3 className="text-sm font-bold text-foreground">Time Analysis Heatmap</h3>
-            <div className="grid grid-cols-7 gap-1 pt-2">
-              {Array.from({ length: 28 }).map((_, i) => (
+            <div className="space-y-2.5">
+              {habitReliability.map((habit) => (
                 <div
-                  key={i}
-                  className={cn(
-                    "h-6 rounded border border-white/5",
-                    i % 5 === 0
-                      ? "bg-primary/80"
-                      : i % 3 === 0
-                      ? "bg-primary/45"
-                      : i % 2 === 0
-                      ? "bg-muted"
-                      : "bg-surface-sunken"
-                  )}
-                  title="Completed routines check shading"
-                />
+                  key={habit.id}
+                  onClick={() => {
+                    setSelectedHabitId(habit.id);
+                    setIsDrilldownOpen(true);
+                  }}
+                  className="p-3 bg-surface-elevated/70 border border-border/70 hover:border-primary/50 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold transition-all cursor-pointer group"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-foreground font-extrabold truncate group-hover:text-primary transition-colors">
+                        {habit.name}
+                      </span>
+                      <span className={cn(
+                        'text-[8px] font-extrabold px-1.5 py-0.5 rounded border uppercase',
+                        habit.risk === 'Stable' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                        habit.risk === 'Watch' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' :
+                        'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                      )}>
+                        {habit.risk}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground">
+                      Streak: {habit.currentStreak}d • {habit.category}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="w-24 hidden sm:block">
+                      <ProgressBar value={habit.reliability} />
+                    </div>
+                    <span className="font-mono text-primary font-extrabold text-sm w-10 text-right">
+                      {habit.reliability}%
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </Card>
         </div>
 
-        {/* Right side: peak windows, capacity, fingerprint */}
-        <div className="space-y-5">
-          {/* Peak Windows */}
+        {/* Habit Friction Breakdown Card (5 cols) */}
+        <div className="lg:col-span-5">
           <Card className="bg-card border border-border rounded-card p-5 space-y-4">
             <div>
-              <h3 className="text-sm font-bold text-foreground">Peak Performance Windows</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Execution odds by schedule blocks</p>
+              <h3 className="text-sm font-extrabold text-foreground">Habit Friction</h3>
+              <p className="text-xs text-muted-foreground">Difficulty maintaining routine vs planned schedule</p>
             </div>
-            <div className="space-y-3 text-xs font-semibold">
-              <div className="flex justify-between items-center text-slate-300">
-                <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-success" /> Morning</span>
-                <span>82% success</span>
-              </div>
-              <div className="flex justify-between items-center text-slate-300">
-                <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-warning" /> Afternoon</span>
-                <span>60% success</span>
-              </div>
-              <div className="flex justify-between items-center text-slate-300">
-                <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5 text-primary" /> Evening</span>
-                <span>91% success</span>
-              </div>
-            </div>
-          </Card>
 
-          {/* Focus Capacity */}
-          <Card className="bg-card border border-border rounded-card p-5 space-y-4">
-            <div>
-              <h3 className="text-sm font-bold text-foreground">Capacity validation</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Workload planned vs actual focus hours</p>
+            <div className="space-y-2.5">
+              {habitReliability.map((h) => (
+                <div
+                  key={h.id}
+                  onClick={() => {
+                    setSelectedHabitId(h.id);
+                    setIsDrilldownOpen(true);
+                  }}
+                  className="p-3 bg-surface-elevated/70 border border-border/70 hover:border-primary/50 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold cursor-pointer transition-all"
+                >
+                  <div>
+                    <span className="text-foreground font-bold block">{h.name}</span>
+                    <span className="text-[10px] text-muted-foreground">{h.preferredTime}</span>
+                  </div>
+                  <span className={cn(
+                    'text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border uppercase',
+                    h.frictionLevel === 'Low' ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400' :
+                    h.frictionLevel === 'Medium' ? 'bg-amber-500/15 border-amber-500/30 text-amber-400' :
+                    'bg-rose-500/15 border-rose-500/30 text-rose-400'
+                  )}>
+                    {h.frictionLevel} ({h.frictionScore}%)
+                  </span>
+                </div>
+              ))}
             </div>
-            <div className="text-xs font-semibold text-slate-300 space-y-1.5">
-              <div className="flex justify-between">
-                <span>Planned Focus Workload</span>
-                <span>5.1h / day</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Actual Focus Execution</span>
-                <span>4.3h / day</span>
-              </div>
-            </div>
-          </Card>
-
-          {/* Habit Fingerprint */}
-          <Card className="bg-card border border-cyan-500/20 rounded-card p-5 space-y-3">
-            <div className="flex items-center gap-1.5 border-b border-border/10 pb-2">
-              <Compass className="h-4 w-4 text-cyan-400" />
-              <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">Habit Fingerprint</h4>
-            </div>
-            <p className="text-xs text-foreground leading-relaxed font-semibold">
-              Early Bird Practitioner: stable morning routines, high focus capacity levels, low risk gap delay. Moderate evening friction logged due to timing delays.
-            </p>
           </Card>
         </div>
       </div>
+
+      {/* Peak Windows & Time of Day Analysis + Weekly Patterns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Time of Day Analysis */}
+        <Card className="bg-card border border-border rounded-card p-5 space-y-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-foreground">Time-of-Day Success</h3>
+            <p className="text-xs text-muted-foreground">Execution rates by circadian block</p>
+          </div>
+
+          <div className="space-y-3 text-xs font-semibold">
+            {timeOfDayAnalysis.map((item) => (
+              <div key={item.window} className="space-y-1">
+                <div className="flex justify-between text-slate-300">
+                  <span>{item.window} ({item.hours})</span>
+                  <span className="text-primary font-bold">{item.successRate}%</span>
+                </div>
+                <ProgressBar value={item.successRate} />
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Weekly Pattern Analysis */}
+        <Card className="bg-card border border-border rounded-card p-5 space-y-4">
+          <div>
+            <h3 className="text-sm font-extrabold text-foreground">Weekly Pattern</h3>
+            <p className="text-xs text-muted-foreground">Day-of-week performance trends</p>
+          </div>
+
+          <div className="space-y-2 text-xs font-semibold">
+            {weeklyPattern.map((p) => (
+              <div key={p.day} className="flex items-center justify-between p-2 rounded-lg bg-surface-sunken">
+                <span className="text-foreground font-bold">{p.dayName}</span>
+                <span className={cn(
+                  'font-mono font-bold',
+                  p.successRate >= 90 ? 'text-emerald-400' : p.successRate < 75 ? 'text-rose-400' : 'text-slate-300'
+                )}>
+                  {p.successRate}%
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[11px] font-bold">
+            <span className="text-emerald-400">Peak: {strongestDay.name} ({strongestDay.rate}%)</span>
+            <span className="text-rose-400">Drop: {weakestDay.name} ({weakestDay.rate}%)</span>
+          </div>
+        </Card>
+
+        {/* Actionable Intelligence Insight Card */}
+        <Card className="bg-card border border-border rounded-card p-5 space-y-4 flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-primary font-bold text-xs">
+              <Sparkles className="h-4 w-4" />
+              <span>Actionable Insight</span>
+            </div>
+            <h4 className="text-base font-extrabold text-foreground leading-tight">
+              {actionableInsight.title}
+            </h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {actionableInsight.description}
+            </p>
+          </div>
+
+          <button
+            onClick={() => navigate('/planner')}
+            className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]"
+          >
+            <span>{actionableInsight.suggestedAction}</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+        </Card>
+      </div>
+
+      {/* Modals */}
+      <ForgeScoreModal
+        isOpen={isForgeScoreModalOpen}
+        onClose={() => setIsForgeScoreModalOpen(false)}
+        breakdown={forgeScoreBreakdown}
+      />
+
+      <HabitDrilldownModal
+        isOpen={isDrilldownOpen}
+        onClose={() => {
+          setIsDrilldownOpen(false);
+          setSelectedHabitId(null);
+        }}
+        habitId={selectedHabitId}
+      />
     </div>
   );
 };

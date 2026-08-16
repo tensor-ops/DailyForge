@@ -1,85 +1,116 @@
 import { apiClient } from './api';
-import { AnalyticsSummary, TimeRange } from '@/types/analytics';
-import { BehaviorAnalytics, EnergyLog, Experiment } from '@/types/behavior';
+import {
+  AnalyticsOverviewResponse,
+  GrowthOverviewResponse,
+  MomentumOverviewResponse,
+  HabitIntelligenceSnapshot,
+} from '@/types/habitIntelligence';
+import { BehaviorAnalytics } from '@/types/behavior';
 
 export const analyticsService = {
-  async getAnalyticsSummary(range: TimeRange = '30d'): Promise<AnalyticsSummary> {
-    const res = await apiClient.get<{ success: boolean; data: AnalyticsSummary }>(
+  // 1. Core Habit Intelligence Endpoints
+  async getAnalyticsOverview(timeRange = '30d'): Promise<AnalyticsOverviewResponse> {
+    const res = await apiClient.get<{ success: boolean; data: AnalyticsOverviewResponse }>(
       '/analytics/overview',
-      {
-        params: { range },
-      }
+      { params: { range: timeRange } }
     );
     return res.data.data;
   },
 
-  async getCompletionTrends(range: TimeRange = '30d') {
-    const res = await apiClient.get('/analytics/completion-trend', { params: { range } });
+  async getGrowthOverview(timeRange = '90d'): Promise<GrowthOverviewResponse> {
+    const res = await apiClient.get<{ success: boolean; data: GrowthOverviewResponse }>(
+      '/analytics/growth',
+      { params: { range: timeRange } }
+    );
     return res.data.data;
   },
 
-  async getCategoryPerformance(range: TimeRange = '30d') {
-    const res = await apiClient.get('/analytics/category-performance', { params: { range } });
+  async getMomentumOverview(timeRange = '30d'): Promise<MomentumOverviewResponse> {
+    const res = await apiClient.get<{ success: boolean; data: MomentumOverviewResponse }>(
+      '/analytics/momentum',
+      { params: { range: timeRange } }
+    );
     return res.data.data;
   },
 
-  async getConsistency() {
-    const res = await apiClient.get('/analytics/consistency');
+  async getHabitSnapshot(habitId: string): Promise<HabitIntelligenceSnapshot> {
+    const res = await apiClient.get<{ success: boolean; data: HabitIntelligenceSnapshot }>(
+      `/analytics/habits/${habitId}/snapshot`
+    );
     return res.data.data;
   },
 
-  // Behavioral Intelligence APIs
-  async getBehaviorAnalytics(range: TimeRange = '30d'): Promise<BehaviorAnalytics> {
+  // 2. Behavioral Intelligence Analytics
+  async getBehaviorAnalytics(timeRange = '30d'): Promise<BehaviorAnalytics> {
     const res = await apiClient.get<{ success: boolean; data: BehaviorAnalytics }>(
       '/analytics/behavior',
-      {
-        params: { range },
-      }
+      { params: { range: timeRange } }
     );
     return res.data.data;
   },
 
-  async logEnergy(input: { energy: number; focus: number; mood?: string; date?: string }): Promise<EnergyLog> {
-    const res = await apiClient.post<{ success: boolean; data: EnergyLog }>(
-      '/analytics/energy-log',
-      input
-    );
+  async getAnalyticsSummary(timeRange = '30d'): Promise<any> {
+    const res = await apiClient.get<{ success: boolean; data: any }>('/analytics/overview', {
+      params: { range: timeRange },
+    });
     return res.data.data;
   },
 
-  async logHabitMiss(input: { habitId: string; reason: string; notes?: string; date?: string }): Promise<void> {
-    await apiClient.post('/analytics/habit-miss', input);
+  // 3. Logging actions with flexible arguments
+  async logEnergy(
+    energyOrPayload: number | { energy: number; focus: number; mood: number | string; date?: string },
+    focus?: number,
+    mood?: number | string,
+    date?: string
+  ): Promise<any> {
+    let payload;
+    if (typeof energyOrPayload === 'object') {
+      payload = energyOrPayload;
+    } else {
+      payload = { energy: energyOrPayload, focus, mood, date };
+    }
+    const res = await apiClient.post('/analytics/energy-log', payload);
+    return res.data;
   },
 
-  async getExperiments(): Promise<Experiment[]> {
-    const res = await apiClient.get<{ success: boolean; data: Experiment[] }>(
-      '/analytics/experiments'
-    );
+  async logMissReason(
+    habitIdOrPayload: string | { habitId: string; reason: string; notes?: string; date?: string },
+    reason?: string,
+    notes?: string,
+    date?: string
+  ): Promise<any> {
+    let payload;
+    if (typeof habitIdOrPayload === 'object') {
+      payload = habitIdOrPayload;
+    } else {
+      payload = { habitId: habitIdOrPayload, reason, notes, date };
+    }
+    const res = await apiClient.post('/analytics/habit-miss', payload);
+    return res.data;
+  },
+
+  async logHabitMiss(
+    habitIdOrPayload: string | { habitId: string; reason: string; notes?: string; date?: string },
+    reason?: string,
+    notes?: string,
+    date?: string
+  ): Promise<any> {
+    return this.logMissReason(habitIdOrPayload as any, reason, notes, date);
+  },
+
+  // 4. Experiments Framework
+  async getExperiments(): Promise<any[]> {
+    const res = await apiClient.get<{ success: boolean; data: any[] }>('/analytics/experiments');
     return res.data.data;
   },
 
-  async createExperiment(input: {
-    name: string;
-    hypothesis: string;
-    durationDays: number;
-    baselineMetric: string;
-    targetValue: number;
-  }): Promise<Experiment> {
-    const res = await apiClient.post<{ success: boolean; data: Experiment }>(
-      '/analytics/experiments',
-      input
-    );
-    return res.data.data;
+  async createExperiment(data: any): Promise<any> {
+    const res = await apiClient.post('/analytics/experiments', data);
+    return res.data;
   },
 
-  async updateExperiment(
-    id: string,
-    input: { status?: 'active' | 'completed' | 'discarded'; result?: string; currentValue?: number }
-  ): Promise<Experiment> {
-    const res = await apiClient.patch<{ success: boolean; data: Experiment }>(
-      `/analytics/experiments/${id}`,
-      input
-    );
-    return res.data.data;
+  async updateExperiment(id: string, data: any): Promise<any> {
+    const res = await apiClient.patch(`/analytics/experiments/${id}`, data);
+    return res.data;
   },
 };

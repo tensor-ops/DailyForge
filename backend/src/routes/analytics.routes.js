@@ -5,11 +5,11 @@ const { authenticate } = require('../middleware/auth.middleware');
 
 router.use(authenticate);
 
-// Legacy routes
+// Habit Intelligence Core Endpoints
 router.get('/overview', analyticsController.getOverview);
-router.get('/completion-trend', analyticsController.getCompletionTrend);
-router.get('/category-performance', analyticsController.getCategoryPerformance);
-router.get('/consistency', analyticsController.getConsistency);
+router.get('/growth', analyticsController.getGrowth);
+router.get('/momentum', analyticsController.getMomentum);
+router.get('/habits/:id/snapshot', analyticsController.getHabitSnapshot);
 
 // Behavioral Intelligence routes
 router.get('/behavior', analyticsController.getBehaviorOverview);
