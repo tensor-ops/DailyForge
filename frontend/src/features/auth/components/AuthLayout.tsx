@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Flame, CheckCircle, Target, Award } from 'lucide-react';
-import { Logo } from '@/components/brand/Logo';
+import { ThemeLogo } from '@/components/brand/ThemeLogo';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -42,8 +42,8 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to Home</span>
           </Link>
-          <Link to="/">
-            <Logo variant="full" size={28} />
+          <Link to="/" title="Daily Forge Home">
+            <ThemeLogo variant="full" theme="auto" size="md" />
           </Link>
         </div>
 

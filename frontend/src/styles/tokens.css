@@ -281,3 +281,78 @@
   --color-primary-hover: 190 18 60;
   --color-accent: 192 38 211;
 }
+
+/* ============================================================
+   FIRST-CLASS DAILY FORGE THEMES
+   ============================================================ */
+
+/* 1. FORGE DARK (Signature Orange + Blue + Dark Navy) */
+.theme-forge-dark.dark {
+  --color-primary: 255 106 0;          /* #FF6A00 */
+  --color-primary-hover: 234 88 12;
+  --color-accent: 22 135 255;          /* #1687FF */
+  --color-ai: 22 135 255;
+  --color-chart-primary: 255 106 0;
+  --color-chart-accent: 22 135 255;
+}
+
+/* 2. FORGE LIGHT (Orange + Deep Blue + Navy) */
+.theme-forge-light {
+  --color-primary: 240 90 0;           /* #F05A00 */
+  --color-primary-hover: 217 74 0;
+  --color-accent: 21 94 239;           /* #155EEF */
+  --color-ai: 21 94 239;
+  --color-chart-primary: 240 90 0;
+  --color-chart-accent: 21 94 239;
+}
+
+/* 3. FOCUS BLUE (Electric Blue + Cyan + White) */
+.theme-focus-blue.dark {
+  --color-primary: 22 135 255;         /* #1687FF */
+  --color-primary-hover: 0 112 230;
+  --color-accent: 0 194 255;           /* #00C2FF */
+  --color-ai: 0 194 255;
+  --color-chart-primary: 22 135 255;
+  --color-chart-accent: 0 194 255;
+}
+
+/* 4. FOREST (Emerald + Teal + White) */
+.theme-forest.dark {
+  --color-primary: 22 184 120;         /* #16B878 */
+  --color-primary-hover: 16 155 100;
+  --color-accent: 32 201 151;          /* #20C997 */
+  --color-ai: 32 201 151;
+  --color-chart-primary: 22 184 120;
+  --color-chart-accent: 32 201 151;
+}
+
+/* 5. AMBER FORGE (Amber + Warm Orange + Warm White) */
+.theme-amber-forge.dark {
+  --color-primary: 255 176 0;          /* #FFB000 */
+  --color-primary-hover: 235 150 0;
+  --color-accent: 255 106 0;           /* #FF6A00 */
+  --color-ai: 255 106 0;
+  --color-chart-primary: 255 176 0;
+  --color-chart-accent: 255 106 0;
+}
+
+/* 6. MONOCHROME (White + Slate + Gray) */
+.theme-monochrome.dark {
+  --color-primary: 241 245 249;        /* #F1F5F9 */
+  --color-primary-hover: 226 232 240;
+  --color-accent: 148 163 184;         /* #94A3B8 */
+  --color-ai: 148 163 184;
+  --color-chart-primary: 241 245 249;
+  --color-chart-accent: 148 163 184;
+  --color-sidebar-active-text: 248 250 252;
+}
+
+/* Smooth 200ms theme transition across interactive surfaces */
+body, 
+.bg-surface, 
+.bg-surface-elevated, 
+.bg-card, 
+.bg-sidebar, 
+.bg-background {
+  transition: background-color 200ms ease-in-out, border-color 200ms ease-in-out, color 200ms ease-in-out;
+}

@@ -20,8 +20,8 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { Logo } from '@/components/brand/Logo';
 import { Avatar } from '@/components/ui/Avatar';
+import { ThemeLogo } from '@/components/brand/ThemeLogo';
 import { habitService } from '@/services/habitService';
 import { todayService } from '@/services/todayService';
 import { analyticsService } from '@/services/analyticsService';
@@ -194,8 +194,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             'flex items-center gap-3 transition-opacity',
             isCollapsed && 'justify-center w-full'
           )}
+          title="Daily Forge Dashboard"
         >
-          {isCollapsed ? <Logo variant="icon" size={32} /> : <Logo variant="full" size={32} />}
+          {isCollapsed ? (
+            <ThemeLogo variant="icon" size="md" />
+          ) : (
+            <ThemeLogo variant="full" size="md" />
+          )}
         </NavLink>
       </div>
 

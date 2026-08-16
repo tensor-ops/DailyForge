@@ -8,6 +8,7 @@ import { Sun, Moon, Laptop, Trash2, User, Eye, Shield, Bell, Database, Target, S
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { cn } from '@/utils/cn';
 import { AccentTheme } from '@/context/ThemeContext';
+import { ThemeLogo, ThemeName, themeLogos } from '@/components/brand/Logo';
 
 /* ------------------------------------------------------------------ */
 /* Helper: reusable settings row                                        */
@@ -81,7 +82,15 @@ const selectCls = 'w-full bg-input border border-input-border rounded-xl px-3.5 
 /* ================================================================== */
 export const SettingsPage: React.FC = () => {
   useDocumentTitle('DailyForge — Settings');
-  const { theme, setTheme, accentTheme, setAccentTheme, resolvedTheme } = useTheme();
+  const {
+    theme,
+    setTheme,
+    accentTheme,
+    setAccentTheme,
+    resolvedTheme,
+    currentTheme,
+    setThemeName,
+  } = useTheme();
   const { user } = useAuth();
   const { success, info } = useToast();
 
@@ -155,41 +164,123 @@ export const SettingsPage: React.FC = () => {
       </Card>
 
       {/* ── 2. APPEARANCE (Theme + Accent) ────────────────────── */}
-      <Card className="p-6 space-y-5">
-        <div className="flex items-center gap-2 border-b border-border/50 pb-2">
-          <Palette className="h-4.5 w-4.5 text-primary" />
-          <h3 className="text-sm font-bold text-foreground">Appearance</h3>
+      <Card className="p-6 space-y-6">
+        <div className="flex items-center justify-between border-b border-border/50 pb-3">
+          <div className="flex items-center gap-2">
+            <Palette className="h-4.5 w-4.5 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Daily Forge Theme System</h3>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20">
+            {themeLogos[currentTheme]?.name || 'Active'}
+          </span>
         </div>
 
-        {/* 2a. Mode selector */}
-        <div className="space-y-2">
-          <label className="text-xs text-muted-foreground block font-bold">Color Mode</label>
+        {/* 2a. 6 Official Daily Forge Themes Grid */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground block font-bold">
+              Theme Presets (Logo, Navigation & Color Mood)
+            </label>
+            <span className="text-[10px] text-muted-foreground">Changes logo & design system instantly</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {(Object.keys(themeLogos) as ThemeName[]).map((themeKey) => {
+              const config = themeLogos[themeKey];
+              const isSelected = currentTheme === themeKey;
+
+              return (
+                <button
+                  key={themeKey}
+                  onClick={() => {
+                    setThemeName(themeKey);
+                    success('Theme Updated', `Switched to ${config.name}`);
+                  }}
+                  className={cn(
+                    'group relative p-4 rounded-xl border flex flex-col justify-between gap-3 text-left transition-all duration-200 cursor-pointer',
+                    isSelected
+                      ? 'border-primary bg-primary/10 shadow-sm ring-1 ring-primary/40'
+                      : 'border-border bg-surface-elevated hover:border-border-strong hover:bg-card-hover'
+                  )}
+                >
+                  {/* Top bar: Theme Logo + Status Check */}
+                  <div className="flex items-center justify-between w-full">
+                    <ThemeLogo variant="full" theme={themeKey} size="sm" />
+                    <div
+                      className={cn(
+                        'h-5 w-5 rounded-full flex items-center justify-center border transition-all shrink-0 ml-2',
+                        isSelected
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border/60 bg-surface group-hover:border-border'
+                      )}
+                    >
+                      {isSelected && <Check className="h-3 w-3" strokeWidth={3} />}
+                    </div>
+                  </div>
+
+                  {/* Info: Name & Palette */}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-foreground block">{config.name}</span>
+                    </div>
+                    <span className="text-[10px] text-muted-foreground block line-clamp-1 mt-0.5">
+                      {config.paletteDescription}
+                    </span>
+                  </div>
+
+                  {/* Color Swatch Dots */}
+                  <div className="flex items-center gap-1.5 pt-1 border-t border-border/40">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full border border-white/10 shrink-0"
+                      style={{ backgroundColor: config.previewColors.primary }}
+                      title={`Primary: ${config.previewColors.primary}`}
+                    />
+                    <span
+                      className="h-2.5 w-2.5 rounded-full border border-white/10 shrink-0"
+                      style={{ backgroundColor: config.previewColors.secondary }}
+                      title={`Accent: ${config.previewColors.secondary}`}
+                    />
+                    <span
+                      className="h-2.5 w-2.5 rounded-full border border-white/20 shrink-0"
+                      style={{ backgroundColor: config.previewColors.background }}
+                      title={`Background: ${config.previewColors.background}`}
+                    />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 2b. Granular Base Mode override */}
+        <div className="space-y-2 pt-2 border-t border-border/50">
+          <label className="text-xs text-muted-foreground block font-bold">Base Mode</label>
           <div className="grid grid-cols-3 gap-3 text-xs font-bold">
             {([
-              { value: 'dark' as const,   label: 'Dark',   Icon: Moon },
-              { value: 'light' as const,  label: 'Light',  Icon: Sun },
+              { value: 'dark' as const, label: 'Dark', Icon: Moon },
+              { value: 'light' as const, label: 'Light', Icon: Sun },
               { value: 'system' as const, label: 'System', Icon: Laptop },
             ]).map(({ value, label, Icon }) => (
               <button
                 key={value}
                 onClick={() => setTheme(value)}
                 className={cn(
-                  'p-3 rounded-xl border flex flex-col items-center gap-2 transition-all cursor-pointer',
+                  'p-2.5 rounded-xl border flex flex-col items-center gap-1.5 transition-all cursor-pointer',
                   theme === value
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
                 )}
               >
-                <Icon className="h-4.5 w-4.5" />
-                <span>{label}</span>
+                <Icon className="h-4 w-4" />
+                <span className="text-xs">{label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* 2b. Accent Color selector */}
-        <div className="space-y-3">
-          <label className="text-xs text-muted-foreground block font-bold">Accent Color</label>
+        {/* 2c. Accent Color Customization */}
+        <div className="space-y-3 pt-2 border-t border-border/50">
+          <label className="text-xs text-muted-foreground block font-bold">Accent Color Highlight</label>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
             {ACCENT_OPTIONS.map((accent) => {
               const isSelected = accentTheme === accent.id;
@@ -228,7 +319,7 @@ export const SettingsPage: React.FC = () => {
             })}
           </div>
           <p className="text-[10px] text-muted-foreground">
-            Accent color applies to buttons, active states, and highlights. Works independently of Light/Dark mode.
+            Customizes highlight and accent energy across cards, charts, and buttons.
           </p>
         </div>
       </Card>

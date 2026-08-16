@@ -8,16 +8,18 @@
         try {
           var theme = localStorage.getItem('df-theme') || 'dark';
           var accent = localStorage.getItem('df-accent') || 'midnight';
+          var themeName = localStorage.getItem('df-theme-name') || (theme === 'light' ? 'forge-light' : 'forge-dark');
           var isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
           var root = document.documentElement;
           root.classList.add(isDark ? 'dark' : 'light');
           root.classList.add('accent-' + accent);
+          root.classList.add('theme-' + themeName);
         } catch(e) {
-          document.documentElement.classList.add('dark', 'accent-midnight');
+          document.documentElement.classList.add('dark', 'accent-midnight', 'theme-forge-dark');
         }
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logos/daily-forge-icon-forge-dark.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>DailyForge</title>
     <meta name="description" content="Build better habits, understand your progress, and create routines that last." />

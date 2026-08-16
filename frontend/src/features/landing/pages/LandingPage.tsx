@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
+import { ThemeLogo } from '@/components/brand/ThemeLogo';
 import {
   Sparkles,
   ArrowRight,
@@ -152,15 +153,8 @@ export const LandingPage: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo checkmark loop */}
-          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="h-9 w-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-subtle border border-primary/10">
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" strokeDasharray="60" strokeDashoffset="15" className="opacity-45" />
-                <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10" />
-                <polyline points="9 11 11 13 15 9" />
-              </svg>
-            </div>
-            <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">DailyForge</span>
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Daily Forge">
+            <ThemeLogo variant="full" size="md" />
           </div>
 
           {/* Desktop Navigation Links */}
@@ -1063,8 +1057,7 @@ export const LandingPage: React.FC = () => {
           {/* Brand Info */}
           <div className="col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded bg-primary text-primary-foreground flex items-center justify-center font-bold text-[10px]">D</div>
-              <span className="font-extrabold text-sm text-foreground">DailyForge</span>
+              <ThemeLogo variant="full" size="sm" />
             </div>
             <p className="max-w-xs leading-relaxed text-muted-foreground/80">
               A beautifully designed habit system that helps you become more consistent. Turn daily routines into lasting progress.
