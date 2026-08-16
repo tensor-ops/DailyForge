@@ -1,87 +1,154 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useToast } from '@/hooks/useToast';
-import { Card } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { MetricCard } from '@/components/ui/MetricCard';
-import { ProgressBar } from '@/components/ui/ProgressBar';
+import { GoalCard } from '@/features/goals/components/GoalCard';
+import { GoalModal } from '@/features/goals/components/GoalModal';
 import { goalService } from '@/services/goalService';
-import { analyticsService } from '@/services/analyticsService';
-import { Goal } from '@/types/goal';
-import { BehaviorAnalytics } from '@/types/behavior';
-import { Target, Calendar, ArrowRight, Plus, AlertTriangle, CheckCircle2, TrendingUp } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import { Goal, GoalOverviewSummary } from '@/types/goal';
+import {
+  Target,
+  Plus,
+  AlertTriangle,
+  CheckCircle2,
+  TrendingUp,
+  Search,
+} from 'lucide-react';
 
 export const GoalsDashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const { error, info } = useToast();
+  useDocumentTitle('DailyForge — Goals');
+  const { success, error, info } = useToast();
+
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [behaviorData, setBehaviorData] = useState<BehaviorAnalytics | null>(null);
+  const [summary, setSummary] = useState<GoalOverviewSummary>({
+    activeGoals: 0,
+    averageProgress: 0,
+    onTrackCount: 0,
+    atRiskCount: 0,
+  });
   const [loading, setLoading] = useState(true);
 
-  const fetchGoalsAndBehavior = async () => {
+  // Filters and Search
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [priorityFilter, setPriorityFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
+  const [sortBy, setSortBy] = useState<'updated' | 'progress' | 'deadline' | 'velocity' | 'name'>('updated');
+
+  // Modals state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+
+  const fetchGoals = async () => {
     try {
-      const [list, behavior] = await Promise.all([
-        goalService.getGoals(),
-        analyticsService.getBehaviorAnalytics('30d'),
-      ]);
-      setGoals(list);
-      setBehaviorData(behavior);
+      setLoading(true);
+      const res = await goalService.getGoals({
+        search: search || undefined,
+        status: statusFilter !== 'All' ? statusFilter : undefined,
+        priority: priorityFilter !== 'All' ? priorityFilter : undefined,
+        category: categoryFilter !== 'All' ? categoryFilter : undefined,
+      });
+      setGoals(res.goals);
+      setSummary(res.summary);
     } catch {
-      error('Failed to load data', 'Could not retrieve goals metrics.');
+      error('Failed to load goals', 'Could not retrieve goals data.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchGoalsAndBehavior();
-  }, []);
+    fetchGoals();
 
-  // Summary Metrics calculations
-  const activeGoalsCount = goals.length || 4;
-  const avgProgress = goals.length > 0 
-    ? Math.round(goals.reduce((s, g) => s + (g.progress || 0), 0) / goals.length) 
-    : 67;
+    const handleUpdate = () => fetchGoals();
+    window.addEventListener('goals-updated', handleUpdate);
+    return () => window.removeEventListener('goals-updated', handleUpdate);
+  }, [statusFilter, priorityFilter, categoryFilter]);
 
-  const onTrackCount = behaviorData?.goalVelocity.filter((g) => g.status === 'On Track' || g.status === 'Ahead').length || 3;
-  const atRiskCount = behaviorData?.goalVelocity.filter((g) => g.status === 'Behind' || g.status === 'At Risk').length || 1;
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchGoals();
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-  // Add sample placeholder goals if empty to support premium walkthrough visualization
-  const displayGoals = goals.length > 0 ? goals : [
-    {
-      id: 'mock-1',
-      name: 'Become ML Engineer',
-      progress: 64,
-      deadline: '2026-09-28',
-      habits: ['1', '2'],
-    },
-    {
-      id: 'mock-2',
-      name: 'Establish Coding System',
-      progress: 80,
-      deadline: '2026-08-30',
-      habits: ['3'],
-    },
-    {
-      id: 'mock-3',
-      name: 'Cardio Stamina Upgrade',
-      progress: 40,
-      deadline: '2026-10-15',
-      habits: ['2'],
-    },
-  ];
+  // Sorted Goals
+  const sortedGoals = useMemo(() => {
+    return [...goals].sort((a, b) => {
+      if (sortBy === 'progress') return (b.progress || 0) - (a.progress || 0);
+      if (sortBy === 'velocity') return (b.velocity || 0) - (a.velocity || 0);
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'deadline') {
+        const da = a.targetDate || a.deadline || '9999-99-99';
+        const db = b.targetDate || b.deadline || '9999-99-99';
+        return da.localeCompare(db);
+      }
+      return new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime();
+    });
+  }, [goals, sortBy]);
+
+  // Handlers for Goal Card actions
+  const handleEdit = (goal: Goal) => {
+    setSelectedGoal(goal);
+    setIsModalOpen(true);
+  };
+
+  const handlePauseToggle = async (goalId: string) => {
+    try {
+      await goalService.togglePauseGoal(goalId);
+      success('Goal status updated', 'Pause state modified.');
+      fetchGoals();
+    } catch {
+      error('Update failed', 'Could not toggle pause state.');
+    }
+  };
+
+  const handleDuplicate = async (goalId: string) => {
+    try {
+      await goalService.duplicateGoal(goalId);
+      success('Goal duplicated! ✦', 'A copy of the goal has been created.');
+      fetchGoals();
+    } catch {
+      error('Duplication failed', 'Could not duplicate goal.');
+    }
+  };
+
+  const handleArchive = async (goalId: string) => {
+    try {
+      await goalService.archiveGoal(goalId);
+      info('Goal archived', 'Goal moved to archive.');
+      fetchGoals();
+    } catch {
+      error('Archive failed', 'Could not archive goal.');
+    }
+  };
+
+  const handleDelete = async (goalId: string) => {
+    if (!window.confirm('Are you sure you want to permanently delete this goal?')) return;
+    try {
+      await goalService.deleteGoal(goalId);
+      success('Goal deleted', 'The goal and its associations were removed.');
+      fetchGoals();
+    } catch {
+      error('Deletion failed', 'Could not delete goal.');
+    }
+  };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20 select-none">
+    <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20 select-none pb-12">
       {/* Header */}
       <PageHeader
         title="Goals"
         description="Turn long-term ambitions into daily actions."
         actions={
           <button
-            onClick={() => info('New Goal creation', 'Goal setup form is available.')}
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider px-3.5 py-2.5 rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
+            onClick={() => {
+              setSelectedGoal(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>New Goal</span>
@@ -89,118 +156,171 @@ export const GoalsDashboard: React.FC = () => {
         }
       />
 
-      {/* Summary Row */}
+      {/* Summary KPI Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           title="Active Goals"
-          value={activeGoalsCount}
+          value={summary.activeGoals}
           subtext="Target milestones"
           icon={Target}
           accent="blue"
         />
         <MetricCard
           title="Average Progress"
-          value={`${avgProgress}%`}
-          subtext="Completion margin"
+          value={`${summary.averageProgress}%`}
+          subtext="Across active goals"
           icon={TrendingUp}
           accent="blue"
         />
         <MetricCard
           title="On Track"
-          value={onTrackCount}
-          subtext="Stable trajectory pacing"
+          value={summary.onTrackCount}
+          subtext="Stable trajectory"
           icon={CheckCircle2}
           accent="green"
         />
         <MetricCard
           title="At Risk"
-          value={atRiskCount}
-          subtext="Postponed deadlines"
+          value={summary.atRiskCount}
+          subtext="Needs attention"
           icon={AlertTriangle}
           accent="orange"
         />
       </div>
 
+      {/* Filter and Search Bar */}
+      <div className="p-3.5 rounded-2xl bg-card border border-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs">
+        {/* Search input */}
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search goals by title, category, or description..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full h-9 pl-9 pr-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary placeholder:text-muted-foreground/60"
+          />
+        </div>
+
+        {/* Dropdowns */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="h-9 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+          >
+            <option value="All">All Statuses</option>
+            <option value="ON_TRACK">On Track</option>
+            <option value="AHEAD">Ahead</option>
+            <option value="AT_RISK">At Risk</option>
+            <option value="BEHIND">Behind</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="PAUSED">Paused</option>
+          </select>
+
+          {/* Priority Filter */}
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+            className="h-9 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+          >
+            <option value="All">All Priorities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+
+          {/* Category Filter */}
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="h-9 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+          >
+            <option value="All">All Categories</option>
+            <option value="Career">Career</option>
+            <option value="Education">Education</option>
+            <option value="Health">Health</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Finance">Finance</option>
+            <option value="Personal">Personal</option>
+            <option value="Projects">Projects</option>
+            <option value="Other">Other</option>
+          </select>
+
+          {/* Sort By */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="h-9 px-3 rounded-xl bg-surface-elevated border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+          >
+            <option value="updated">Recently Updated</option>
+            <option value="progress">Highest Progress</option>
+            <option value="velocity">Fastest Velocity</option>
+            <option value="deadline">Upcoming Deadline</option>
+            <option value="name">Alphabetical</option>
+          </select>
+        </div>
+      </div>
+
       {/* Goal Cards Grid */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-56 rounded-2xl bg-muted/20 animate-pulse" />
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-64 rounded-2xl bg-muted/20 animate-pulse" />
           ))}
+        </div>
+      ) : sortedGoals.length === 0 ? (
+        <div className="py-16 text-center space-y-3 bg-card border border-border rounded-card p-6">
+          <div className="text-4xl">🎯</div>
+          <h3 className="text-base font-extrabold text-foreground">
+            {search || statusFilter !== 'All' || priorityFilter !== 'All' || categoryFilter !== 'All'
+              ? 'No matching goals found'
+              : 'No Goals Yet'}
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            {search || statusFilter !== 'All' || priorityFilter !== 'All' || categoryFilter !== 'All'
+              ? 'Try adjusting your search criteria or filter selections.'
+              : 'Turn long-term ambitions into a clear roadmap. Create your first goal and connect daily habits and tasks to make measurable progress.'}
+          </p>
+          <button
+            onClick={() => {
+              setSelectedGoal(null);
+              setIsModalOpen(true);
+            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer mt-2"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>+ Create Your First Goal</span>
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayGoals.map((goal) => {
-            const velocityObj = behaviorData?.goalVelocity.find((g) => g.goalId === goal.id);
-            const status = velocityObj?.status || (goal.progress > 60 ? 'Ahead' : 'On Track');
-            const velocity = velocityObj?.velocity || (status === 'Ahead' ? 6 : 0);
-            const expectedDate = goal.deadline || 'Sept 28';
-
-            return (
-              <Card
-                key={goal.id}
-                className="bg-card border border-border rounded-card p-5 flex flex-col justify-between gap-4 hover:border-primary/30 transition-all group"
-              >
-                <div className="space-y-4 text-left">
-                  <div>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Active Target</span>
-                    <h3 className="text-base font-extrabold text-foreground leading-tight mt-0.5">
-                      {goal.name}
-                    </h3>
-                  </div>
-
-                  {/* Progress info */}
-                  <div className="space-y-1.5 text-xs font-semibold">
-                    <div className="flex justify-between text-slate-300">
-                      <span>Progress</span>
-                      <span>{goal.progress}%</span>
-                    </div>
-                    <ProgressBar value={goal.progress} />
-                  </div>
-
-                  {/* Trajectory and timelines */}
-                  <div className="grid grid-cols-2 gap-3.5 text-xs font-semibold pt-1 border-t border-border/5">
-                    <div>
-                      <span className="text-[10px] text-muted-foreground block">Goal Velocity</span>
-                      <span className={cn(
-                        "font-bold",
-                        velocity > 0 ? "text-success" : velocity < 0 ? "text-danger" : "text-slate-300"
-                      )}>
-                        {velocity > 0 ? `+${velocity}%` : `${velocity}%`} {status}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-muted-foreground block font-bold">Expected Date</span>
-                      <span className="text-slate-300 flex items-center gap-1 mt-0.5">
-                        <Calendar className="h-3.5 w-3.5 text-primary shrink-0" />
-                        <span>{expectedDate}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Goal Milestones nested visual path */}
-                  <div className="space-y-1.5 pt-1 text-xs">
-                    <span className="text-[10px] text-muted-foreground block font-bold">Milestones Status</span>
-                    <div className="flex items-center gap-1">
-                      <span className="h-1.5 flex-1 rounded bg-success/80" title="Completed" />
-                      <span className="h-1.5 flex-1 rounded bg-primary" title="Current" />
-                      <span className="h-1.5 flex-1 rounded bg-muted" title="Upcoming" />
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => navigate(`/goals/${goal.id}`)}
-                  className="w-full bg-surface-elevated border border-border/5 hover:border-border/20 text-slate-300 text-xs font-bold py-2.5 rounded-xl flex items-center justify-center gap-1 transition-all cursor-pointer group-hover:bg-muted"
-                >
-                  <span>Goal Details</span>
-                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              </Card>
-            );
-          })}
+          {sortedGoals.map((goal) => (
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              onEdit={handleEdit}
+              onPauseToggle={handlePauseToggle}
+              onDuplicate={handleDuplicate}
+              onArchive={handleArchive}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       )}
+
+      {/* Create / Edit Goal Modal */}
+      <GoalModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedGoal(null);
+        }}
+        goal={selectedGoal}
+        onSuccess={fetchGoals}
+      />
     </div>
   );
 };

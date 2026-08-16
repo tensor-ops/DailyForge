@@ -72,7 +72,7 @@ export const DashboardGreeting: React.FC<DashboardGreetingProps> = ({
         className
       )}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         {/* Left column: Hero copy & contextual snapshot */}
         <div className="space-y-1.5 flex-1 min-w-0">
           {/* 1. Main Greeting Title */}
@@ -135,7 +135,7 @@ export const DashboardGreeting: React.FC<DashboardGreetingProps> = ({
 
         {/* Right column: Action buttons */}
         {actions && (
-          <div className="flex items-center gap-2 shrink-0 self-start lg:self-center motion-safe:animate-fade-in [animation-delay:120ms]">
+          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-center motion-safe:animate-fade-in [animation-delay:120ms]">
             {actions}
           </div>
         )}

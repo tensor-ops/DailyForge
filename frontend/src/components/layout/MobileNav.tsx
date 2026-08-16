@@ -56,7 +56,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     { path: '/today', label: 'Today', icon: Activity },
     { path: '/habits', label: 'My Habits', icon: CheckCircle2 },
     { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
-    { path: '/dashboard?tab=goals', label: 'Goals', icon: Target },
+    { path: '/goals', label: 'Goals', icon: Target },
     { path: '/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/ai-insights', label: 'Forge Insights', icon: Sparkles },
     { path: '/profile', label: 'Profile', icon: UserIcon },

@@ -1,145 +1,193 @@
-const Goal = require('../models/Goal');
-const Habit = require('../models/Habit');
-const { sendSuccess: successResponse, sendError: errorResponse } = require('../utils/response');
-const logger = require('../utils/logger');
+const goalService = require('../services/goal.service');
+const { sendSuccess, sendError } = require('../utils/response');
 
-/**
- * GET /api/v1/goals
- * Get all goals for authenticated user
- */
-async function getGoals(req, res) {
+async function getGoals(req, res, next) {
   try {
-    const goals = await Goal.find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
-      .lean();
-
-    // Compute real-time progress for each goal based on linked habits
-    const goalsWithProgress = await Promise.all(
-      goals.map(async (goal) => {
-        const habitProgress = await computeGoalProgress(goal);
-        return { ...goal, id: goal._id.toString(), progress: habitProgress };
-      })
-    );
-
-    return successResponse(res, { goals: goalsWithProgress }, 'Goals retrieved');
-  } catch (err) {
-    logger.error(`getGoals error: ${err.message}`);
-    return errorResponse(res, 'Failed to retrieve goals', 500);
+    const data = await goalService.getGoals(req.user._id, req.query);
+    return sendSuccess(res, data, 'Goals retrieved successfully');
+  } catch (error) {
+    next(error);
   }
 }
 
-/**
- * POST /api/v1/goals
- * Create a new goal
- */
-async function createGoal(req, res) {
+async function getGoal(req, res, next) {
   try {
-    const { name, description, emoji, color, targetValue, deadline, habits, milestones } = req.body;
+    const goal = await goalService.getGoalById(req.user._id, req.params.id);
+    if (!goal) {
+      return sendError(res, 'Goal not found', 404);
+    }
+    return sendSuccess(res, goal, 'Goal retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+}
 
+async function createGoal(req, res, next) {
+  try {
+    const { name } = req.body;
     if (!name || name.trim().length < 2) {
-      return errorResponse(res, 'Goal name must be at least 2 characters', 400);
+      return sendError(res, 'Goal name must be at least 2 characters', 400);
     }
 
-    const goal = await Goal.create({
-      userId: req.user.id,
-      name: name.trim(),
-      description: description || '',
-      emoji: emoji || '🎯',
-      color: color || '#6366f1',
-      targetValue: targetValue || 100,
-      deadline: deadline || null,
-      habits: habits || [],
-      milestones: milestones || [],
-    });
-
-    return successResponse(res, { ...goal.toJSON() }, 'Goal created', 201);
-  } catch (err) {
-    logger.error(`createGoal error: ${err.message}`);
-    return errorResponse(res, 'Failed to create goal', 500);
+    const goal = await goalService.createGoal(req.user._id, req.body);
+    return sendSuccess(res, goal, 'Goal created successfully', 201);
+  } catch (error) {
+    next(error);
   }
 }
 
-/**
- * GET /api/v1/goals/:id
- * Get a single goal
- */
-async function getGoal(req, res) {
+async function updateGoal(req, res, next) {
   try {
-    const goal = await Goal.findOne({ _id: req.params.id, userId: req.user.id }).lean();
+    const goal = await goalService.updateGoal(req.user._id, req.params.id, req.body);
     if (!goal) {
-      return errorResponse(res, 'Goal not found', 404);
+      return sendError(res, 'Goal not found', 404);
     }
-
-    const progress = await computeGoalProgress(goal);
-    return successResponse(res, { ...goal, id: goal._id.toString(), progress }, 'Goal retrieved');
-  } catch (err) {
-    logger.error(`getGoal error: ${err.message}`);
-    return errorResponse(res, 'Failed to retrieve goal', 500);
+    return sendSuccess(res, goal, 'Goal updated successfully');
+  } catch (error) {
+    next(error);
   }
 }
 
-/**
- * PATCH /api/v1/goals/:id
- * Update a goal
- */
-async function updateGoal(req, res) {
+async function deleteGoal(req, res, next) {
   try {
-    const allowed = ['name', 'description', 'emoji', 'color', 'targetValue', 'deadline', 'habits', 'status', 'milestones'];
-    const updates = {};
-    for (const key of allowed) {
-      if (req.body[key] !== undefined) updates[key] = req.body[key];
-    }
-
-    const goal = await Goal.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user.id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    ).lean();
-
+    const goal = await goalService.deleteGoal(req.user._id, req.params.id);
     if (!goal) {
-      return errorResponse(res, 'Goal not found', 404);
+      return sendError(res, 'Goal not found', 404);
     }
-
-    const progress = await computeGoalProgress(goal);
-    return successResponse(res, { ...goal, id: goal._id.toString(), progress }, 'Goal updated');
-  } catch (err) {
-    logger.error(`updateGoal error: ${err.message}`);
-    return errorResponse(res, 'Failed to update goal', 500);
+    return sendSuccess(res, null, 'Goal deleted successfully');
+  } catch (error) {
+    next(error);
   }
 }
 
-/**
- * DELETE /api/v1/goals/:id
- * Delete a goal
- */
-async function deleteGoal(req, res) {
+async function archiveGoal(req, res, next) {
   try {
-    const goal = await Goal.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    const goal = await goalService.archiveGoal(req.user._id, req.params.id);
     if (!goal) {
-      return errorResponse(res, 'Goal not found', 404);
+      return sendError(res, 'Goal not found', 404);
     }
-    return successResponse(res, null, 'Goal deleted');
-  } catch (err) {
-    logger.error(`deleteGoal error: ${err.message}`);
-    return errorResponse(res, 'Failed to delete goal', 500);
+    return sendSuccess(res, goal, 'Goal archived successfully');
+  } catch (error) {
+    next(error);
   }
 }
 
-/**
- * Compute aggregate progress for a goal based on its linked habits' completion rates
- */
-async function computeGoalProgress(goal) {
-  if (!goal.habits || goal.habits.length === 0) return 0;
-
+async function togglePause(req, res, next) {
   try {
-    const habits = await Habit.find({ _id: { $in: goal.habits } }).lean();
-    if (habits.length === 0) return 0;
-
-    const totalRate = habits.reduce((sum, h) => sum + (h.completionRate || 0), 0);
-    return Math.round(totalRate / habits.length);
-  } catch {
-    return 0;
+    const goal = await goalService.togglePauseGoal(req.user._id, req.params.id);
+    if (!goal) {
+      return sendError(res, 'Goal not found', 404);
+    }
+    return sendSuccess(res, goal, 'Goal pause status updated');
+  } catch (error) {
+    next(error);
   }
 }
 
-module.exports = { getGoals, createGoal, getGoal, updateGoal, deleteGoal };
+async function duplicateGoal(req, res, next) {
+  try {
+    const goal = await goalService.duplicateGoal(req.user._id, req.params.id);
+    if (!goal) {
+      return sendError(res, 'Goal not found', 404);
+    }
+    return sendSuccess(res, goal, 'Goal duplicated successfully', 201);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function addMilestone(req, res, next) {
+  try {
+    const { title } = req.body;
+    if (!title || !title.trim()) {
+      return sendError(res, 'Milestone title is required', 400);
+    }
+    const goal = await goalService.addMilestone(req.user._id, req.params.id, req.body);
+    return sendSuccess(res, goal, 'Milestone added successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateMilestone(req, res, next) {
+  try {
+    const goal = await goalService.updateMilestone(
+      req.user._id,
+      req.params.id,
+      req.params.milestoneId,
+      req.body
+    );
+    return sendSuccess(res, goal, 'Milestone updated successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteMilestone(req, res, next) {
+  try {
+    const goal = await goalService.deleteMilestone(
+      req.user._id,
+      req.params.id,
+      req.params.milestoneId
+    );
+    return sendSuccess(res, goal, 'Milestone removed successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function linkHabit(req, res, next) {
+  try {
+    const { habitId } = req.body;
+    const goal = await goalService.linkHabit(req.user._id, req.params.id, habitId);
+    return sendSuccess(res, goal, 'Habit linked to goal');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function unlinkHabit(req, res, next) {
+  try {
+    const goal = await goalService.unlinkHabit(req.user._id, req.params.id, req.params.habitId);
+    return sendSuccess(res, goal, 'Habit unlinked from goal');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function linkTask(req, res, next) {
+  try {
+    const { taskId } = req.body;
+    const goal = await goalService.linkTask(req.user._id, req.params.id, taskId);
+    return sendSuccess(res, goal, 'Task linked to goal');
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function unlinkTask(req, res, next) {
+  try {
+    const goal = await goalService.unlinkTask(req.user._id, req.params.id, req.params.taskId);
+    return sendSuccess(res, goal, 'Task unlinked from goal');
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  getGoals,
+  getGoal,
+  createGoal,
+  updateGoal,
+  deleteGoal,
+  archiveGoal,
+  togglePause,
+  duplicateGoal,
+  addMilestone,
+  updateMilestone,
+  deleteMilestone,
+  linkHabit,
+  unlinkHabit,
+  linkTask,
+  unlinkTask,
+};

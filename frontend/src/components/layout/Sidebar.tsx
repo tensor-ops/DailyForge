@@ -25,6 +25,7 @@ import { Avatar } from '@/components/ui/Avatar';
 import { habitService } from '@/services/habitService';
 import { todayService } from '@/services/todayService';
 import { analyticsService } from '@/services/analyticsService';
+import { goalService } from '@/services/goalService';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -55,14 +56,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const [activeHabitsCount, setActiveHabitsCount] = useState<number | null>(null);
   const [todayRemainingCount, setTodayRemainingCount] = useState<number | null>(null);
+  const [activeGoalsCount, setActiveGoalsCount] = useState<number | null>(null);
   const [momentumScore, setMomentumScore] = useState<number>(84);
 
   const fetchBadgeCounts = async () => {
     try {
-      const [overviewData, todayData, behaviorData] = await Promise.all([
+      const [overviewData, todayData, behaviorData, goalsData] = await Promise.all([
         habitService.getHabitsOverview().catch(() => null),
         todayService.getTodayOverview().catch(() => null),
         analyticsService.getBehaviorAnalytics('30d').catch(() => null),
+        goalService.getGoals().catch(() => null),
       ]);
 
       if (overviewData) {
@@ -73,6 +76,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
       if (behaviorData?.momentum?.score) {
         setMomentumScore(behaviorData.momentum.score);
+      }
+      if (goalsData?.summary) {
+        setActiveGoalsCount(goalsData.summary.activeGoals);
       }
     } catch {
       // Graceful fallback
@@ -85,9 +91,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const handleUpdate = () => fetchBadgeCounts();
     window.addEventListener('habits-updated', handleUpdate);
     window.addEventListener('tasks-updated', handleUpdate);
+    window.addEventListener('goals-updated', handleUpdate);
     return () => {
       window.removeEventListener('habits-updated', handleUpdate);
       window.removeEventListener('tasks-updated', handleUpdate);
+      window.removeEventListener('goals-updated', handleUpdate);
     };
   }, []);
 
@@ -109,7 +117,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
           badge: activeHabitsCount !== null ? activeHabitsCount : null,
         },
         { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
-        { path: '/dashboard?tab=goals', label: 'Goals', icon: Target },
+        {
+          path: '/goals',
+          label: 'Goals',
+          icon: Target,
+          badge: activeGoalsCount !== null && activeGoalsCount > 0 ? activeGoalsCount : null,
+        },
       ],
     },
     {
@@ -151,6 +164,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
     if (path === '/today') {
       return location.pathname === '/today' || currentPath === '/dashboard?tab=today';
+    }
+    if (path === '/goals') {
+      return location.pathname.startsWith('/goals') || currentPath === '/dashboard?tab=goals';
     }
     return currentPath === path;
   };

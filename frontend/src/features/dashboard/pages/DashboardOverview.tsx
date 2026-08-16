@@ -21,6 +21,7 @@ import { WeeklyPerformanceChart } from '../components/WeeklyPerformanceChart';
 import { ConsistencyHeatmap } from '../components/ConsistencyHeatmap';
 import { EnergyLogModal } from '../components/EnergyLogModal';
 import { MissReasonModal } from '../components/MissReasonModal';
+import { QuickAddModal } from '../components/QuickAddModal';
 import { TodayDashboard } from './TodayDashboard';
 import { PlannerDashboard } from './PlannerDashboard';
 import { GoalsDashboard } from './GoalsDashboard';
@@ -45,6 +46,7 @@ export const DashboardOverview: React.FC = () => {
 
   // Modal states
   const [isEnergyOpen, setIsEnergyOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [missedHabit, setMissedHabit] = useState<Habit | null>(null);
 
   const fetchDashboardData = async () => {
@@ -56,7 +58,7 @@ export const DashboardOverview: React.FC = () => {
         analyticsService.getBehaviorAnalytics('30d'),
       ]);
       setHabits(fetchedHabits);
-      setGoals(fetchedGoals);
+      setGoals(fetchedGoals.goals || []);
       setAnalyticsData(fetchedAnalytics);
       setBehaviorData(fetchedBehavior);
     } catch (err) {
@@ -162,17 +164,17 @@ export const DashboardOverview: React.FC = () => {
         momentumScore={momentumScore}
         consistencyScore={consistencyScore}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={onOpenCreateHabit}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center justify-center gap-1.5 h-10 px-4 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer border border-transparent select-none"
             >
               <Plus className="h-4 w-4" />
               <span>Add Habit</span>
             </button>
             <button
-              onClick={() => setIsEnergyOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-surface hover:bg-surface-elevated border border-border text-foreground text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] cursor-pointer"
+              onClick={() => setIsTaskModalOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 h-10 px-4 bg-surface hover:bg-surface-elevated border border-border text-foreground text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] cursor-pointer select-none"
             >
               <Plus className="h-4 w-4 text-primary" />
               <span>Add Task</span>
@@ -456,6 +458,14 @@ export const DashboardOverview: React.FC = () => {
         isOpen={isEnergyOpen}
         onClose={() => setIsEnergyOpen(false)}
         onSave={fetchDashboardData}
+      />
+
+      {/* Quick Add Task Modal */}
+      <QuickAddModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        initialType="task"
+        onSuccess={fetchDashboardData}
       />
 
       {/* Miss skip reason modal */}

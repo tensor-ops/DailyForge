@@ -11,6 +11,7 @@ import { HabitsPage } from '@/features/habits/pages/HabitsPage';
 import { AnalyticsPage } from '@/features/dashboard/pages/AnalyticsPage';
 import { ForgeLabPage } from '@/features/dashboard/pages/ForgeLabPage';
 import { HabitDetailPage } from '@/features/dashboard/pages/HabitDetailPage';
+import { GoalsDashboard } from '@/features/dashboard/pages/GoalsDashboard';
 import { GoalDetailPage } from '@/features/dashboard/pages/GoalDetailPage';
 import { AIPage } from '@/features/ai/pages/AIPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
@@ -102,6 +103,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="today" element={<TodayDashboard />} />
         <Route path="habits" element={<HabitsPage />} />
         <Route path="habits/:id" element={<HabitDetailPage />} />
+        <Route path="goals" element={<GoalsDashboard />} />
         <Route path="goals/:id" element={<GoalDetailPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="forge-lab" element={<ForgeLabPage />} />
