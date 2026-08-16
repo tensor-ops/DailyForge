@@ -47,17 +47,18 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity animate-fade-in"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal Dialog */}
       <div
         className={cn(
-          'relative z-50 w-full bg-card border border-border rounded-panel p-6 shadow-popover animate-scale-in text-foreground',
+          'relative z-50 w-full bg-surface-elevated/95 backdrop-blur-xl border border-border/90 rounded-2xl p-5 sm:p-6 shadow-2xl animate-scale-in text-foreground my-auto text-left',
           sizeClasses[size],
           className
         )}
@@ -65,28 +66,28 @@ export const Modal: React.FC<ModalProps> = ({
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-start justify-between pb-4">
-          <div className="space-y-1">
+        <div className="flex items-start justify-between pb-3.5 border-b border-border/60">
+          <div className="space-y-1 min-w-0 pr-4">
             {title && (
-              <h2 className="text-lg font-semibold text-foreground tracking-tight">
+              <h2 className="text-base sm:text-lg font-extrabold text-foreground tracking-tight leading-tight truncate">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="text-xs sm:text-sm text-muted-foreground">{description}</p>
+              <p className="text-xs text-muted-foreground leading-normal">{description}</p>
             )}
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="rounded-xl p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer shrink-0"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Body Content */}
-        <div className="pt-1">{children}</div>
+        <div className="pt-3.5">{children}</div>
       </div>
     </div>
   );

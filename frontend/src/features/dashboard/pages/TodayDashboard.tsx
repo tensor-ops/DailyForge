@@ -9,6 +9,7 @@ import { TodayOverviewResponse, TodayHabitItem } from '@/types/today';
 // Design System Components
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Card } from '@/components/ui/Card';
+import { Modal } from '@/components/ui/Modal';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { QuickAddModal } from '../components/QuickAddModal';
@@ -621,11 +622,14 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = () => {
 
       {/* Reschedule Modal */}
       {rescheduleTarget && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface rounded-2xl border border-border p-5 max-w-sm w-full space-y-4 text-left shadow-2xl">
-            <h3 className="text-sm font-extrabold text-foreground">
-              Reschedule &quot;{rescheduleTarget.title}&quot;
-            </h3>
+        <Modal
+          isOpen={!!rescheduleTarget}
+          onClose={() => setRescheduleTarget(null)}
+          title={`Reschedule "${rescheduleTarget.title}"`}
+          description="Select a new preferred time for today's routine."
+          size="sm"
+        >
+          <div className="space-y-4 text-left">
             <div className="space-y-1">
               <label className="text-xs font-bold text-muted-foreground">New Preferred Time</label>
               <input
@@ -651,7 +655,7 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = () => {
               </button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
