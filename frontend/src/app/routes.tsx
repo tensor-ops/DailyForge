@@ -13,6 +13,7 @@ import { ForgeLabPage } from '@/features/dashboard/pages/ForgeLabPage';
 import { HabitDetailPage } from '@/features/dashboard/pages/HabitDetailPage';
 import { GoalsDashboard } from '@/features/dashboard/pages/GoalsDashboard';
 import { GoalDetailPage } from '@/features/dashboard/pages/GoalDetailPage';
+import { PlannerDashboard } from '@/features/dashboard/pages/PlannerDashboard';
 import { AIPage } from '@/features/ai/pages/AIPage';
 import { ProfilePage } from '@/features/profile/pages/ProfilePage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
@@ -105,6 +106,8 @@ export const AppRoutes: React.FC = () => {
         <Route path="habits/:id" element={<HabitDetailPage />} />
         <Route path="goals" element={<GoalsDashboard />} />
         <Route path="goals/:id" element={<GoalDetailPage />} />
+        <Route path="planner" element={<PlannerDashboard />} />
+        <Route path="calendar" element={<Navigate to="/planner" replace />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="forge-lab" element={<ForgeLabPage />} />
         <Route path="ai-insights" element={<AIPage />} />

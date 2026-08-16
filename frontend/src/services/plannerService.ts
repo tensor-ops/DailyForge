@@ -1,56 +1,87 @@
 import { apiClient } from './api';
-
-export interface PlannerDetail {
-  date: string;
-  habits: Array<{
-    id: string;
-    name: string;
-    category: string;
-    color: string;
-    preferredTime: string;
-    durationMinutes: number;
-  }>;
-  tasks: Array<{
-    id: string;
-    title: string;
-    status: string;
-    priority: string;
-    estimatedMinutes: number;
-    actualMinutes: number;
-  }>;
-  focusSessions: Array<{
-    id: string;
-    durationMinutes: number;
-    focusQuality: number;
-  }>;
-  capacity: {
-    availableMinutes: number;
-    plannedMinutes: number;
-    isOverloaded: boolean;
-    status: 'UNDER' | 'BALANCED' | 'NEAR_LIMIT' | 'OVER_CAPACITY';
-    shiftRecommendation: {
-      type: string;
-      action: string;
-      reason: string;
-      habitName: string;
-    } | null;
-  };
-}
+import {
+  PlannerOverviewResponse,
+  CalendarEvent,
+  AutoSchedulePreviewResponse,
+} from '@/types/planner';
 
 export const plannerService = {
-  async getPlanner(date?: string): Promise<PlannerDetail> {
-    const res = await apiClient.get<{ success: boolean; data: PlannerDetail }>('/planner', {
-      params: { date },
+  async getPlannerOverview(params?: {
+    date?: string;
+    view?: 'day' | 'week' | 'month';
+    startDate?: string;
+    endDate?: string;
+  }): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.get<{ success: boolean; data: PlannerOverviewResponse }>('/planner', {
+      params,
     });
     return res.data.data;
   },
 
-  async rescheduleEvent(id: string, type: 'task' | 'habit', newDate: string): Promise<any> {
-    const res = await apiClient.post<{ success: boolean; data: any }>('/planner/reschedule', {
-      id,
-      type,
-      newDate,
-    });
+  async createEvent(data: Partial<CalendarEvent>): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.post<{ success: boolean; data: PlannerOverviewResponse }>(
+      '/planner/events',
+      data
+    );
+    return res.data.data;
+  },
+
+  async updateEvent(id: string, data: Partial<CalendarEvent>): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.patch<{ success: boolean; data: PlannerOverviewResponse }>(
+      `/planner/events/${id}`,
+      data
+    );
+    return res.data.data;
+  },
+
+  async deleteEvent(id: string): Promise<void> {
+    await apiClient.delete(`/planner/events/${id}`);
+  },
+
+  async completeEvent(id: string): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.post<{ success: boolean; data: PlannerOverviewResponse }>(
+      `/planner/events/${id}/complete`
+    );
+    return res.data.data;
+  },
+
+  async rescheduleEvent(payload: {
+    id: string;
+    newDate?: string;
+    newStartTime?: string;
+    newEndTime?: string;
+  }): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.post<{ success: boolean; data: PlannerOverviewResponse }>(
+      '/planner/events/reschedule',
+      payload
+    );
+    return res.data.data;
+  },
+
+  async applyRecommendation(payload: {
+    eventId?: string | null;
+    targetDate?: string;
+  }): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.post<{ success: boolean; data: PlannerOverviewResponse }>(
+      '/planner/recommendations/apply',
+      payload
+    );
+    return res.data.data;
+  },
+
+  async getAutoSchedulePreview(date?: string): Promise<AutoSchedulePreviewResponse> {
+    const res = await apiClient.get<{ success: boolean; data: AutoSchedulePreviewResponse }>(
+      '/planner/auto-schedule/preview',
+      { params: { date } }
+    );
+    return res.data.data;
+  },
+
+  async applyAutoSchedule(date: string, events: any[]): Promise<PlannerOverviewResponse> {
+    const res = await apiClient.post<{ success: boolean; data: PlannerOverviewResponse }>(
+      '/planner/auto-schedule/apply',
+      { date, events }
+    );
     return res.data.data;
   },
 };

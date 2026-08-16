@@ -116,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           icon: CheckCircle2,
           badge: activeHabitsCount !== null ? activeHabitsCount : null,
         },
-        { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
+        { path: '/planner', label: 'Planner', icon: CalendarIcon },
         {
           path: '/goals',
           label: 'Goals',
@@ -164,6 +164,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
     if (path === '/today') {
       return location.pathname === '/today' || currentPath === '/dashboard?tab=today';
+    }
+    if (path === '/planner') {
+      return (
+        location.pathname.startsWith('/planner') ||
+        location.pathname.startsWith('/calendar') ||
+        currentPath === '/dashboard?tab=calendar' ||
+        currentPath === '/dashboard?tab=planner'
+      );
     }
     if (path === '/goals') {
       return location.pathname.startsWith('/goals') || currentPath === '/dashboard?tab=goals';
