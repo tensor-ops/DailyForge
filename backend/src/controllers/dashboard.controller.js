@@ -2,6 +2,7 @@ const Habit = require('../models/Habit');
 const Task = require('../models/Task');
 const FocusSession = require('../models/FocusSession');
 const behaviorAnalyticsService = require('../services/behaviorAnalytics.service');
+const todayService = require('../services/today.service');
 const { formatDate } = require('../utils/dates');
 const { sendSuccess } = require('../utils/response');
 
@@ -21,7 +22,7 @@ async function getOverview(req, res, next) {
 
     // Today progress calculation
     const totalTodayRoutines = habits.length;
-    const completedTodayRoutines = habits.filter(h => h.completionRate > 75).length; // Proxy count matching completion rates
+    const completedTodayRoutines = habits.filter(h => h.completionRate > 75).length;
     const todayRate = totalTodayRoutines > 0 ? Math.round((completedTodayRoutines / totalTodayRoutines) * 100) : 78;
 
     // Heatmap data array
@@ -89,53 +90,8 @@ async function getOverview(req, res, next) {
 
 async function getTodayCockpit(req, res, next) {
   try {
-    const userId = req.user._id;
-    const dateStr = formatDate(new Date());
-
-    const habits = await Habit.find({ userId, isArchived: false }).lean();
-    const tasks = await Task.find({ userId, scheduledStart: dateStr }).lean();
-    const focusSessions = await FocusSession.find({ userId }).limit(5).lean();
-
-    const totalTodayRoutines = habits.length;
-    const completedTodayRoutines = habits.filter(h => h.completionRate > 75).length;
-    const todayRate = totalTodayRoutines > 0 ? Math.round((completedTodayRoutines / totalTodayRoutines) * 100) : 78;
-
-    const nextBestAction = {
-      action: 'DSA Practice',
-      reason: 'High-priority goal and strong historical completion at this time block.',
-      suggestedTime: '7:30 PM',
-      estimatedDuration: 60,
-      priority: 'high',
-    };
-
-    return sendSuccess(res, {
-      date: dateStr,
-      progress: {
-        percentage: todayRate,
-        completedCount: completedTodayRoutines || 7,
-        totalCount: totalTodayRoutines || 9,
-        remainingCount: Math.max(0, totalTodayRoutines - completedTodayRoutines) || 2,
-      },
-      habits: habits.map(h => ({
-        id: h._id.toString(),
-        name: h.name,
-        category: h.category,
-        preferredTime: h.preferredTime || '07:30 PM',
-        streak: h.currentStreak,
-        isCompleted: h.completionRate > 75,
-      })),
-      tasks: tasks.map(t => ({
-        id: t._id.toString(),
-        title: t.title,
-        status: t.status,
-        priority: t.priority,
-      })),
-      nextBestAction,
-      capacity: {
-        focusHours: '2h 40m',
-        remainingMins: 160,
-      },
-    }, 'Today cockpit details compiled successfully');
+    const data = await todayService.getTodayOverview(req.user._id, req.query.date);
+    return sendSuccess(res, data, 'Today cockpit details compiled successfully');
   } catch (error) {
     next(error);
   }

@@ -6,6 +6,7 @@ import { LandingPage } from '@/features/landing/pages/LandingPage';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 import { DashboardOverview } from '@/features/dashboard/pages/DashboardOverview';
+import { TodayDashboard } from '@/features/dashboard/pages/TodayDashboard';
 import { HabitsPage } from '@/features/habits/pages/HabitsPage';
 import { AnalyticsPage } from '@/features/dashboard/pages/AnalyticsPage';
 import { ForgeLabPage } from '@/features/dashboard/pages/ForgeLabPage';
@@ -98,6 +99,7 @@ export const AppRoutes: React.FC = () => {
         }
       >
         <Route path="dashboard" element={<DashboardOverview />} />
+        <Route path="today" element={<TodayDashboard />} />
         <Route path="habits" element={<HabitsPage />} />
         <Route path="habits/:id" element={<HabitDetailPage />} />
         <Route path="goals/:id" element={<GoalDetailPage />} />

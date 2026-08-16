@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '@/utils/cn';
 import {
@@ -22,6 +22,9 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { Logo } from '@/components/brand/Logo';
 import { Avatar } from '@/components/ui/Avatar';
+import { habitService } from '@/services/habitService';
+import { todayService } from '@/services/todayService';
+import { analyticsService } from '@/services/analyticsService';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -33,7 +36,7 @@ export interface NavItem {
   path: string;
   label: string;
   icon: React.ComponentType<any>;
-  badge?: string | null;
+  badge?: string | number | null;
   isAi?: boolean;
 }
 
@@ -41,45 +44,6 @@ export interface NavGroup {
   groupName: string;
   items: NavItem[];
 }
-
-export const NAV_GROUPS: NavGroup[] = [
-  {
-    groupName: 'Main',
-    items: [
-      { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-      { path: '/dashboard?tab=today', label: 'Today', icon: Activity },
-      { path: '/habits', label: 'My Habits', icon: CheckCircle2, badge: '5' },
-      { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
-      { path: '/dashboard?tab=goals', label: 'Goals', icon: Target },
-    ],
-  },
-  {
-    groupName: 'Performance',
-    items: [
-      { path: '/analytics', label: 'Analytics', icon: BarChart3 },
-      { path: '/analytics?tab=growth', label: 'Growth', icon: TrendingUp },
-      { path: '/analytics?tab=momentum', label: 'Momentum', icon: Flame },
-      { path: '/analytics?tab=milestones', label: 'Milestones', icon: Trophy },
-      { path: '/forge-lab', label: 'Forge Lab', icon: Beaker },
-    ],
-  },
-  {
-    groupName: 'Intelligence',
-    items: [
-      { path: '/ai-insights', label: 'Forge Insights', icon: Sparkles, isAi: true },
-      { path: '/ai-insights?tab=coach', label: 'AI Coach', icon: Bot, isAi: true, badge: 'AI' },
-    ],
-  },
-  {
-    groupName: 'System',
-    items: [
-      { path: '/settings', label: 'Settings', icon: Settings },
-    ],
-  },
-];
-
-// Flattened for compatibility/mobile nav usage if needed
-export const NAV_ITEMS = NAV_GROUPS.flatMap(g => g.items);
 
 export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
@@ -89,10 +53,104 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { user } = useAuth();
   const location = useLocation();
 
+  const [activeHabitsCount, setActiveHabitsCount] = useState<number | null>(null);
+  const [todayRemainingCount, setTodayRemainingCount] = useState<number | null>(null);
+  const [momentumScore, setMomentumScore] = useState<number>(84);
+
+  const fetchBadgeCounts = async () => {
+    try {
+      const [overviewData, todayData, behaviorData] = await Promise.all([
+        habitService.getHabitsOverview().catch(() => null),
+        todayService.getTodayOverview().catch(() => null),
+        analyticsService.getBehaviorAnalytics('30d').catch(() => null),
+      ]);
+
+      if (overviewData) {
+        setActiveHabitsCount(overviewData.summary.activeHabits);
+      }
+      if (todayData) {
+        setTodayRemainingCount(todayData.progress.remaining);
+      }
+      if (behaviorData?.momentum?.score) {
+        setMomentumScore(behaviorData.momentum.score);
+      }
+    } catch {
+      // Graceful fallback
+    }
+  };
+
+  useEffect(() => {
+    fetchBadgeCounts();
+
+    const handleUpdate = () => fetchBadgeCounts();
+    window.addEventListener('habits-updated', handleUpdate);
+    window.addEventListener('tasks-updated', handleUpdate);
+    return () => {
+      window.removeEventListener('habits-updated', handleUpdate);
+      window.removeEventListener('tasks-updated', handleUpdate);
+    };
+  }, []);
+
+  const navGroups: NavGroup[] = [
+    {
+      groupName: 'Main',
+      items: [
+        { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+        {
+          path: '/today',
+          label: 'Today',
+          icon: Activity,
+          badge: todayRemainingCount && todayRemainingCount > 0 ? todayRemainingCount : null,
+        },
+        {
+          path: '/habits',
+          label: 'My Habits',
+          icon: CheckCircle2,
+          badge: activeHabitsCount !== null ? activeHabitsCount : null,
+        },
+        { path: '/dashboard?tab=calendar', label: 'Calendar', icon: CalendarIcon },
+        { path: '/dashboard?tab=goals', label: 'Goals', icon: Target },
+      ],
+    },
+    {
+      groupName: 'Performance',
+      items: [
+        { path: '/analytics', label: 'Analytics', icon: BarChart3 },
+        { path: '/analytics?tab=growth', label: 'Growth', icon: TrendingUp },
+        {
+          path: '/analytics?tab=momentum',
+          label: 'Momentum',
+          icon: Flame,
+          badge: `${momentumScore}`,
+        },
+        { path: '/analytics?tab=milestones', label: 'Milestones', icon: Trophy },
+        { path: '/forge-lab', label: 'Forge Lab', icon: Beaker },
+      ],
+    },
+    {
+      groupName: 'Intelligence',
+      items: [
+        { path: '/ai-insights', label: 'Forge Insights', icon: Sparkles, isAi: true },
+        { path: '/ai-insights?tab=coach', label: 'AI Coach', icon: Bot, isAi: true, badge: 'AI' },
+      ],
+    },
+    {
+      groupName: 'System',
+      items: [{ path: '/settings', label: 'Settings', icon: Settings }],
+    },
+  ];
+
   const currentPath = location.pathname + location.search;
   const checkActive = (path: string) => {
     if (path === '/dashboard') {
-      return currentPath === '/dashboard' || currentPath === '/dashboard/';
+      return (
+        currentPath === '/dashboard' ||
+        currentPath === '/dashboard/' ||
+        (location.pathname === '/dashboard' && !location.search)
+      );
+    }
+    if (path === '/today') {
+      return location.pathname === '/today' || currentPath === '/dashboard?tab=today';
     }
     return currentPath === path;
   };
@@ -105,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
     >
       {/* Brand Header */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-border/70">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-border/70 shrink-0">
         <NavLink
           to="/dashboard"
           className={cn(
@@ -113,20 +171,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             isCollapsed && 'justify-center w-full'
           )}
         >
-          {isCollapsed ? (
-            <Logo variant="icon" size={32} />
-          ) : (
-            <Logo variant="full" size={32} />
-          )}
+          {isCollapsed ? <Logo variant="icon" size={32} /> : <Logo variant="full" size={32} />}
         </NavLink>
       </div>
 
       {/* Quick Action Button */}
-      <div className="p-3">
+      <div className="p-3 shrink-0">
         <button
           onClick={onOpenCreateHabit}
           className={cn(
-            'w-full flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-sm transition-all duration-150 shadow-sm select-none',
+            'w-full flex items-center justify-center gap-2 rounded-xl py-2.5 font-medium text-sm transition-all duration-150 shadow-sm select-none cursor-pointer',
             'bg-primary text-primary-foreground hover:bg-primary-hover active:scale-[0.98]',
             isCollapsed && 'px-0 py-2.5'
           )}
@@ -137,9 +191,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      {/* Navigation Groups */}
-      <div className="flex-1 px-3 py-2 space-y-4 overflow-y-auto">
-        {NAV_GROUPS.map((group) => (
+      {/* Navigation Groups (Scrollable Body) */}
+      <div className="flex-1 px-3 py-2 space-y-4 overflow-y-auto scrollbar-none">
+        {navGroups.map((group) => (
           <div key={group.groupName} className="space-y-1">
             {!isCollapsed && (
               <h4 className="px-3 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 opacity-60">
@@ -156,7 +210,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     to={item.path}
                     className={() =>
                       cn(
-                        'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative border border-transparent',
+                        'flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all group relative border border-transparent select-none',
                         isActive
                           ? 'bg-primary/[0.12] border-primary/15 text-foreground'
                           : 'hover:text-foreground hover:bg-muted/40 text-muted-foreground',
@@ -176,16 +230,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       )}
                       size={18}
                     />
-                    
+
                     {!isCollapsed && (
                       <div className="flex items-center justify-between flex-1">
                         <span className="truncate">{item.label}</span>
-                        {item.badge && (
+                        {item.badge !== null && item.badge !== undefined && (
                           <span
                             className={cn(
-                              'text-[9px] font-bold px-1.5 py-0.5 rounded-md',
+                              'text-[9px] font-bold px-1.5 py-0.5 rounded-md font-mono',
                               item.isAi
                                 ? 'bg-ai/15 text-ai border border-ai/30'
+                                : isActive
+                                ? 'bg-primary/20 text-primary'
                                 : 'bg-muted text-muted-foreground'
                             )}
                           >
@@ -208,7 +264,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* User / Collapse Footer */}
-      <div className="p-3 border-t border-border/70 space-y-2">
+      <div className="p-3 border-t border-border/70 space-y-2 shrink-0">
         {/* User profile link */}
         {user && (
           <NavLink
