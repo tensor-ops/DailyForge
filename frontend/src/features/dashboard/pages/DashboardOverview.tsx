@@ -22,6 +22,7 @@ import { ConsistencyHeatmap } from '../components/ConsistencyHeatmap';
 import { EnergyLogModal } from '../components/EnergyLogModal';
 import { MissReasonModal } from '../components/MissReasonModal';
 import { QuickAddModal } from '../components/QuickAddModal';
+import { CreateHabitModal } from '@/features/habits/components/CreateHabitModal';
 import { TodayDashboard } from './TodayDashboard';
 import { PlannerDashboard } from './PlannerDashboard';
 import { GoalsDashboard } from './GoalsDashboard';
@@ -45,6 +46,7 @@ export const DashboardOverview: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Modal states
+  const [isHabitModalOpen, setIsHabitModalOpen] = useState(false);
   const [isEnergyOpen, setIsEnergyOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [missedHabit, setMissedHabit] = useState<Habit | null>(null);
@@ -166,7 +168,13 @@ export const DashboardOverview: React.FC = () => {
         actions={
           <div className="flex items-center gap-2.5">
             <button
-              onClick={onOpenCreateHabit}
+              onClick={() => {
+                if (onOpenCreateHabit) {
+                  onOpenCreateHabit();
+                } else {
+                  setIsHabitModalOpen(true);
+                }
+              }}
               className="inline-flex items-center justify-center gap-1.5 h-10 px-4 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer border border-transparent select-none"
             >
               <Plus className="h-4 w-4" />
@@ -474,6 +482,13 @@ export const DashboardOverview: React.FC = () => {
         habit={missedHabit}
         onClose={() => setMissedHabit(null)}
         onLogged={fetchDashboardData}
+      />
+
+      {/* Create Habit Modal */}
+      <CreateHabitModal
+        isOpen={isHabitModalOpen}
+        onClose={() => setIsHabitModalOpen(false)}
+        onSuccess={fetchDashboardData}
       />
     </div>
   );
