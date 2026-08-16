@@ -34,10 +34,7 @@ export interface ExperimentItem {
     | 'INCONCLUSIVE'
     | 'NO_IMPROVEMENT'
     | 'NEGATIVE'
-    | 'DISCARDED'
-    | 'active'
-    | 'completed'
-    | 'discarded';
+    | 'DISCARDED';
   startDate: string;
   endDate: string;
   durationDays: number;

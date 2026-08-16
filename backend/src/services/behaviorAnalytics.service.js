@@ -43,7 +43,11 @@ async function getBehaviorAnalytics(userId, timeRange = '30d') {
     date: { $gte: startDateStr, $lte: todayStr },
   }).lean();
 
-  const goals = await Goal.find({ userId, status: 'active' }).lean();
+  const goals = await Goal.find({
+    userId,
+    isArchived: false,
+    status: { $in: ['ON_TRACK', 'AHEAD', 'AT_RISK', 'BEHIND'] },
+  }).lean();
   const experiments = await Experiment.find({ userId }).lean();
 
   // 2. Consistency Index

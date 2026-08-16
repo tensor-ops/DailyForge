@@ -71,4 +71,30 @@ export const todayService = {
     const newStatus = currentStatus === 'completed' ? 'todo' : 'completed';
     await apiClient.patch(`/tasks/${taskId}`, { status: newStatus });
   },
+
+  async logFocusSession(data: {
+    habitId?: string;
+    taskId?: string;
+    goalId?: string;
+    durationMinutes: number;
+    focusQuality?: number; // 1-10
+    distractionCount?: number;
+    startedAt?: string;
+    endedAt?: string;
+  }): Promise<any> {
+    const res = await apiClient.post<{ success: boolean; data: any }>(
+      '/today/focus-session',
+      data
+    );
+    return res.data.data;
+  },
+
+  async getFocusSessions(date?: string): Promise<any> {
+    const params = date ? { date } : {};
+    const res = await apiClient.get<{ success: boolean; data: any }>(
+      '/today/focus-sessions',
+      { params }
+    );
+    return res.data.data;
+  },
 };

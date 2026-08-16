@@ -52,6 +52,7 @@ export interface Habit {
   startDate: string;
   color?: string;
   isArchived: boolean;
+  lastCompletedAt?: string | null; // YYYY-MM-DD
 
   // Computed / cached stats
   currentStreak: number;

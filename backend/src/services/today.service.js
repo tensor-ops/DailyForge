@@ -3,6 +3,7 @@ const HabitCompletion = require('../models/HabitCompletion');
 const Task = require('../models/Task');
 const FocusSession = require('../models/FocusSession');
 const DailyReview = require('../models/DailyReview');
+const DailySnapshot = require('../models/DailySnapshot');
 const User = require('../models/User');
 const { isDateScheduled, calculateHabitStats } = require('./habitAnalytics.service');
 const { generateDailySparkNotification } = require('./dailySpark.service');
@@ -459,6 +460,27 @@ async function submitDailyReview(userId, { rating, notes = '', date = null }) {
     { upsert: true, new: true }
   );
 
+  // BUG-7 FIX: Write a DailySnapshot for long-term trend analysis
+  // Upsert so multiple submits on the same day don't duplicate records
+  await DailySnapshot.findOneAndUpdate(
+    { userId, date: dateStr },
+    {
+      userId,
+      date: dateStr,
+      plannedHabits: overview.progress.habitsTotal,
+      completedHabits: overview.progress.habitsCompleted,
+      missedHabits: Math.max(0, overview.progress.habitsTotal - overview.progress.habitsCompleted),
+      plannedTasks: overview.progress.tasksTotal,
+      completedTasks: overview.progress.tasksCompleted,
+      completionRate: overview.progress.percentage,
+      executionRate: overview.progress.percentage, // same baseline; can diverge with capacity data
+      focusMinutes: overview.focusTime.completedMinutes,
+      plannedMinutes: overview.focusTime.plannedMinutes,
+      capacityMinutes: overview.capacity?.availableMinutes || 0,
+    },
+    { upsert: true, new: true }
+  ).catch(() => null); // Non-critical — don't fail review submission if snapshot write fails
+
   return {
     review,
     forgeNote,
@@ -492,10 +514,69 @@ async function rescheduleItem(userId, { id, type, newTime, newDate }) {
   throw new Error('Invalid reschedule type');
 }
 
+/**
+ * Logs a focus session for today.
+ */
+async function logFocusSession(userId, { habitId, taskId, goalId, durationMinutes, focusQuality, distractionCount, startedAt, endedAt }) {
+  const now = new Date();
+  const start = startedAt ? new Date(startedAt) : new Date(now.getTime() - (durationMinutes || 25) * 60000);
+  const end = endedAt ? new Date(endedAt) : now;
+  const duration = durationMinutes || Math.max(1, Math.round((end.getTime() - start.getTime()) / 60000));
+
+  const session = await FocusSession.create({
+    userId,
+    habitId: habitId || null,
+    taskId: taskId || null,
+    goalId: goalId || null,
+    startedAt: start,
+    endedAt: end,
+    durationMinutes: duration,
+    focusQuality: focusQuality || 5,
+    distractionCount: distractionCount || 0,
+  });
+
+  return session.toJSON();
+}
+
+/**
+ * Returns focus sessions for a given date (defaults to today).
+ */
+async function getFocusSessions(userId, dateParam = null) {
+  const dateStr = dateParam || formatDate(new Date());
+  const sessions = await FocusSession.find({
+    userId,
+    startedAt: {
+      $gte: new Date(dateStr + 'T00:00:00.000Z'),
+      $lte: new Date(dateStr + 'T23:59:59.999Z'),
+    },
+  }).sort({ startedAt: 1 }).lean();
+
+  const totalMinutes = sessions.reduce((acc, s) => acc + (s.durationMinutes || 0), 0);
+
+  return {
+    date: dateStr,
+    sessions: sessions.map((s) => ({
+      id: s._id.toString(),
+      habitId: s.habitId?.toString() || null,
+      taskId: s.taskId?.toString() || null,
+      goalId: s.goalId?.toString() || null,
+      startedAt: s.startedAt,
+      endedAt: s.endedAt,
+      durationMinutes: s.durationMinutes,
+      focusQuality: s.focusQuality,
+      distractionCount: s.distractionCount,
+    })),
+    totalMinutes,
+    formattedTotal: formatDuration(totalMinutes),
+  };
+}
+
 module.exports = {
   getTodayOverview,
   submitDailyReview,
   rescheduleItem,
+  logFocusSession,
+  getFocusSessions,
   parseTimeToMinutes,
   formatMinutesToTime,
   formatDuration,

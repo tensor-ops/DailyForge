@@ -28,8 +28,28 @@ async function rescheduleItem(req, res, next) {
   }
 }
 
+async function logFocusSession(req, res, next) {
+  try {
+    const data = await todayService.logFocusSession(req.user._id, req.body);
+    return sendSuccess(res, data, 'Focus session logged successfully', 201);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getFocusSessions(req, res, next) {
+  try {
+    const data = await todayService.getFocusSessions(req.user._id, req.query.date);
+    return sendSuccess(res, data, 'Focus sessions retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   getTodayOverview,
   submitDailyReview,
   rescheduleItem,
+  logFocusSession,
+  getFocusSessions,
 };

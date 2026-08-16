@@ -9,4 +9,8 @@ router.get('/', todayController.getTodayOverview);
 router.post('/review', todayController.submitDailyReview);
 router.post('/reschedule', todayController.rescheduleItem);
 
+// Focus Sessions — exposed API for FocusSession model
+router.post('/focus-session', todayController.logFocusSession);
+router.get('/focus-sessions', todayController.getFocusSessions);
+
 module.exports = router;
