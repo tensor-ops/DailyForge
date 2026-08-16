@@ -11,12 +11,12 @@ import { Goal } from '@/types/goal';
 import { AnalyticsSummary } from '@/types/analytics';
 import { BehaviorAnalytics } from '@/types/behavior';
 import { Flame, CheckCircle2, TrendingUp, Sparkles, Plus, ArrowRight, Check } from 'lucide-react';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Card } from '@/components/ui/Card';
 
 // Subcomponents
+import { DashboardGreeting } from '../components/DashboardGreeting';
 import { WeeklyPerformanceChart } from '../components/WeeklyPerformanceChart';
 import { ConsistencyHeatmap } from '../components/ConsistencyHeatmap';
 import { EnergyLogModal } from '../components/EnergyLogModal';
@@ -118,13 +118,6 @@ export const DashboardOverview: React.FC = () => {
     }
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    if (hour < 21) return 'Good evening';
-    return 'Good night';
-  };
 
   const completedCount = habits.filter((h) => h.completedToday).length;
   const totalCount = habits.length;
@@ -160,9 +153,14 @@ export const DashboardOverview: React.FC = () => {
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-left selection:bg-primary/20 select-none">
       {/* 1. Header greeting */}
-      <PageHeader
-        title={`${getGreeting()}, ${user?.name || 'Developer'} 👋`}
-        description="Build consistency. Forge progress."
+      <DashboardGreeting
+        user={user}
+        habits={habits}
+        analyticsData={analyticsData}
+        behaviorData={behaviorData}
+        currentStreak={maxStreak}
+        momentumScore={momentumScore}
+        consistencyScore={consistencyScore}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -378,7 +376,13 @@ export const DashboardOverview: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Consistency Heatmap (Left, 7 columns) */}
         <div className="lg:col-span-7">
-          <ConsistencyHeatmap />
+          <ConsistencyHeatmap
+            habits={habits}
+            behaviorData={behaviorData}
+            analyticsData={analyticsData}
+            isLoading={isLoading}
+            onOpenCreateHabit={onOpenCreateHabit}
+          />
         </div>
 
         {/* Goal Progress (Right, 5 columns) */}
