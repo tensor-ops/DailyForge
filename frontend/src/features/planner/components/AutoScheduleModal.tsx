@@ -55,30 +55,33 @@ export const AutoScheduleModal: React.FC<AutoScheduleModalProps> = ({
       isOpen={isOpen}
       onClose={onClose}
       title="Auto Schedule Optimization"
-      description="Daily Forge will balance your capacity and schedule high-impact goal actions."
+      description="Daily Forge balances your capacity and schedules high-impact goal routines."
       size="md"
     >
       {loading ? (
-        <div className="py-12 text-center text-xs text-muted-foreground animate-pulse">
-          Analyzing capacity, optimal windows, and goal priorities...
+        <div className="py-16 text-center space-y-3">
+          <div className="h-8 w-8 mx-auto border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-xs text-muted-foreground font-semibold">
+            Analyzing capacity, optimal windows, and goal priorities...
+          </p>
         </div>
       ) : !preview ? null : (
         <div className="space-y-4 text-left pt-1">
           {/* Comparison Delta Cards */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-2xl bg-surface-sunken border border-border/80 text-xs">
-              <span className="text-[10px] text-muted-foreground font-bold uppercase block mb-1">
+            <div className="p-3.5 rounded-2xl bg-surface-sunken border border-border/80 text-xs">
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">
                 Capacity Load
               </span>
               <div className="flex items-center gap-1.5 font-extrabold text-foreground">
                 <span className="text-warning line-through">{preview.capacityBefore}</span>
                 <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                <span className="text-success">{preview.capacityAfter} (Balanced)</span>
+                <span className="text-emerald-400">{preview.capacityAfter} (Balanced)</span>
               </div>
             </div>
 
-            <div className="p-3 rounded-2xl bg-surface-sunken border border-border/80 text-xs">
-              <span className="text-[10px] text-muted-foreground font-bold uppercase block mb-1">
+            <div className="p-3.5 rounded-2xl bg-surface-sunken border border-border/80 text-xs">
+              <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">
                 Goal Alignment
               </span>
               <div className="flex items-center gap-1.5 font-extrabold text-foreground">
@@ -89,7 +92,7 @@ export const AutoScheduleModal: React.FC<AutoScheduleModalProps> = ({
             </div>
           </div>
 
-          {/* Proposed Optimizations List */}
+          {/* Key Adjustments */}
           <div className="space-y-2">
             <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider block">
               Key Adjustments
@@ -98,52 +101,67 @@ export const AutoScheduleModal: React.FC<AutoScheduleModalProps> = ({
               {preview.changes.map((c, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded-xl bg-surface-elevated border border-border/70 text-xs flex items-center gap-2"
+                  className="p-2.5 rounded-xl bg-surface-elevated border border-border/70 text-xs flex items-center gap-2.5"
                 >
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/25 uppercase shrink-0">
+                  <span className="text-[9px] font-extrabold px-2 py-0.5 rounded bg-primary/15 text-primary border border-primary/25 uppercase shrink-0">
                     {c.action}
                   </span>
-                  <span className="text-foreground font-medium truncate">{c.item}</span>
+                  <span className="text-foreground font-semibold truncate text-[11px]">
+                    {c.item}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Timeline preview */}
+          {/* Optimized Day Flow Blocks */}
           <div className="space-y-1.5">
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block">
-              Optimized Day Flow ({preview.proposedEvents.length} blocks)
-            </span>
-            <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">
+                Optimized Day Flow
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground font-bold">
+                {preview.proposedEvents.length} blocks
+              </span>
+            </div>
+            <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
               {preview.proposedEvents.map((e, idx) => (
                 <div
                   key={idx}
-                  className="p-2 rounded-lg bg-surface-sunken border border-border/50 text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-xl bg-surface-sunken border border-border/50 text-xs flex items-center justify-between gap-3"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono text-primary font-bold">{e.startTime}</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-[10px] font-mono text-primary font-extrabold shrink-0">
+                      {e.startTime}
+                    </span>
                     <span className="text-foreground font-bold truncate">{e.title}</span>
                   </div>
-                  <span className="text-[9px] text-muted-foreground truncate">{e.goalTitle}</span>
+                  {e.goalTitle && (
+                    <span className="text-[9px] text-muted-foreground font-semibold truncate shrink-0">
+                      🎯 {e.goalTitle}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border/60">
             <button
+              type="button"
               onClick={onClose}
-              className="px-3 py-1.5 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer"
+              className="px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-xl"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={handleApply}
               disabled={isApplying}
-              className="px-4 py-2 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+              className="px-4 py-2.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 active:scale-[0.98]"
             >
-              <Sparkles className="h-3.5 w-3.5 fill-white" />
+              <Sparkles className="h-4 w-4 fill-white" />
               <span>Apply Optimized Schedule</span>
             </button>
           </div>

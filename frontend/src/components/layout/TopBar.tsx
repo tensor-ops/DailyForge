@@ -36,11 +36,21 @@ export const TopBar: React.FC<TopBarProps> = ({
   const navigate = useNavigate();
 
   const getPageTitle = (pathname: string) => {
+    if (pathname.startsWith('/planner') || pathname.startsWith('/calendar')) return 'Planner';
+    if (pathname.startsWith('/goals')) return 'Goals';
+    if (pathname.startsWith('/habits')) return 'My Habits';
+
     switch (pathname) {
       case '/dashboard':
         return 'Dashboard';
+      case '/today':
+        return 'Today';
       case '/habits':
         return 'My Habits';
+      case '/planner':
+        return 'Planner';
+      case '/goals':
+        return 'Goals';
       case '/analytics':
         return 'Analytics';
       case '/ai-insights':
@@ -52,7 +62,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       case '/settings':
         return 'Settings';
       default:
-        return 'Today';
+        return 'Dashboard';
     }
   };
 

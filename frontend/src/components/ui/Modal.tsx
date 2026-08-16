@@ -47,24 +47,26 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Modal Dialog */}
-      <div
-        className={cn(
-          'relative z-50 w-full bg-surface-elevated/95 backdrop-blur-xl border border-border/90 rounded-2xl p-5 sm:p-6 shadow-2xl animate-scale-in text-foreground my-auto text-left',
-          sizeClasses[size],
-          className
-        )}
-        role="dialog"
-        aria-modal="true"
-      >
+      {/* Centering Wrapper */}
+      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 text-center">
+        {/* Modal Dialog */}
+        <div
+          className={cn(
+            'relative z-50 w-full bg-[#0D1527] border border-border/90 rounded-2xl p-5 sm:p-6 shadow-2xl animate-scale-in text-foreground text-left transition-all',
+            sizeClasses[size],
+            className
+          )}
+          role="dialog"
+          aria-modal="true"
+        >
         {/* Header */}
         <div className="flex items-start justify-between pb-3.5 border-b border-border/60">
           <div className="space-y-1 min-w-0 pr-4">
@@ -88,6 +90,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Body Content */}
         <div className="pt-3.5">{children}</div>
+      </div>
       </div>
     </div>
   );
