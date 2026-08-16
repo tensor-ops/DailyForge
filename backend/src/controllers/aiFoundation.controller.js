@@ -7,6 +7,16 @@ const retrievalService = require('../ai/rag/retrieval.service');
 const RecommendationEngine = require('../ai/recommendations/recommendationEngine.service');
 const InsightSynthesizer = require('../ai/insights/insightSynthesizer.service');
 const ChatOrchestrator = require('../ai/orchestrator/chatOrchestrator.service');
+
+// Phase 3 Systems
+const ForgeAIOrchestrator = require('../ai/orchestrator/ForgeAIOrchestrator');
+const NextBestActionEngine = require('../ai/recommendations/nextBestAction.service');
+const HabitRiskEngine = require('../ai/signals/HabitRiskEngine');
+const CoachingProfileEngine = require('../ai/context/CoachingProfileEngine');
+const ExperimentAI = require('../ai/experiments/experimentAI.service');
+const ReflectionEngine = require('../ai/reflection/reflectionEngine.service');
+const AIActionTransactionService = require('../ai/transactions/aiActionTransaction.service');
+
 const { sendSuccess, sendError } = require('../utils/response');
 
 // --- Phase 1 Handlers ---
@@ -127,9 +137,6 @@ async function searchKnowledgeBase(req, res, next) {
 
 // --- Phase 2 Handlers ---
 
-/**
- * GET /api/v1/ai/insights/feed
- */
 async function getInsightFeed(req, res, next) {
   try {
     const data = await InsightSynthesizer.getInsightFeed(req.user._id);
@@ -139,9 +146,6 @@ async function getInsightFeed(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/insights/:id/feedback
- */
 async function submitInsightFeedback(req, res, next) {
   try {
     const data = await InsightSynthesizer.submitFeedback(req.user._id, req.params.id, req.body);
@@ -151,9 +155,6 @@ async function submitInsightFeedback(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/recommendations/ranked
- */
 async function getRankedRecommendations(req, res, next) {
   try {
     const recommendations = await RecommendationEngine.getRankedRecommendations(req.user._id);
@@ -163,12 +164,9 @@ async function getRankedRecommendations(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/recommendations/:id/action
- */
 async function handleRecommendationAction(req, res, next) {
   try {
-    const { action } = req.body; // 'APPLY' | 'DISMISS'
+    const { action } = req.body;
     const updated = await RecommendationEngine.handleAction(req.user._id, req.params.id, action);
     return sendSuccess(res, updated, `Recommendation ${action.toLowerCase()}ed successfully`);
   } catch (err) {
@@ -176,9 +174,6 @@ async function handleRecommendationAction(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/recommendations/:id/feedback
- */
 async function submitRecommendationFeedback(req, res, next) {
   try {
     const updated = await RecommendationEngine.submitFeedback(req.user._id, req.params.id, req.body);
@@ -188,9 +183,6 @@ async function submitRecommendationFeedback(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/brief/daily
- */
 async function getDailyBrief(req, res, next) {
   try {
     const brief = await InsightSynthesizer.getDailyBrief(req.user._id);
@@ -200,9 +192,6 @@ async function getDailyBrief(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/review/weekly
- */
 async function getWeeklyReview(req, res, next) {
   try {
     const review = await InsightSynthesizer.getWeeklyReview(req.user._id);
@@ -212,9 +201,6 @@ async function getWeeklyReview(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/review/monthly
- */
 async function getMonthlyReview(req, res, next) {
   try {
     const review = await InsightSynthesizer.getMonthlyReview(req.user._id);
@@ -224,9 +210,6 @@ async function getMonthlyReview(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/chat
- */
 async function sendChatMessage(req, res, next) {
   try {
     const { message, conversationId } = req.body;
@@ -240,9 +223,6 @@ async function sendChatMessage(req, res, next) {
   }
 }
 
-/**
- * GET /api/v1/ai/chat/history
- */
 async function getChatHistory(req, res, next) {
   try {
     const history = await ChatOrchestrator.getHistory(req.user._id, req.query.conversationId);
@@ -252,15 +232,124 @@ async function getChatHistory(req, res, next) {
   }
 }
 
-/**
- * POST /api/v1/ai/actions/confirm
- */
 async function confirmAction(req, res, next) {
   try {
     const { messageId } = req.body;
     if (!messageId) return sendError(res, 'messageId is required', 400);
     const result = await ChatOrchestrator.confirmAction(req.user._id, messageId);
     return sendSuccess(res, result, 'Action confirmed and executed');
+  } catch (err) {
+    next(err);
+  }
+}
+
+// --- Phase 3 Handlers ---
+
+/**
+ * GET /api/v1/ai/next-best-action
+ */
+async function getNextBestActions(req, res, next) {
+  try {
+    const actions = await NextBestActionEngine.computeNextActions(req.user._id);
+    return sendSuccess(res, { actions, count: actions.length }, 'Next best actions computed');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/risk-map
+ */
+async function getHabitRiskMap(req, res, next) {
+  try {
+    const riskMap = await HabitRiskEngine.computeRiskMap(req.user._id);
+    return sendSuccess(res, riskMap, 'Habit risk telemetry computed');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/coaching-profile
+ */
+async function getCoachingProfile(req, res, next) {
+  try {
+    const profile = await CoachingProfileEngine.getProfile(req.user._id);
+    return sendSuccess(res, profile, 'Personalized coaching profile retrieved');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/experiments/generate
+ */
+async function generateExperimentProposal(req, res, next) {
+  try {
+    const proposal = await ExperimentAI.generateProposal(req.user._id, req.body.habitId || null);
+    return sendSuccess(res, proposal, 'N-of-1 trial proposal generated successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/experiments/evaluate/:id
+ */
+async function evaluateExperiment(req, res, next) {
+  try {
+    const evaluation = await ExperimentAI.evaluate(req.user._id, req.params.id);
+    return sendSuccess(res, evaluation, 'Experiment evaluated with closed-loop learning');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * GET /api/v1/ai/reflections/prompts
+ */
+async function getReflectionPrompts(req, res, next) {
+  try {
+    const prompts = await ReflectionEngine.getReflectionPrompts(req.user._id);
+    return sendSuccess(res, { prompts }, 'Reflection prompts retrieved');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/reflections/submit
+ */
+async function submitReflection(req, res, next) {
+  try {
+    const result = await ReflectionEngine.submitReflection(req.user._id, req.body);
+    return sendSuccess(res, result, 'Reflection submitted and stored as episodic memory');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/orchestrator/workflow
+ */
+async function runOrchestratorWorkflow(req, res, next) {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) return sendError(res, 'Prompt is required', 400);
+    const result = await ForgeAIOrchestrator.runWorkflow(req.user._id, prompt);
+    return sendSuccess(res, result, 'Workflow completed successfully');
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * POST /api/v1/ai/transactions/rollback/:id
+ */
+async function rollbackTransaction(req, res, next) {
+  try {
+    const result = await AIActionTransactionService.rollback(req.user._id, req.params.id);
+    return sendSuccess(res, result, 'Transaction rolled back successfully');
   } catch (err) {
     next(err);
   }
@@ -289,4 +378,14 @@ module.exports = {
   sendChatMessage,
   getChatHistory,
   confirmAction,
+  // Phase 3
+  getNextBestActions,
+  getHabitRiskMap,
+  getCoachingProfile,
+  generateExperimentProposal,
+  evaluateExperiment,
+  getReflectionPrompts,
+  submitReflection,
+  runOrchestratorWorkflow,
+  rollbackTransaction,
 };

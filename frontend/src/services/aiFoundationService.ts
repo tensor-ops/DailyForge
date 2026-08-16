@@ -8,9 +8,14 @@ import {
   WeeklyReviewData,
   MonthlyReviewData,
   ChatMessage,
+  NextBestAction,
+  HabitRiskMap,
+  CoachingProfile,
+  ReflectionPrompt,
 } from '@/types/aiFoundation';
 
 export const aiFoundationService = {
+  // Phase 1
   async getStatus(): Promise<AIStatusResponse> {
     const res = await apiClient.get<{ success: boolean; data: AIStatusResponse }>('/ai/status');
     return res.data.data;
@@ -21,6 +26,7 @@ export const aiFoundationService = {
     return res.data.data;
   },
 
+  // Phase 2
   async getInsightFeed(): Promise<{
     topInsight: InsightItem | null;
     feed: InsightItem[];
@@ -117,6 +123,52 @@ export const aiFoundationService = {
       success: boolean;
       data: { success: boolean; message: string };
     }>('/ai/actions/confirm', { messageId });
+    return res.data.data;
+  },
+
+  // Phase 3: Next Best Action, Risk Map, Profile, Experiments, Reflections & Rollback
+  async getNextBestActions(): Promise<{ actions: NextBestAction[]; count: number }> {
+    const res = await apiClient.get<{
+      success: boolean;
+      data: { actions: NextBestAction[]; count: number };
+    }>('/ai/next-best-action');
+    return res.data.data;
+  },
+
+  async getHabitRiskMap(): Promise<HabitRiskMap> {
+    const res = await apiClient.get<{ success: boolean; data: HabitRiskMap }>('/ai/risk-map');
+    return res.data.data;
+  },
+
+  async getCoachingProfile(): Promise<CoachingProfile> {
+    const res = await apiClient.get<{ success: boolean; data: CoachingProfile }>('/ai/coaching-profile');
+    return res.data.data;
+  },
+
+  async generateExperiment(habitId?: string): Promise<any> {
+    const res = await apiClient.post<{ success: boolean; data: any }>('/ai/experiments/generate', { habitId });
+    return res.data.data;
+  },
+
+  async evaluateExperiment(experimentId: string): Promise<any> {
+    const res = await apiClient.post<{ success: boolean; data: any }>(`/ai/experiments/evaluate/${experimentId}`);
+    return res.data.data;
+  },
+
+  async getReflectionPrompts(): Promise<{ prompts: ReflectionPrompt[] }> {
+    const res = await apiClient.get<{ success: boolean; data: { prompts: ReflectionPrompt[] } }>('/ai/reflections/prompts');
+    return res.data.data;
+  },
+
+  async submitReflection(data: { promptId: string; question: string; responseText: string }): Promise<any> {
+    const res = await apiClient.post<{ success: boolean; data: any }>('/ai/reflections/submit', data);
+    return res.data.data;
+  },
+
+  async rollbackTransaction(transactionId: string): Promise<{ success: boolean; message: string }> {
+    const res = await apiClient.post<{ success: boolean; data: { success: boolean; message: string } }>(
+      `/ai/transactions/rollback/${transactionId}`
+    );
     return res.data.data;
   },
 };

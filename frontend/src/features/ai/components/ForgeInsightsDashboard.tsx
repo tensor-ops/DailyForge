@@ -11,6 +11,8 @@ import {
 } from '@/types/aiFoundation';
 import { PersonalizationCoverageBadge } from './PersonalizationCoverageBadge';
 import { EvidenceDrawerModal } from '@/features/ai-insights/components/EvidenceDrawerModal';
+import { NextBestActionWidget } from './NextBestActionWidget';
+import { HabitRiskMapWidget } from './HabitRiskMapWidget';
 import {
   Sparkles,
   Zap,
@@ -153,6 +155,10 @@ export const ForgeInsightsDashboard: React.FC = () => {
           </span>
         </div>
       </div>
+
+      {/* Real-time Next Best Action & Risk Telemetry */}
+      <NextBestActionWidget />
+      <HabitRiskMapWidget />
 
       {/* Navigation Tabs */}
       <div className="flex items-center gap-1.5 border-b border-border/60 pb-2 overflow-x-auto scrollbar-none font-bold text-xs">

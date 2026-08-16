@@ -165,3 +165,57 @@ export interface ChatMessage {
   proposedAction?: ProposedAction;
   createdAt: string;
 }
+
+// Phase 3 Types
+export interface NextBestAction {
+  id: string;
+  title: string;
+  reason: string;
+  durationMinutes: number;
+  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  expectedValue: string;
+  actionLabel: string;
+  actionType: string;
+  entityId?: string;
+}
+
+export interface HabitRiskItem {
+  habitId: string;
+  name: string;
+  category: string;
+  currentStreak: number;
+  recent7DayRate: string;
+  frictionLevel: string;
+  riskLevel: 'AT_RISK' | 'WATCH' | 'STABLE';
+  reason: string;
+  suggestedMitigation: string;
+}
+
+export interface HabitRiskMap {
+  atRisk: HabitRiskItem[];
+  watch: HabitRiskItem[];
+  stable: HabitRiskItem[];
+}
+
+export interface CoachingProfile {
+  preferredExecutionWindows: Array<{
+    window: string;
+    reliabilityRate: number;
+    isPeak: boolean;
+  }>;
+  highFrictionPeriods: Array<{
+    period: string;
+    reason: string;
+  }>;
+  strongWeekdays: string[];
+  weakWeekdays: string[];
+  preferredSessionLengthMinutes: number;
+  recoveryVelocityHours: number;
+  successfulExperimentPatterns: string[];
+}
+
+export interface ReflectionPrompt {
+  id: string;
+  category: string;
+  prompt: string;
+}

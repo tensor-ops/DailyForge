@@ -26,7 +26,7 @@ router.get('/usage', aiFoundationController.getUsageStats);
 // Coaching Knowledge Base (RAG)
 router.get('/rag/search', aiFoundationController.searchKnowledgeBase);
 
-// --- Phase 2: Forge Insights, Recommendations & Daily/Weekly Reviews ---
+// --- Phase 2: Forge Insights, Recommendations & Reviews ---
 router.get('/insights/feed', aiFoundationController.getInsightFeed);
 router.post('/insights/:id/feedback', aiFoundationController.submitInsightFeedback);
 
@@ -38,10 +38,21 @@ router.get('/brief/daily', aiFoundationController.getDailyBrief);
 router.get('/review/weekly', aiFoundationController.getWeeklyReview);
 router.get('/review/monthly', aiFoundationController.getMonthlyReview);
 
-// --- Phase 2: AI Coach Multi-Turn Interactive Agent & Action Confirmation ---
+// --- Phase 2: AI Coach Interactive Agent & Action Confirmation ---
 router.post('/chat', aiFoundationController.sendChatMessage);
 router.get('/chat/history', aiFoundationController.getChatHistory);
 router.post('/actions/confirm', aiFoundationController.confirmAction);
+
+// --- Phase 3: Agentic AI, Next Best Action, Risk Map, Forge Lab AI & Closed-Loop Learning ---
+router.get('/next-best-action', aiFoundationController.getNextBestActions);
+router.get('/risk-map', aiFoundationController.getHabitRiskMap);
+router.get('/coaching-profile', aiFoundationController.getCoachingProfile);
+router.post('/experiments/generate', aiFoundationController.generateExperimentProposal);
+router.post('/experiments/evaluate/:id', aiFoundationController.evaluateExperiment);
+router.get('/reflections/prompts', aiFoundationController.getReflectionPrompts);
+router.post('/reflections/submit', aiFoundationController.submitReflection);
+router.post('/orchestrator/workflow', aiFoundationController.runOrchestratorWorkflow);
+router.post('/transactions/rollback/:id', aiFoundationController.rollbackTransaction);
 
 // --- Legacy fallback routes for backward compatibility ---
 router.get('/insights', aiController.getInsights);
