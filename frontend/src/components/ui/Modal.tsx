@@ -41,13 +41,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   const sizeClasses = {
     sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-2xl',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+    xl: 'max-w-3xl',
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-fade-in"
@@ -55,20 +55,19 @@ export const Modal: React.FC<ModalProps> = ({
         aria-hidden="true"
       />
 
-      {/* Centering Wrapper */}
-      <div className="flex min-h-full items-center justify-center p-4 sm:p-6 text-center">
-        {/* Modal Dialog */}
-        <div
-          className={cn(
-            'relative z-50 w-full bg-[#0D1527] border border-border/90 rounded-2xl p-5 sm:p-6 shadow-2xl animate-scale-in text-foreground text-left transition-all',
-            sizeClasses[size],
-            className
-          )}
-          role="dialog"
-          aria-modal="true"
-        >
-        {/* Header */}
-        <div className="flex items-start justify-between pb-3.5 border-b border-border/60">
+      {/* Modal Dialog Box (Strictly Centered in Viewport) */}
+      <div
+        className={cn(
+          'relative z-50 w-full max-h-[88vh] flex flex-col bg-[#0D1527] border border-border/90 rounded-2xl shadow-2xl animate-scale-in text-foreground text-left transition-all overflow-hidden',
+          sizeClasses[size],
+          className
+        )}
+        role="dialog"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Pinned Header */}
+        <div className="flex items-start justify-between p-5 sm:p-6 pb-4 border-b border-border/60 shrink-0 bg-[#0D1527]">
           <div className="space-y-1 min-w-0 pr-4">
             {title && (
               <h2 className="text-base sm:text-lg font-extrabold text-foreground tracking-tight leading-tight truncate">
@@ -88,9 +87,10 @@ export const Modal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        {/* Body Content */}
-        <div className="pt-3.5">{children}</div>
-      </div>
+        {/* Scrollable Body Content */}
+        <div className="p-5 sm:p-6 pt-4 flex-1 overflow-y-auto">
+          {children}
+        </div>
       </div>
     </div>
   );

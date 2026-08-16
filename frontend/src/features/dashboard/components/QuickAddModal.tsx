@@ -49,11 +49,12 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      setActiveType(initialType);
       setTitle('');
       setTitleError('');
       setIsSubmitting(false);
     }
-  }, [isOpen]);
+  }, [isOpen, initialType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

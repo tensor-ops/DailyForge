@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   Sparkles,
   Play,
+  CheckCircle2,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -189,13 +190,22 @@ export const TodayDashboard: React.FC<TodayDashboardProps> = () => {
         title={greeting.title}
         description={`Today — ${data.formattedDate}`}
         actions={
-          <button
-            onClick={() => setIsQuickAddOpen(true)}
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Quick Add</span>
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setIsReviewOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 h-10 px-3.5 bg-surface-elevated hover:bg-muted border border-border text-foreground text-xs font-bold uppercase tracking-wider rounded-xl transition-all active:scale-[0.98] cursor-pointer select-none"
+            >
+              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <span>Complete Day Review</span>
+            </button>
+            <button
+              onClick={() => setIsQuickAddOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 h-10 px-4 bg-primary hover:bg-primary-hover text-white text-xs font-bold uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer select-none"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Quick Add</span>
+            </button>
+          </div>
         }
       >
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-semibold italic mt-0.5">
