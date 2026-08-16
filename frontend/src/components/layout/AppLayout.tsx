@@ -7,14 +7,21 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Search } from 'lucide-react';
 import { CreateHabitModal } from '@/features/habits/components/CreateHabitModal';
+import { HabitCategory } from '@/types/habit';
 
 export const AppLayout: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createModalCategory, setCreateModalCategory] = useState<HabitCategory | undefined>(undefined);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+
+  const handleOpenCreateHabit = (category?: HabitCategory) => {
+    setCreateModalCategory(category);
+    setIsCreateModalOpen(true);
+  };
 
   // Keyboard shortcut listener for Command + K
   React.useEffect(() => {
@@ -43,14 +50,14 @@ export const AppLayout: React.FC = () => {
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        onOpenCreateHabit={() => setIsCreateModalOpen(true)}
+        onOpenCreateHabit={() => handleOpenCreateHabit()}
       />
 
       {/* Mobile Navigation Drawer & Bottom Bar */}
       <MobileNav
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        onOpenCreateHabit={() => setIsCreateModalOpen(true)}
+        onOpenCreateHabit={() => handleOpenCreateHabit()}
       />
 
       {/* Main Container Area */}
@@ -63,12 +70,12 @@ export const AppLayout: React.FC = () => {
         <TopBar
           onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
           onOpenSearch={() => setIsSearchModalOpen(true)}
-          onOpenCreateHabit={() => setIsCreateModalOpen(true)}
+          onOpenCreateHabit={() => handleOpenCreateHabit()}
         />
 
         {/* Content Outlet */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-20 md:pb-8 animate-fade-in">
-          <Outlet context={{ onOpenCreateHabit: () => setIsCreateModalOpen(true) }} />
+          <Outlet context={{ onOpenCreateHabit: handleOpenCreateHabit }} />
         </main>
       </div>
 
@@ -76,6 +83,7 @@ export const AppLayout: React.FC = () => {
       <CreateHabitModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        initialCategory={createModalCategory}
       />
 
       {/* QUICK COMMAND / SEARCH MODAL */}
@@ -91,31 +99,34 @@ export const AppLayout: React.FC = () => {
             placeholder="Type a command or page name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            leftIcon={<Search className="h-4 w-4" />}
             autoFocus
           />
 
-          <div className="divide-y divide-border/60 max-h-60 overflow-y-auto pt-2">
+          <div className="max-h-60 overflow-y-auto space-y-1 pt-1">
             {searchResults.length > 0 ? (
-              searchResults.map((item, idx) => (
+              searchResults.map((item) => (
                 <button
-                  key={idx}
+                  key={item.path}
                   onClick={() => {
                     navigate(item.path);
                     setIsSearchModalOpen(false);
+                    setSearchQuery('');
                   }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-muted text-left transition-colors text-sm"
+                  className="w-full flex items-center justify-between p-2 rounded-lg text-left text-xs font-semibold hover:bg-muted transition-colors cursor-pointer text-foreground"
                 >
-                  <span className="font-medium text-foreground">{item.title}</span>
-                  <span className="text-[11px] text-muted-foreground bg-surface px-2 py-0.5 rounded border border-border">
+                  <span className="flex items-center gap-2">
+                    <Search className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>{item.title}</span>
+                  </span>
+                  <span className="text-[10px] bg-surface-sunken px-1.5 py-0.5 rounded border border-border text-muted-foreground">
                     {item.type}
                   </span>
                 </button>
               ))
             ) : (
-              <div className="p-4 text-center text-xs text-muted-foreground">
-                No matching results found.
-              </div>
+              <p className="text-xs text-muted-foreground py-4 text-center">
+                No results found for &quot;{searchQuery}&quot;
+              </p>
             )}
           </div>
         </div>

@@ -304,64 +304,131 @@ export const NotificationBell: React.FC = () => {
                 </p>
               </div>
             ) : (
-              notifications.map((notif) => (
-                <div
-                  key={notif.id}
-                  onClick={() => handleNotificationClick(notif)}
-                  className={cn(
-                    'p-3.5 flex items-start gap-3 transition-colors cursor-pointer group relative',
-                    notif.isRead
-                      ? 'bg-transparent hover:bg-surface-elevated/50'
-                      : 'bg-primary/[0.04] hover:bg-primary/[0.08]'
-                  )}
-                >
-                  {/* Category Icon */}
-                  <div className="p-2 rounded-xl bg-surface-elevated border border-border/80 shrink-0 mt-0.5">
-                    {getNotificationIcon(notif.type)}
-                  </div>
+              notifications.map((notif) => {
+                if (notif.type === 'DAILY_SPARK') {
+                  return (
+                    <div
+                      key={notif.id}
+                      onClick={() => handleNotificationClick(notif)}
+                      className={cn(
+                        'p-4 flex items-start gap-3 transition-all cursor-pointer group relative border-l-2',
+                        notif.isRead
+                          ? 'border-transparent bg-surface-elevated/30 hover:bg-surface-elevated/60'
+                          : 'border-primary bg-primary/[0.08] hover:bg-primary/[0.12]'
+                      )}
+                    >
+                      {/* Spark Icon */}
+                      <div className="p-2 rounded-xl bg-primary/15 border border-primary/30 text-primary shrink-0 shadow-sm mt-0.5">
+                        <Flame className="h-4 w-4 fill-primary" />
+                      </div>
 
-                  {/* Body */}
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <h4
-                        className={cn(
-                          'text-xs font-bold leading-tight truncate',
-                          notif.isRead ? 'text-foreground' : 'text-foreground font-extrabold'
-                        )}
+                      {/* Body */}
+                      <div className="flex-1 min-w-0 space-y-1.5">
+                        <div className="flex items-center justify-between gap-1">
+                          <span className="text-[10px] font-extrabold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                            <span>Daily Forge Spark</span>
+                            {notif.metadata?.contextState && notif.metadata.contextState !== 'NEUTRAL' && (
+                              <span className="text-[9px] bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded-full font-mono text-primary/80">
+                                {notif.metadata.contextState.replace('_', ' ')}
+                              </span>
+                            )}
+                          </span>
+                          <div className="flex items-center gap-1.5">
+                            {!notif.isRead && (
+                              <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 animate-pulse" />
+                            )}
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {formatTimeAgo(notif.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs font-semibold text-foreground italic leading-relaxed">
+                          {notif.message}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-0.5 text-[10px] text-muted-foreground">
+                          <span className="font-semibold text-foreground/80">
+                            — {notif.metadata?.attribution || 'Daily Forge'}
+                          </span>
+                          <span className="text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                            <span>Dashboard</span>
+                            <ExternalLink className="h-2.5 w-2.5" />
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Quick Delete */}
+                      <button
+                        onClick={(e) => handleDeleteNotification(notif.id, e)}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-danger rounded transition-all cursor-pointer shrink-0"
+                        title="Dismiss"
                       >
-                        {notif.title}
-                      </h4>
-                      {!notif.isRead && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                      )}
+                        <Trash2 className="h-3 w-3" />
+                      </button>
                     </div>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                      {notif.message}
-                    </p>
+                  );
+                }
 
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-[10px] text-muted-foreground/70 font-mono">
-                        {formatTimeAgo(notif.createdAt)}
-                      </span>
-                      {notif.actionUrl && (
-                        <span className="text-[10px] text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
-                          <span>Action</span>
-                          <ExternalLink className="h-2.5 w-2.5" />
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Quick Delete */}
-                  <button
-                    onClick={(e) => handleDeleteNotification(notif.id, e)}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-danger rounded transition-all cursor-pointer shrink-0"
-                    title="Dismiss"
+                return (
+                  <div
+                    key={notif.id}
+                    onClick={() => handleNotificationClick(notif)}
+                    className={cn(
+                      'p-3.5 flex items-start gap-3 transition-colors cursor-pointer group relative',
+                      notif.isRead
+                        ? 'bg-transparent hover:bg-surface-elevated/50'
+                        : 'bg-primary/[0.04] hover:bg-primary/[0.08]'
+                    )}
                   >
-                    <Trash2 className="h-3 w-3" />
-                  </button>
-                </div>
-              ))
+                    {/* Category Icon */}
+                    <div className="p-2 rounded-xl bg-surface-elevated border border-border/80 shrink-0 mt-0.5">
+                      {getNotificationIcon(notif.type)}
+                    </div>
+
+                    {/* Body */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center justify-between gap-1">
+                        <h4
+                          className={cn(
+                            'text-xs font-bold leading-tight truncate',
+                            notif.isRead ? 'text-foreground' : 'text-foreground font-extrabold'
+                          )}
+                        >
+                          {notif.title}
+                        </h4>
+                        {!notif.isRead && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                        {notif.message}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] text-muted-foreground/70 font-mono">
+                          {formatTimeAgo(notif.createdAt)}
+                        </span>
+                        {notif.actionUrl && (
+                          <span className="text-[10px] text-primary font-bold flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+                            <span>Action</span>
+                            <ExternalLink className="h-2.5 w-2.5" />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Quick Delete */}
+                    <button
+                      onClick={(e) => handleDeleteNotification(notif.id, e)}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-danger rounded transition-all cursor-pointer shrink-0"
+                      title="Dismiss"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

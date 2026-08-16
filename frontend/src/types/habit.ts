@@ -59,9 +59,45 @@ export interface Habit {
   totalCompletions: number;
   completionRate: number; // 0 to 100
   completedToday: boolean;
-  history: Record<string, boolean>; // 'YYYY-MM-DD' -> true/false
+  history?: Record<string, boolean>; // 'YYYY-MM-DD' -> true/false
   createdAt: string;
   updatedAt: string;
+}
+
+export interface EnrichedHabit extends Habit {
+  reliability: number;
+  consistency: number;
+  friction: 'LOW' | 'MEDIUM' | 'HIGH';
+  stabilityRisk: 'STABLE' | 'WATCH' | 'AT_RISK' | 'HIGH_RISK';
+  stabilityTrend: number;
+  bestTime: string;
+  progress: number;
+  isNew: boolean;
+  isStrong: boolean;
+  isAtRisk: boolean;
+}
+
+export interface HabitHealthDistribution {
+  strong: number;
+  stable: number;
+  atRisk: number;
+  total: number;
+}
+
+export interface HabitSummary {
+  activeHabits: number;
+  averageReliability: number;
+  averageCompletion: number;
+  atRisk: number;
+  strong: number;
+  bestCurrentStreak: number;
+  healthDistribution: HabitHealthDistribution;
+  pulse: string | null;
+}
+
+export interface HabitsOverviewResponse {
+  summary: HabitSummary;
+  habits: EnrichedHabit[];
 }
 
 export interface HabitFilterOptions {

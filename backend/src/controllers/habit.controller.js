@@ -10,6 +10,15 @@ async function createHabit(req, res, next) {
   }
 }
 
+async function getHabitsOverview(req, res, next) {
+  try {
+    const data = await habitService.getHabitsOverview(req.user._id, req.query);
+    return sendSuccess(res, data, 'Habits overview retrieved successfully');
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getHabits(req, res, next) {
   try {
     const data = await habitService.getHabits(req.user._id, req.query);
@@ -96,6 +105,7 @@ async function uncompleteHabit(req, res, next) {
 
 module.exports = {
   createHabit,
+  getHabitsOverview,
   getHabits,
   getHabitById,
   getHabitAnalytics,

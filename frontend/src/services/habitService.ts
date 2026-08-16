@@ -1,7 +1,21 @@
 import { apiClient } from './api';
-import { Habit, CreateHabitInput, HabitFilterOptions, HabitAnalytics } from '@/types/habit';
+import {
+  Habit,
+  CreateHabitInput,
+  HabitFilterOptions,
+  HabitAnalytics,
+  HabitsOverviewResponse,
+} from '@/types/habit';
 
 export const habitService = {
+  async getHabitsOverview(): Promise<HabitsOverviewResponse> {
+    const res = await apiClient.get<{
+      success: boolean;
+      data: HabitsOverviewResponse;
+    }>('/habits/overview');
+    return res.data.data;
+  },
+
   async getHabits(options?: Partial<HabitFilterOptions>): Promise<Habit[]> {
     const params: Record<string, string | number> = {};
     if (options?.status) params.status = options.status;

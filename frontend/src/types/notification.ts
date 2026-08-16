@@ -1,4 +1,5 @@
 export type NotificationType =
+  | 'DAILY_SPARK'
   | 'HABIT_REMINDER'
   | 'STREAK_AT_RISK'
   | 'STREAK_MILESTONE'

@@ -22,19 +22,27 @@ interface CreateHabitModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  initialCategory?: HabitCategory;
 }
 
 export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  initialCategory,
 }) => {
   const { success, error } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
   const [name, setName] = useState('');
-  const [category, setCategory] = useState<HabitCategory>('Health');
+  const [category, setCategory] = useState<HabitCategory>(initialCategory || 'Health');
+
+  React.useEffect(() => {
+    if (isOpen && initialCategory) {
+      setCategory(initialCategory);
+    }
+  }, [isOpen, initialCategory]);
   const [description, setDescription] = useState('');
   const [frequency, setFrequency] = useState<HabitFrequency>('daily');
   const [customDays, setCustomDays] = useState<number[]>([1, 2, 3, 4, 5]);

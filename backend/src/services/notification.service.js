@@ -56,7 +56,7 @@ async function getNotifications(userId, options = {}) {
   if (filter === 'unread') {
     query.isRead = false;
   } else if (filter === 'insights') {
-    query.type = { $in: ['NEW_DISCOVERY', 'CONSISTENCY_CHANGE', 'MOMENTUM_CHANGE'] };
+    query.type = { $in: ['DAILY_SPARK', 'NEW_DISCOVERY', 'CONSISTENCY_CHANGE', 'MOMENTUM_CHANGE'] };
   } else if (filter === 'alerts') {
     query.type = { $in: ['STREAK_AT_RISK', 'STABILITY_RISK', 'FRICTION_ALERT', 'HABIT_REMINDER'] };
   } else if (filter === 'milestones') {

@@ -12,6 +12,7 @@ const {
 
 router.use(authenticate);
 
+router.get('/overview', habitController.getHabitsOverview);
 router.get('/', habitController.getHabits);
 router.post('/', validate(createHabitSchema), habitController.createHabit);
 

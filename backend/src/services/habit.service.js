@@ -26,6 +26,117 @@ async function createHabit(userId, habitData) {
   });
 }
 
+async function getHabitsOverview(userId, options = {}) {
+  const habits = await Habit.find({ userId, isArchived: false })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const now = new Date();
+  const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const enrichedHabits = await Promise.all(
+    habits.map(async (h) => {
+      const analytics = await getHabitDetailedAnalytics(h._id, userId);
+      const isNew = (now.getTime() - new Date(h.createdAt).getTime()) <= SEVEN_DAYS_MS;
+      const isStrong = analytics.reliability >= 80 && analytics.stabilityRisk === 'STABLE';
+      const isAtRisk = analytics.stabilityRisk === 'AT_RISK' || analytics.stabilityRisk === 'HIGH_RISK';
+
+      return {
+        id: h._id.toString(),
+        userId: h.userId.toString(),
+        name: h.name,
+        description: h.description || '',
+        category: h.category,
+        icon: h.icon || 'target',
+        trackingType: h.trackingType || 'binary',
+        frequency: h.frequency,
+        customDays: h.customDays || [],
+        targetValue: h.targetValue || 1,
+        unit: h.unit || 'times',
+        preferredTime: h.preferredTime || '',
+        timeWindowStart: h.timeWindowStart || '',
+        timeWindowEnd: h.timeWindowEnd || '',
+        reminderEnabled: Boolean(h.reminderEnabled),
+        reminderTime: h.reminderTime || '',
+        reminderDays: h.reminderDays || [],
+        difficulty: h.difficulty || 'moderate',
+        expectedFriction: h.expectedFriction || 'medium',
+        checklistItems: h.checklistItems || [],
+        startDate: h.startDate,
+        color: h.color || '#6366f1',
+        isArchived: h.isArchived || false,
+        createdAt: h.createdAt ? new Date(h.createdAt).toISOString() : now.toISOString(),
+        updatedAt: h.updatedAt ? new Date(h.updatedAt).toISOString() : now.toISOString(),
+
+        // Unified analytics metrics
+        reliability: analytics.reliability,
+        consistency: analytics.consistency,
+        currentStreak: analytics.currentStreak,
+        longestStreak: analytics.longestStreak,
+        completedToday: analytics.dailyTrend[analytics.dailyTrend.length - 1]?.completed || false,
+        completionRate: analytics.completionRate,
+        friction: analytics.friction,
+        stabilityRisk: analytics.stabilityRisk,
+        stabilityTrend: analytics.stabilityTrend,
+        bestTime: analytics.bestTime,
+        progress: analytics.progress,
+        isNew,
+        isStrong,
+        isAtRisk,
+      };
+    })
+  );
+
+  const totalActive = enrichedHabits.length;
+  const avgReliability =
+    totalActive > 0
+      ? Math.round(enrichedHabits.reduce((acc, h) => acc + h.reliability, 0) / totalActive)
+      : 80;
+
+  const avgCompletion =
+    totalActive > 0
+      ? Math.round(enrichedHabits.reduce((acc, h) => acc + h.completionRate, 0) / totalActive)
+      : 80;
+
+  const atRiskCount = enrichedHabits.filter((h) => h.isAtRisk).length;
+  const strongCount = enrichedHabits.filter((h) => h.isStrong).length;
+  const stableCount = enrichedHabits.filter((h) => !h.isAtRisk && !h.isStrong).length;
+  const bestCurrentStreak = enrichedHabits.reduce((max, h) => Math.max(max, h.currentStreak || 0), 0);
+
+  // Derive pulse insight
+  let pulse = null;
+  if (totalActive > 0) {
+    const topHabit = [...enrichedHabits].sort((a, b) => b.reliability - a.reliability)[0];
+    const atRiskHabit = enrichedHabits.find((h) => h.isAtRisk);
+    if (atRiskHabit) {
+      pulse = `Your strongest habit is ${topHabit.name} (${topHabit.reliability}%). ${atRiskHabit.name} is currently your primary at-risk routine.`;
+    } else {
+      pulse = `Your strongest habit is ${topHabit.name} with ${topHabit.reliability}% reliability. All ${totalActive} active routines are in a stable flow.`;
+    }
+  }
+
+  const summary = {
+    activeHabits: totalActive,
+    averageReliability: avgReliability,
+    averageCompletion: avgCompletion,
+    atRisk: atRiskCount,
+    strong: strongCount,
+    bestCurrentStreak,
+    healthDistribution: {
+      strong: strongCount,
+      stable: stableCount,
+      atRisk: atRiskCount,
+      total: totalActive,
+    },
+    pulse,
+  };
+
+  return {
+    summary,
+    habits: enrichedHabits,
+  };
+}
+
 async function getHabits(userId, options = {}) {
   const {
     status = 'active',
@@ -259,6 +370,7 @@ function formatHabitResponse(habitObj, stats) {
 
 module.exports = {
   createHabit,
+  getHabitsOverview,
   getHabits,
   getHabitById,
   getHabitAnalytics,

@@ -1,4 +1,5 @@
 const { formatDate } = require('../utils/dates');
+const { generateDailySparkNotification } = require('./dailySpark.service');
 
 const NOTIFICATION_THRESHOLDS = {
   CONSISTENCY_DELTA_MIN: 8, // >= 8% change
@@ -14,6 +15,12 @@ function evaluateNotificationRules(userId, habits, behaviorData, now = new Date(
   const notifications = [];
   const todayStr = formatDate(now);
   const currentHour = now.getHours();
+
+  // 0. DAILY FORGE SPARK (Exactly 1 per day per user)
+  const spark = generateDailySparkNotification(userId, habits, behaviorData, now);
+  if (spark) {
+    notifications.push(spark);
+  }
 
   // 1. STREAK AT RISK
   for (const habit of habits) {

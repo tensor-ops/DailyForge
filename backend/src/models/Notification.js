@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const NOTIFICATION_TYPES = [
+  'DAILY_SPARK',
   'HABIT_REMINDER',
   'STREAK_AT_RISK',
   'STREAK_MILESTONE',
