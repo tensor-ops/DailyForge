@@ -10,6 +10,20 @@ const UserSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 100,
     },
+    username: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      sparse: true,
+      minlength: 2,
+      maxlength: 50,
+      default: function () {
+        if (this.name) {
+          return this.name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        }
+        return 'forger';
+      },
+    },
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -26,15 +40,34 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    bio: {
+      type: String,
+      maxlength: 300,
+      default: 'Forging daily discipline and habits with Daily Forge.',
+    },
+    membershipTier: {
+      type: String,
+      enum: ['free', 'pro', 'beta', 'admin'],
+      default: 'pro', // Default pro experience in Daily Forge beta
+    },
     timezone: {
       type: String,
       default: 'UTC',
+    },
+    language: {
+      type: String,
+      default: 'en',
     },
     preferences: {
       theme: {
         type: String,
         enum: ['light', 'dark', 'system'],
         default: 'dark',
+      },
+      themeName: {
+        type: String,
+        enum: ['forge-dark', 'forge-light', 'focus-blue', 'forest', 'amber-forge', 'monochrome'],
+        default: 'forge-dark',
       },
       accentTheme: {
         type: String,
@@ -57,9 +90,23 @@ const UserSchema = new mongoose.Schema(
         type: Boolean,
         default: true,
       },
+      weekStartsOn: {
+        type: String,
+        enum: ['monday', 'sunday'],
+        default: 'monday',
+      },
+      aiCoachingStyle: {
+        type: String,
+        enum: ['direct', 'encouraging', 'analytical', 'balanced'],
+        default: 'balanced',
+      },
+      preferredFocusTime: {
+        type: String,
+        default: 'Morning',
+      },
       focusAreas: {
         type: [String],
-        default: [],
+        default: ['Learning', 'Fitness', 'Productivity'],
       },
       dailyCommitment: {
         type: String,
@@ -69,6 +116,14 @@ const UserSchema = new mongoose.Schema(
         type: [String],
         default: [],
       },
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
     },
     lastLoginAt: {
       type: Date,
@@ -87,7 +142,6 @@ UserSchema.pre('save', async function () {
     this.passwordHash = await hashPassword(this.passwordHash);
   }
 });
-
 
 // Compare password method
 UserSchema.methods.comparePassword = async function (candidatePassword) {
