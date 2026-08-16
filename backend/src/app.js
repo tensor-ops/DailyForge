@@ -18,6 +18,7 @@ const taskRoutes = require('./routes/task.routes');
 const plannerRoutes = require('./routes/planner.routes');
 const recommendationRoutes = require('./routes/recommendation.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const notificationRoutes = require('./routes/notification.routes');
 
 const app = express();
 
@@ -118,6 +119,7 @@ app.use('/api/v1/tasks', taskRoutes);
 app.use('/api/v1/planner', plannerRoutes);
 app.use('/api/v1/recommendations', recommendationRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // Fallback 404 & Global Error Handling
 app.use(notFoundHandler);

@@ -5,12 +5,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
 import { Avatar } from '@/components/ui/Avatar';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import {
   Menu,
   Sun,
   Moon,
   Laptop,
-  Bell,
   Search,
   LogOut,
   User as UserIcon,
@@ -161,14 +161,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         />
 
         {/* Notification Bell */}
-        <button
-          onClick={() => info('Notifications', 'All habits and reminders are synchronized.')}
-          className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-        </button>
+        <NotificationBell />
 
         <div className="h-5 w-px bg-border mx-0.5 hidden sm:block" />
 
