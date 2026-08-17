@@ -4,10 +4,12 @@ import { HabitCategoryMetric } from '@/types/profile';
 import { Layers } from 'lucide-react';
 
 interface HabitCategoryBreakdownCardProps {
-  categories: HabitCategoryMetric[];
+  categories?: HabitCategoryMetric[];
 }
 
-export const HabitCategoryBreakdownCard: React.FC<HabitCategoryBreakdownCardProps> = ({ categories }) => {
+export const HabitCategoryBreakdownCard: React.FC<HabitCategoryBreakdownCardProps> = ({ categories = [] }) => {
+  const safeCategories = Array.isArray(categories) ? categories : [];
+
   return (
     <Card className="p-6 bg-surface-elevated border-border shadow-card h-full flex flex-col justify-between space-y-5">
       <div className="flex items-center justify-between border-b border-border/50 pb-3">
@@ -21,30 +23,37 @@ export const HabitCategoryBreakdownCard: React.FC<HabitCategoryBreakdownCardProp
       </div>
 
       <div className="space-y-3.5 flex-1">
-        {categories.length === 0 ? (
+        {safeCategories.length === 0 ? (
           <div className="p-6 text-center text-xs text-muted-foreground">
             No habit categories active yet.
           </div>
         ) : (
-          categories.map((cat) => (
-            <div key={cat.category} className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-foreground">{cat.category}</span>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <span className="text-[10px] font-medium">{cat.count} habits</span>
-                  <span className="text-[10px] font-medium text-warning">🔥 {cat.averageStreak}d streak</span>
-                  <span className="font-extrabold text-foreground">{cat.completionRate}%</span>
+          safeCategories.map((cat, idx) => {
+            const categoryName = cat?.category || `Category ${idx + 1}`;
+            const count = cat?.count ?? 0;
+            const streak = cat?.averageStreak ?? 0;
+            const rate = cat?.completionRate ?? 0;
+
+            return (
+              <div key={`${categoryName}-${idx}`} className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-foreground">{categoryName}</span>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <span className="text-[10px] font-medium">{count} habits</span>
+                    <span className="text-[10px] font-medium text-warning">🔥 {streak}d streak</span>
+                    <span className="font-extrabold text-foreground">{rate}%</span>
+                  </div>
+                </div>
+
+                <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(0, rate))}%` }}
+                  />
                 </div>
               </div>
-
-              <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, cat.completionRate)}%` }}
-                />
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </Card>

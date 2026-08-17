@@ -5,31 +5,33 @@ import { Calendar, Flame } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface ConsistencyHistoryHeatmapProps {
-  history: ConsistencyDay[];
-  currentStreak: number;
-  longestStreak: number;
+  history?: ConsistencyDay[];
+  currentStreak?: number;
+  longestStreak?: number;
 }
 
 export const ConsistencyHistoryHeatmap: React.FC<ConsistencyHistoryHeatmapProps> = ({
-  history,
-  currentStreak,
-  longestStreak,
+  history = [],
+  currentStreak = 0,
+  longestStreak = 0,
 }) => {
   const [hoveredDay, setHoveredDay] = useState<ConsistencyDay | null>(null);
+
+  const safeHistory = Array.isArray(history) ? history : [];
 
   // Group days into columns of 7 (weeks)
   const weeks: ConsistencyDay[][] = [];
   let currentWeek: ConsistencyDay[] = [];
 
-  history.forEach((day, index) => {
+  safeHistory.forEach((day, index) => {
     currentWeek.push(day);
-    if (currentWeek.length === 7 || index === history.length - 1) {
+    if (currentWeek.length === 7 || index === safeHistory.length - 1) {
       weeks.push(currentWeek);
       currentWeek = [];
     }
   });
 
-  const totalCompletions = history.reduce((sum, d) => sum + d.count, 0);
+  const totalCompletions = safeHistory.reduce((sum, d) => sum + (d?.count || 0), 0);
 
   return (
     <Card className="p-6 bg-surface-elevated border-border shadow-card space-y-4">

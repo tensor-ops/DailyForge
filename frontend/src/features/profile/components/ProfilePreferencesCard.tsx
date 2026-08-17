@@ -8,16 +8,17 @@ import { useTheme } from '@/hooks/useTheme';
 
 interface ProfilePreferencesCardProps {
   preferences?: Record<string, any>;
-  timezone: string;
-  language: string;
+  timezone?: string;
+  language?: string;
 }
 
 export const ProfilePreferencesCard: React.FC<ProfilePreferencesCardProps> = ({
   preferences = {},
-  timezone,
-  language,
+  timezone = 'UTC',
+  language = 'en',
 }) => {
-  const { currentTheme } = useTheme();
+  const themeContext = useTheme();
+  const currentTheme = themeContext?.currentTheme || 'forge-dark';
 
   return (
     <Card className="p-6 bg-surface-elevated border-border shadow-card space-y-5">
@@ -44,7 +45,9 @@ export const ProfilePreferencesCard: React.FC<ProfilePreferencesCardProps> = ({
             <Palette className="h-4 w-4 text-primary" />
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">Active Theme</span>
-              <span className="font-bold text-foreground capitalize">{currentTheme.replace('-', ' ')}</span>
+              <span className="font-bold text-foreground capitalize">
+                {(currentTheme || 'forge-dark').replace(/-/g, ' ')}
+              </span>
             </div>
           </div>
           <ThemeLogo variant="icon" size="sm" />
@@ -56,7 +59,7 @@ export const ProfilePreferencesCard: React.FC<ProfilePreferencesCardProps> = ({
             <Bot className="h-4 w-4 text-ai" />
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">AI Coach Style</span>
-              <span className="font-bold text-foreground capitalize">{preferences.aiCoachingStyle || 'Balanced'}</span>
+              <span className="font-bold text-foreground capitalize">{preferences?.aiCoachingStyle || 'Balanced'}</span>
             </div>
           </div>
           <Badge variant="ai" size="sm" className="text-[9px] uppercase font-extrabold">
@@ -70,7 +73,7 @@ export const ProfilePreferencesCard: React.FC<ProfilePreferencesCardProps> = ({
             <Calendar className="h-4 w-4 text-emerald-500" />
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">Week Starts On</span>
-              <span className="font-bold text-foreground capitalize">{preferences.weekStartsOn || 'Monday'}</span>
+              <span className="font-bold text-foreground capitalize">{preferences?.weekStartsOn || 'Monday'}</span>
             </div>
           </div>
           <span className="text-[10px] font-bold text-muted-foreground">Standard</span>
@@ -93,7 +96,7 @@ export const ProfilePreferencesCard: React.FC<ProfilePreferencesCardProps> = ({
             <Clock className="h-4 w-4 text-amber-500" />
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">Morning Briefing</span>
-              <span className="font-bold text-foreground">{preferences.dailyReminderTime || '08:00 AM'}</span>
+              <span className="font-bold text-foreground">{preferences?.dailyReminderTime || '08:00 AM'}</span>
             </div>
           </div>
           <Badge variant="outline" size="sm" className="text-[9px] font-bold text-success">

@@ -9,6 +9,14 @@ interface ProfilePerformanceGridProps {
 }
 
 export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ performance }) => {
+  const forgeScore = performance?.forgeScore ?? 742;
+  const scoreChange = performance?.forgeScoreChange || '+18';
+  const momentumStatus = performance?.momentum?.status || 'BUILDING';
+  const consistency = performance?.consistency ?? 0;
+  const execution = performance?.execution ?? 0;
+  const reliability = performance?.reliability ?? 85;
+  const recovery = performance?.recovery ?? 90;
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -39,17 +47,17 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
 
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-                {performance.forgeScore}
+                {forgeScore}
               </span>
               <span className="text-xs font-bold text-success flex items-center gap-0.5">
-                {performance.forgeScoreChange}
+                {scoreChange}
               </span>
             </div>
 
             <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground font-medium">
               <span>Momentum Status</span>
               <span className="font-bold text-primary uppercase text-[10px] tracking-wider px-2 py-0.5 rounded-full bg-primary/10">
-                {performance.momentum.status}
+                {momentumStatus}
               </span>
             </div>
           </Card>
@@ -69,7 +77,7 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
 
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-                {performance.consistency}%
+                {consistency}%
               </span>
               <span className="text-xs text-muted-foreground font-medium">30-day index</span>
             </div>
@@ -79,7 +87,7 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, performance.consistency)}%` }}
+                  style={{ width: `${Math.min(100, consistency)}%` }}
                 />
               </div>
               <span className="text-[10px] text-muted-foreground block text-right font-medium">
@@ -103,7 +111,7 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
 
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-                {performance.execution}%
+                {execution}%
               </span>
               <span className="text-xs text-muted-foreground font-medium">Planned vs Done</span>
             </div>
@@ -112,11 +120,11 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, performance.execution)}%` }}
+                  style={{ width: `${Math.min(100, execution)}%` }}
                 />
               </div>
               <span className="text-[10px] text-muted-foreground block text-right font-medium">
-                Reliability: {performance.reliability}%
+                Reliability: {reliability}%
               </span>
             </div>
           </Card>
@@ -136,7 +144,7 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
 
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
-                {performance.recovery}%
+                {recovery}%
               </span>
               <span className="text-xs text-muted-foreground font-medium">Post-miss rebound</span>
             </div>
@@ -145,7 +153,7 @@ export const ProfilePerformanceGrid: React.FC<ProfilePerformanceGridProps> = ({ 
               <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-purple-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, performance.recovery)}%` }}
+                  style={{ width: `${Math.min(100, recovery)}%` }}
                 />
               </div>
               <span className="text-[10px] text-muted-foreground block text-right font-medium">

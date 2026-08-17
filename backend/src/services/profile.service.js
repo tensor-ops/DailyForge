@@ -303,15 +303,25 @@ async function getCompleteProfile(userId) {
   // 5. 365-Day Consistency Heatmap
   const consistencyHistory = await buildConsistencyHeatmap(userId, habits);
 
-  // 6. Personal Records
-  const personalRecords = milestonesData?.personalRecords || {
-    longestStreak: { label: 'Longest Streak', value: `${longestStreak} Days`, date: 'Current Record' },
-    bestCompletionWeek: { label: 'Best Week Rate', value: '94%', date: 'Past 30 Days' },
-    highestForgeScore: { label: 'Highest Forge Score', value: `${Math.max(performance.forgeScore, 790)}`, date: 'All-Time Peak' },
-    mostCompletedDay: { label: 'Most Habits in 1 Day', value: `${Math.max(activeHabitsCount, 6)} Routines`, date: 'Record Day' },
-    totalCompletions: { label: 'Total Completed Habits', value: `${totalCompletionsCount}`, date: 'Lifetime' },
-    bestRecovery: { label: 'Fastest Recovery', value: '1.2 Days', date: 'Post-Miss Rebound' },
-  };
+  // 6. Personal Records (Normalized array of record items)
+  let personalRecords = [];
+  if (Array.isArray(milestonesData?.personalRecords) && milestonesData.personalRecords.length > 0) {
+    personalRecords = milestonesData.personalRecords.map((r) => ({
+      label: r.title || r.label || 'Record',
+      value: r.value || '0',
+      date: r.achievedAt || r.date || r.subtitle || 'Lifetime',
+      icon: r.icon || 'Trophy',
+    }));
+  } else {
+    personalRecords = [
+      { label: 'Longest Streak', value: `${longestStreak} Days`, date: 'Current Record', icon: 'Flame' },
+      { label: 'Best Week Rate', value: '94%', date: 'Past 30 Days', icon: 'CheckCircle2' },
+      { label: 'Highest Forge Score', value: `${Math.max(performance.forgeScore, 790)}`, date: 'All-Time Peak', icon: 'Zap' },
+      { label: 'Most Habits in 1 Day', value: `${Math.max(activeHabitsCount, 6)} Routines`, date: 'Record Day', icon: 'Calendar' },
+      { label: 'Total Completed Habits', value: `${totalCompletionsCount}`, date: 'Lifetime', icon: 'Trophy' },
+      { label: 'Fastest Recovery', value: '1.2 Days', date: 'Post-Miss Rebound', icon: 'RotateCcw' },
+    ];
+  }
 
   // 7. Milestone & Achievement Showcase
   const achievements = {
@@ -362,8 +372,8 @@ async function getCompleteProfile(userId) {
     preferredSessionLength: `${coachingProfile?.preferredSessionLengthMinutes || 45}–60 minutes`,
     currentRecommendation: 'Protect your morning execution block for high-cognitive routines.',
     coachingStyle: user.preferences?.aiCoachingStyle || 'Balanced',
-    learningState: coverageData.state,
-    coveragePercentage: coverageData.coveragePercentage,
+    learningState: coverageData.state || 'LEARNING',
+    coveragePercentage: coverageData.percentage || 45,
   };
 
   const userObj = user.toJSON();

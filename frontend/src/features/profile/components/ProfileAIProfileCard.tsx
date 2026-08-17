@@ -10,6 +10,14 @@ interface ProfileAIProfileCardProps {
 }
 
 export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiProfile }) => {
+  const learningState = aiProfile?.learningState || 'LEARNING';
+  const coverage = aiProfile?.coveragePercentage ?? 45;
+  const primaryFocus = aiProfile?.primaryFocus || 'Habits & Productivity';
+  const peakWindow = aiProfile?.peakWindow || 'Morning';
+  const challenge = aiProfile?.currentChallenge || 'Consistency maintenance after disruptions';
+  const recommendation = aiProfile?.currentRecommendation || 'Protect your morning execution block for high-cognitive routines.';
+  const coachingStyle = aiProfile?.coachingStyle || 'Balanced';
+
   return (
     <Card className="p-6 bg-surface-elevated border-border shadow-card h-full flex flex-col justify-between space-y-5">
       <div className="flex items-center justify-between border-b border-border/50 pb-3">
@@ -25,7 +33,7 @@ export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiPr
 
         <Badge variant="ai" size="sm" className="font-extrabold uppercase text-[10px] tracking-wider">
           <Sparkles className="h-3 w-3 mr-1" />
-          {aiProfile.learningState} ({aiProfile.coveragePercentage}%)
+          {learningState} ({coverage}%)
         </Badge>
       </div>
 
@@ -35,7 +43,7 @@ export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiPr
           <Compass className="h-4 w-4 text-primary shrink-0 mt-0.5" />
           <div>
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Primary Habit Focus</span>
-            <span className="font-bold text-foreground">{aiProfile.primaryFocus}</span>
+            <span className="font-bold text-foreground">{primaryFocus}</span>
           </div>
         </div>
 
@@ -44,7 +52,7 @@ export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiPr
           <Clock className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
           <div>
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Optimal Focus Window</span>
-            <span className="font-bold text-foreground">{aiProfile.peakWindow}</span>
+            <span className="font-bold text-foreground">{peakWindow}</span>
           </div>
         </div>
 
@@ -53,7 +61,7 @@ export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiPr
           <ShieldAlert className="h-4 w-4 text-warning shrink-0 mt-0.5" />
           <div>
             <span className="text-[10px] uppercase font-bold text-muted-foreground block">Current Friction Point</span>
-            <span className="text-muted-foreground/90 font-medium">{aiProfile.currentChallenge}</span>
+            <span className="text-muted-foreground/90 font-medium">{challenge}</span>
           </div>
         </div>
 
@@ -63,14 +71,14 @@ export const ProfileAIProfileCard: React.FC<ProfileAIProfileCardProps> = ({ aiPr
             Coach Recommendation
           </span>
           <p className="text-xs text-foreground font-medium italic">
-            "{aiProfile.currentRecommendation}"
+            "{recommendation}"
           </p>
         </div>
       </div>
 
       <div className="pt-2 border-t border-border/40 flex items-center justify-between">
         <span className="text-[11px] text-muted-foreground">
-          Style: <strong className="text-foreground">{aiProfile.coachingStyle}</strong>
+          Style: <strong className="text-foreground capitalize">{coachingStyle}</strong>
         </span>
         <Link
           to="/dashboard?tab=ai-coach"

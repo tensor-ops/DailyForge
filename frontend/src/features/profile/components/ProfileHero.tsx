@@ -28,6 +28,11 @@ export const ProfileHero: React.FC<ProfileHeroProps> = ({
   onEditProfile,
   onExportData,
 }) => {
+  const level = identity?.level || 1;
+  const xp = identity?.experiencePoints || 0;
+  const title = identity?.title || 'Forge Initiate';
+  const memberSince = user?.memberSince || 'Recent';
+
   return (
     <Card className="relative overflow-hidden p-6 sm:p-8 bg-surface-elevated border-border shadow-card">
       {/* Subtle background glow */}
@@ -40,12 +45,12 @@ export const ProfileHero: React.FC<ProfileHeroProps> = ({
           {/* Avatar Container */}
           <div className="relative group shrink-0">
             <Avatar
-              name={user.name}
+              name={user?.name || 'Forger'}
               size="lg"
               className="h-24 w-24 sm:h-28 sm:w-28 text-2xl sm:text-3xl font-extrabold ring-4 ring-primary/20 shadow-elevated"
             />
             <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-black text-xs shadow-md border-2 border-surface">
-              {identity.level}
+              {level}
             </div>
           </div>
 
@@ -53,38 +58,38 @@ export const ProfileHero: React.FC<ProfileHeroProps> = ({
           <div className="space-y-2 max-w-xl">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
               <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
-                {user.name}
+                {user?.name || 'Daily Forger'}
               </h1>
 
               <Badge variant="default" size="sm" className="font-bold">
                 <Sparkles className="h-3 w-3 mr-1" />
-                {identity.title}
+                {title}
               </Badge>
 
               <Badge variant="default" size="sm" className="uppercase font-extrabold tracking-wider text-[10px]">
                 <ShieldCheck className="h-3 w-3 mr-1 text-success" />
-                {user.membershipTier === 'pro' ? 'PRO FORGER' : 'FORGER'}
+                {user?.membershipTier === 'pro' ? 'PRO FORGER' : 'FORGER'}
               </Badge>
             </div>
 
             {/* Handle & Tagline */}
-            <div className="flex items-center justify-center sm:justify-start gap-3 text-xs text-muted-foreground font-medium">
-              <span>@{user.username || 'forger'}</span>
+            <div className="flex items-center justify-center sm:justify-start gap-3 text-xs text-muted-foreground font-medium flex-wrap">
+              <span>@{user?.username || 'forger'}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5" />
-                Member since {user.memberSince}
+                Member since {memberSince}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1 text-primary">
                 <Award className="h-3.5 w-3.5" />
-                Level {identity.level} ({identity.experiencePoints.toLocaleString()} XP)
+                Level {level} ({xp.toLocaleString()} XP)
               </span>
             </div>
 
             {/* Bio */}
             <p className="text-xs sm:text-sm text-muted-foreground/90 leading-relaxed max-w-md pt-1">
-              {user.bio || identity.description}
+              {user?.bio || identity?.description || 'Forging daily discipline and habits with Daily Forge.'}
             </p>
           </div>
         </div>
@@ -99,7 +104,7 @@ export const ProfileHero: React.FC<ProfileHeroProps> = ({
               </div>
               <div className="text-left">
                 <span className="text-[10px] uppercase font-bold text-muted-foreground block">Streak</span>
-                <span className="text-sm font-black text-foreground">{user.currentStreak} Days</span>
+                <span className="text-sm font-black text-foreground">{user?.currentStreak || 0} Days</span>
               </div>
             </div>
 
