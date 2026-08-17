@@ -219,7 +219,7 @@ export const GoalModal: React.FC<GoalModalProps> = ({
         <DialogFooter
           onCancel={onClose}
           cancelLabel="Cancel"
-          onConfirm={undefined}
+          onConfirm={() => handleSubmit({ preventDefault: () => {} } as any)}
           confirmLabel={isEdit ? 'Save Changes' : 'Create Goal'}
           isSubmitting={isSubmitting}
         />

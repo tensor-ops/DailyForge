@@ -165,7 +165,7 @@ export const EventModal: React.FC<EventModalProps> = ({
         <DialogFooter
           onCancel={onClose}
           cancelLabel="Cancel"
-          onConfirm={undefined}
+          onConfirm={() => handleSubmit({ preventDefault: () => {} } as any)}
           confirmLabel={isEdit ? 'Save Block' : 'Add to Schedule'}
           isSubmitting={isSubmitting}
         />

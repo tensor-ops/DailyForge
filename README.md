@@ -1,672 +1,410 @@
 <p align="center">
-  <img src="frontend/public/logos/daily-forge-logo-forge-dark.svg" alt="DailyForge Logo" width="460" />
+  <img src="frontend/public/branding/dailyforge-logo.svg" alt="DailyForge Logo" width="340" />
 </p>
 
-<h1 align="center">⚒️ DailyForge</h1>
+<h1 align="center">🔥 Daily Forge</h1>
 
 <p align="center">
-  <strong>Forge Better Days. Build Lasting Consistency.</strong>
-</p>
-
-<p align="center">
-  <em>An enterprise-grade personal productivity and habit operating system that bridges the gap between high-level aspirations and daily behavioral execution with mathematical momentum, circadian time-blocking, scientific routine experimentation, and grounded AI coaching.</em>
+  <strong>Build Better. Every Day.</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/TypeScript-5.7.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/Vite-5.4.14-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/Node.js-Express_4.21-339933?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/MongoDB-Mongoose_8.24-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge"><img src="https://img.shields.io/badge/Tailwind_CSS-3.4.17-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
-  <a href="http://localhost:5001/api/docs"><img src="https://img.shields.io/badge/OpenAPI-Swagger_UI-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger" /></a>
-  <a href="https://github.com/tensor-ops/DailyForge/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-F97316?style=for-the-badge" alt="License" /></a>
+  A high-performance personal operating system engineered to transform ambitious goals into consistent daily execution through atomic habits, time-blocked planning, transparent behavioral analytics, scientific N-of-1 experimentation, and grounded multi-agent AI intelligence.
 </p>
 
 <p align="center">
-  <a href="#-quick-start--local-development"><b>💻 Quick Start</b></a> •
-  <a href="#-core-feature-suite"><b>✨ Feature Suite</b></a> •
-  <a href="#-system-architecture"><b>🏗️ Architecture</b></a> •
-  <a href="#-email-otp-authentication"><b>🔐 OTP Auth</b></a> •
-  <a href="#-rest-api-documentation--swagger"><b>🔌 REST APIs</b></a> •
-  <a href="#-universal-dialog-design-system"><b>🎨 Dialog System</b></a> •
-  <a href="#-database-domain-models"><b>🗄️ Database</b></a> •
-  <a href="#-testing--verification"><b>🧪 Testing</b></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React 18" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript_5-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js" /></a>
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express.js-404D59?style=for-the-badge" alt="Express.js" /></a>
+  <a href="https://www.mongodb.com/"><img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" /></a>
+  <a href="https://jestjs.io/"><img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white" alt="Jest" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite_5-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-F97316?style=for-the-badge" alt="MIT License" /></a>
+</p>
+
+<p align="center">
+  <a href="#-getting-started"><strong>[ 💻 Run Locally ]</strong></a> &nbsp;•&nbsp;
+  <a href="./docs/README.md"><strong>[ 📚 Documentation Hub ]</strong></a> &nbsp;•&nbsp;
+  <a href="#-api-documentation"><strong>[ 🔵 Swagger API ]</strong></a> &nbsp;•&nbsp;
+  <a href="./docs/ai/README.md"><strong>[ 🤖 AI Architecture ]</strong></a> &nbsp;•&nbsp;
+  <a href="./docs/architecture/system.md"><strong>[ 🏗 System Design ]</strong></a>
 </p>
 
 ---
 
 ## 📌 Table of Contents
 
-- [🔥 What is DailyForge?](#-what-is-dailyforge)
+- [🔥 What is Daily Forge?](#-what-is-daily-forge)
 - [⚒️ The Forge Philosophy](#️-the-forge-philosophy)
-- [✨ Core Feature Suite](#-core-feature-suite)
+- [✨ Core Capabilities](#-core-capabilities)
+- [🖥️ Product Tour](#️-product-tour)
 - [🏗️ System Architecture](#️-system-architecture)
-- [🔐 Email OTP Authentication](#-email-otp-authentication)
-- [🧠 The Closed-Loop AI Coaching Engine](#-the-closed-loop-ai-coaching-engine)
-- [🎨 Universal Dialog Design System](#-universal-dialog-design-system)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🗂️ Project Structure](#️-project-structure)
-- [🔌 REST API Documentation & Swagger](#-rest-api-documentation--swagger)
-- [🗄️ Database Domain Models](#️-database-domain-models)
-- [🎨 6-Theme Visual Identity System](#-6-theme-visual-identity-system)
-- [🚀 Quick Start & Local Development](#-quick-start--local-development)
-- [⚙️ Environment Variables](#️-environment-variables)
+- [🤖 Grounded AI Architecture](#-grounded-ai-architecture)
+- [🔌 API Documentation](#-api-documentation)
+- [🗄️ Data Architecture](#️-data-architecture)
+- [🛠️ Technology Stack](#️-technology-stack)
+- [⚙️ Getting Started](#️-getting-started)
 - [🧪 Testing & Verification](#-testing--verification)
-- [🛡️ Security & Privacy Guardrails](#️-security-privacy--ai-guardrails)
-- [🗺️ Future Roadmap](#️-roadmap)
+- [🎨 Design System & Theme Studio](#-design-system--theme-studio)
+- [🗺️ Roadmap](#️-roadmap)
+- [🔐 Security Policy](#-security-policy)
 - [🤝 Contributing](#-contributing)
 - [📄 License](#-license)
 
 ---
 
-## 🔥 What is DailyForge?
+## 🔥 What is Daily Forge?
 
-**DailyForge** is a full-stack personal operating system engineered to eliminate the gap between high-level ambitions and daily execution.
+**Daily Forge is NOT another simplistic checkbox habit tracker.**
 
-Most productivity tools suffer from two fundamental problems:
-1. **Disconnected Checkboxes**: Generic task managers lack context—completing an isolated checkbox provides no insight into whether your daily routines actually advance your 90-day goals.
-2. **Hallucinatory AI Assistants**: Generic chatbots dispense disconnected advice with zero grounding in your actual telemetry, sleep windows, or cognitive friction points.
+Most productivity tools treat routines as isolated binary tasks without understanding human capacity, circadian rhythms, or long-term ambition roadmaps. When users miss a day, generic apps punish them with broken streaks and negative feedback loops.
 
-DailyForge solves this with a **closed-loop behavioral architecture**:
-* **Multi-Tier Goal Trees** connect to daily atomic habits.
-* **Circadian Time Blocking** schedules routines into optimal cognitive windows.
-* **Deterministic Analytics & Momentum Engines** compute transparent Forge Scores (0–1000) and recovery velocity.
-* **Forge Lab** enables scientific N-of-1 routine experimentation (e.g. testing 7:30 PM vs 9:00 PM study windows).
-* **Grounded Agentic AI Coaches** synthesize your verified execution history to deliver actionable, non-hallucinatory guidance.
-
-```text
-GOALS ➔ HABITS ➔ DAILY EXECUTION ➔ TELEMETRY LOGS ➔ FORGE SCORE ➔ N-of-1 EXPERIMENTS ➔ COMPOUNDING GROWTH
-```
+**Daily Forge redefines habit tracking as a Personal Operating System:**
+1. **Directional Roadmaps**: Decompose long-term multi-month goals into weighted milestones and recurring atomic habits.
+2. **Circadian Time-Blocking**: Match cognitive task difficulty with biological energy peaks (morning deep work vs evening reflection).
+3. **Transparent Behavioral Telemetry**: Track execution velocity, recovery rates, and a deterministic 5-pillar **Forge Score** (0–1000).
+4. **N-of-1 Scientific Trials**: Use **Forge Lab** to test behavioral interventions with hypothesis-driven trial schedules.
+5. **Grounded Multi-Agent AI**: A fleet of specialized assistants (Habit Coach, Planner Optimizer, Momentum Analyst) that ground advice in your authentic historical telemetry.
 
 ---
 
 ## ⚒️ The Forge Philosophy
 
-> *"Goals provide direction. Habits build systems. Daily execution creates evidence. Analytics reveal patterns. Momentum shows trajectory. AI provides guidance. Consistency compounds."*
+> *"Goals define your direction. Habits construct your systems. Daily execution builds your evidence. Consistency compounds into mastery."*
 
 ```mermaid
 flowchart LR
-    A["🎯 Goals\n(Direction)"] --> B["🔄 Habits\n(Systems)"]
-    B --> C["⚡ Daily Execution\n(Evidence)"]
-    C --> D["📊 Behavior Logs\n(Data)"]
-    D --> E["📈 Performance Analytics\n(Patterns)"]
-    E --> F["🔥 Momentum & Score\n(Trajectory)"]
-    F --> G["🤖 Grounded AI Engine\n(Coaching)"]
-    G --> H["🧪 Forge Lab Experiments\n(Optimization)"]
+    A[🎯 Goals] --> B[🔄 Habits]
+    B --> C[⚡ Daily Execution]
+    C --> D[📊 Behavior Data]
+    D --> E[📈 Analytics]
+    E --> F[🔥 Momentum]
+    F --> G[🤖 AI Insights]
+    G --> H[🎯 Better Routines]
     H --> B
 ```
 
-### Core Engineering Tenets
-1. **Deterministic Grounding First**: AI never hallucinates statistics. Every metric, streak, momentum score, and recovery velocity is computed deterministically from real database logs before reaching the intelligence layer.
-2. **Actionable Micro-Interventions**: Insights link directly to concrete system mutations (e.g., reschedule routine, adjust duration, launch experiment).
-3. **Resilience Over Perfection**: The platform measures *Recovery Velocity*—how quickly you rebound after a missed routine—prioritizing identity resilience over fragile streaks.
+---
+
+## ✨ Core Capabilities
+
+| Capability | Module | Description | Status |
+|---|---|---|:---:|
+| **Atomic Habit Engine** | `Habits` | Binary, numeric, duration, and checklist routines with circadian time windows and friction logs. | ✅ Complete |
+| **High-Impact Goals** | `Goals` | Multi-tier goal trees with milestone weights, deadline trajectories, and linked habits. | ✅ Complete |
+| **Circadian Planner** | `Planner` | 24-hour visual time-blocking calendar with AI auto-schedule and focus session tracking. | ✅ Complete |
+| **End of Day Review** | `Today` | Idempotent daily reflection cockpit capturing completion rates, focus time, and mood. | ✅ Complete |
+| **Forge Score Engine** | `Analytics` | 5-pillar mathematical score (Consistency, Execution, Reliability, Momentum, Recovery). | ✅ Complete |
+| **Forge Lab Experiments**| `Forge Lab` | 4-step scientific N-of-1 trial builder to test routine optimizations (7–30 days). | ✅ Complete |
+| **Digital Collectibles** | `Milestones` | Rarity-tiered milestone medallions (Bronze $\rightarrow$ Legendary) with profile showcase pinning. | ✅ Complete |
+| **Grounded AI Multi-Agent** | `AI Coach` | Autonomous intent-routed agent fleet powered by personal telemetry context. | ✅ Complete |
+| **Theme Studio** | `Settings` | Modular design-token studio with 10 presets, custom HEX picker, and schema export/import. | ✅ Complete |
 
 ---
 
-## ✨ Core Feature Suite
+## 🖥️ Product Tour
 
-| Feature Module | Key Capabilities | Technical Highlights |
-|---|---|---|
-| **📊 Dashboard & Today Cockpit** | Daily Spark greeting, Forge Score (0–1000), quick routine completion, cognitive energy logs, daily review modal | Real-time score recalculation, reactive state synchronization |
-| **🔄 Habit Management** | Categorized habits (Health, Study, Work, etc.), flexible circadian windows, measurement types (binary, numeric, duration, checklist) | Friction tagging, streak freeze protection, Mongoose TTL logs |
-| **🎯 Multi-Tier Goals** | Goal trees, milestone-weighted progress, habit-linked trajectory, velocity badges (Ahead, On Track, Behind) | Mathematical contribution formulas, dynamic milestone steppers |
-| **📅 Focus Planner & Time Blocking** | 9 execution block types, drag-and-drop calendar, AI auto-scheduler, fullscreen Focus Mode countdown timer | Conflict detection, circadian capacity forecasting |
-| **🧪 Forge Lab (A/B Behavior Experiments)** | N-of-1 scientific trials (7–30 days), baseline vs intervention comparison area charts, adherence scoring, 1-click schedule applying | Recharts area/line visualization, observational signal detection |
-| **🏆 Milestones & Collectibles** | Digital Collectible Moments with 5 rarity tiers (`COMMON` to `LEGENDARY`), 365-day activity heatmap, achievement gallery | SVG icon medallion rendering, unlock date serialization |
-| **💡 Forge Insights** | Multi-signal behavioral intelligence feed, evidence telemetry drawers, ranked recommendations with 1-click apply | Personalization coverage metric, feedback refinement loop |
-| **🤖 AI Coach** | 8 specialized domain agents (HabitCoach, RecoveryCoach, GoalStrategist, etc.), multi-turn conversation memory, safety transaction manager | Contextual RAG knowledge chunks, intent routing |
-| **🔐 Email OTP Authentication** | Passwordless 6-digit email OTP login and registration, HMAC-SHA256 verification, countdown resend cooldown | 5-minute MongoDB TTL index, rate limiting, Gmail REST API provider |
-| **🎨 Universal Dialog System** | 22 unified modals modeled after canonical `GoalModal`, sticky footers, scrollable bodies, 100% theme awareness | Viewport-constrained (`max-h: 85vh`), zero clipped buttons |
+<p align="center">
+  <img src="docs/screenshots/today/today-review.png" alt="End of Day Momentum Review" width="720" />
+  <br />
+  <em>End of Day Momentum Review Cockpit — Capturing execution metrics, focus time, and subjective reflections.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/goals/goals.png" alt="High-Impact Goals Roadmap" width="720" />
+  <br />
+  <em>High-Impact Goal Studio — Milestone roadmap decomposition with trajectory pacing curves.</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/theme-studio/theme-studio.png" alt="DailyForge Theme Studio" width="720" />
+  <br />
+  <em>DailyForge Theme Studio — Interactive live preview cockpit with 10 curated color profiles & token controls.</em>
+</p>
 
 ---
 
 ## 🏗️ System Architecture
 
-DailyForge follows an API-first, service-oriented architecture with strict separation of concerns across presentation, routing, validation, domain services, data persistence, and intelligence layers.
+DailyForge follows a clean, decoupled layered service architecture:
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Frontend Client (React 18 + Vite + Tailwind)"]
-        UI["App Shell / Navigation (12 Modules)"]
-        Ctx["Context Layer (Auth, Theme, Toast)"]
-        Dialogs["Universal Dialog System (22 Modals)"]
-        APIClient["Axios HTTP Client (JWT Interceptor)"]
+    subgraph Client["🖥️ Single Page Application (React 18 + Vite + TypeScript)"]
+        UI[Design System & Component Library]
+        ThemeEngine[Modular Design Token Engine]
+        APIClient[Axios API Client with Auth Interceptors]
     end
 
-    subgraph Gateway ["Backend API Gateway (Express 4.21 @ Port 5001)"]
-        MW["Middleware Pipeline (Helmet, CORS, Rate Limit, Auth JWT)"]
-        Validators["Zod Schema Validation Engine"]
-        Routes["Express API Routers (/api/v1/*)"]
-        Swagger["OpenAPI Swagger UI (/api/docs)"]
+    subgraph Server["⚡ RESTful API (Node.js + Express)"]
+        Routes[Express Route Handlers]
+        AuthGuard[Timing-Safe Auth & JWT Middleware]
+        Services[Business Logic & Domain Services]
+        AIOrchestrator[Multi-Agent AI Orchestrator]
     end
 
-    subgraph Services ["Core Business & Intelligence Services"]
-        AuthSvc["Auth & OTP Service"]
-        HabitSvc["Habit & Analytics Service"]
-        GoalSvc["Goal & Milestone Service"]
-        PlannerSvc["Planner & AutoSchedule Service"]
-        ExpSvc["Experiment Service"]
-        EmailSvc["Email Provider Subsystem (Gmail / Console)"]
-        AISvc["AI Orchestrator & 8 Domain Agents"]
+    subgraph Database["🗄️ Persistence Layer (MongoDB)"]
+        Mongoose[31 Mongoose Domain Models]
+        DB[(MongoDB Database)]
     end
 
-    subgraph Persistence ["Persistence Layer (MongoDB Mongoose 8.24)"]
-        UserDB[(Users & Profiles)]
-        OTPDB[(Email Verification Codes - TTL 5m)]
-        HabitDB[(Habits, Completions & Misses)]
-        GoalDB[(Goals & Milestones)]
-        EventDB[(Calendar Events & Focus Logs)]
-        ExpDB[(Experiments & Observations)]
-        AIDB[(AI Memories, Insights & Usage)]
-    end
-
-    UI --> Ctx
-    UI --> Dialogs
-    Dialogs --> APIClient
     UI --> APIClient
-    APIClient -->|Bearer JWT / REST| MW
-    MW --> Validators
-    Validators --> Routes
-    Routes --> Services
-    Services --> Persistence
-    Services --> EmailSvc
-    Services --> AISvc
-    Routes -.-> Swagger
+    ThemeEngine --> UI
+    APIClient -- "HTTPS / JSON" --> Routes
+    Routes --> AuthGuard
+    AuthGuard --> Services
+    Services --> AIOrchestrator
+    Services --> Mongoose
+    Mongoose --> DB
 ```
 
 ---
 
-## 🔐 Email OTP Authentication
+## 🤖 Grounded AI Architecture
 
-DailyForge implements a secure **passwordless Email OTP (One-Time Password)** authentication system for registration, login, and email verification.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as User Browser
-    participant FE as DailyForge Frontend
-    participant API as Express API (/api/v1/auth)
-    participant OTP as OTP & Hash Utility
-    participant DB as MongoDB (EmailVerificationCode)
-    participant Email as Email Service (Gmail / Console)
-
-    User->>FE: Enter Email Address
-    FE->>API: POST /send-otp { email, purpose }
-    API->>OTP: Generate 6-Digit Code & Salt
-    OTP->>OTP: Compute HMAC-SHA256(code + salt + server_pepper)
-    API->>DB: Store hashed code (5-min TTL index, attempts: 0)
-    API->>Email: Send formatted OTP template
-    Email-->>User: Deliver 6-digit OTP code to Inbox
-    API-->>FE: HTTP 200 { success: true, expiresInSeconds: 300 }
-    
-    User->>FE: Enter 6-digit OTP in 6-box input
-    FE->>API: POST /verify-otp { email, code, purpose, name }
-    API->>DB: Retrieve active OTP record
-    API->>OTP: Verify timing-safe HMAC-SHA256 match
-    API->>DB: Mark email verified & upsert User document
-    API->>DB: Invalidate / delete OTP record
-    API-->>FE: HTTP 200 { token: JWT, user: UserData }
-    FE->>FE: Store JWT in localStorage & set Auth state
-    FE->>User: Redirect to /dashboard
-```
-
-### Security Highlights:
-* **HMAC-SHA256 Hashing**: Plaintext codes are never stored in the database.
-* **Automatic Expiration**: MongoDB TTL index automatically purges records after 300 seconds.
-* **Brute-Force Shield**: Maximum 5 attempts allowed per code; rate-limited to 5 requests per 15 minutes per IP.
-* **Multi-Provider Email Abstraction**: Seamlessly operates with `GmailEmailProvider` (via Google OAuth2 refresh tokens and Gmail REST API) in production or `ConsoleEmailProvider` during local development.
-
----
-
-## 🧠 The Closed-Loop AI Coaching Engine
-
-DailyForge features an **Agentic Multi-Agent AI Architecture** that coordinates 8 specialized domain agents with long-term memory, contextual RAG knowledge, and execution safety transaction managers.
+Unlike generic chat wrappers, DailyForge connects AI assistants directly to your **computed behavioral telemetry**, ensuring zero hallucination and mathematically grounded coaching.
 
 ```mermaid
 flowchart TD
-    subgraph ClientLayer ["Client Interface"]
-        Chat["💬 AI Coach Chat Workspace"]
-        InsightsUI["💡 Forge Insights Dashboard"]
-        RecsUI["⚡ Ranked Action Recommendations"]
+    Query([User Query / Prompt]) --> Router[Intent Router]
+    
+    subgraph ContextEngine["🧠 Grounded Context Engine"]
+        Habits[(Active Habits & Streaks)]
+        Snapshots[(Daily Execution Snapshots)]
+        Goals[(Goal Roadmaps & Deadlines)]
+        Energy[(Energy & Friction Logs)]
     end
-
-    subgraph CoreEngine ["Agentic Intelligence Core"]
-        Router["🧭 IntentRouter (Query Classifier)"]
-        Context["🧠 PersonalContextEngine & ContextBuilder"]
-        Orch["⚡ ForgeAIOrchestrator"]
-        
-        subgraph SpecializedAgents ["8 Specialized Intelligence Agents"]
-            HC["HabitCoach (Friction & Circadian)"]
-            RC["RecoveryCoach (Missed Routine Protocols)"]
-            GS["GoalStrategist (Roadmap & Velocity)"]
-            PO["PlannerOptimizer (Conflict & AutoSchedule)"]
-            MA["MomentumAnalyst (Multi-week Trajectory)"]
-            ES["ExperimentScientist (Forge Lab Trials)"]
-            PN["ProgressNarrator (Narrative Reviews)"]
-            IR["IntentRouter (Agent Dispatcher)"]
-        end
-        
-        RAG["📚 Vector Knowledge Base / RAG Chunks"]
-        Safety["🛡️ AISafetyService & Transaction Guard"]
-    end
-
-    subgraph DatabaseLayer ["MongoDB Persistence"]
-        DB1[(Habits & Completions)]
-        DB2[(Goals & Milestones)]
-        DB3[(Calendar Events)]
-        DB4[(AIMemory & Context)]
-    end
-
-    ClientLayer <--> Router
-    Router --> Orch
-    Orch <--> Context
-    Context <--> DatabaseLayer
-    Context <--> RAG
-    Orch --> SpecializedAgents
-    SpecializedAgents --> Safety
-    Safety --> DatabaseLayer
-    Safety --> ClientLayer
+    
+    Habits --> ContextEngine
+    Snapshots --> ContextEngine
+    Goals --> ContextEngine
+    Energy --> ContextEngine
+    
+    Router --> ContextEngine
+    ContextEngine --> AgentFleet{Specialized Agent Dispatcher}
+    
+    AgentFleet -->|Habit Stacking| HC[Habit Coach]
+    AgentFleet -->|Circadian Scheduling| PO[Planner Optimizer]
+    AgentFleet -->|Milestone Trajectory| GS[Goal Strategist]
+    AgentFleet -->|Fatigue & Reset| RC[Recovery Coach]
+    AgentFleet -->|N-of-1 Trials| ES[Experiment Scientist]
+    
+    HC --> Guardrails[Safety Guardrails & Tool Validator]
+    PO --> Guardrails
+    GS --> Guardrails
+    RC --> Guardrails
+    ES --> Guardrails
+    
+    Guardrails --> Response([Actionable Insight / 1-Click Schedule Action])
 ```
 
 ---
 
-## 🎨 Universal Dialog Design System
+## 🔌 API Documentation
 
-All 22 dialogs and modals across DailyForge strictly adhere to the canonical **Goal Modal Master Architecture**:
+DailyForge provides a production-grade RESTful API. When running locally, explore interactive specifications:
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│ [ICON]  DIALOG TITLE                                    X   │
-│         Helpful, contextual description                     │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│                    SCROLLABLE BODY                          │
-│                                                             │
-│  SECTION HEADER / STEPPERS                                  │
-│  ───────────────────────────────────────────────────────    │
-│                                                             │
-│  FIELD LABEL *                    FIELD LABEL               │
-│  [________________________]       [____________________]    │
-│                                                             │
-│  GROUPED CARDS (e.g. Target & Milestones, Timings)          │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ Field             | Field             | Field         │  │
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ▼ Advanced Options / AI Actions / Live Previews            │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│                                Cancel  [Primary Action]     │
-└─────────────────────────────────────────────────────────────┘
-```
+- 🔵 **Interactive Swagger UI**: [`http://localhost:5001/api-docs`](http://localhost:5001/api-docs)
+- 🧾 **OpenAPI JSON**: [`http://localhost:5001/api-docs.json`](http://localhost:5001/api-docs.json)
 
-### Design Standards:
-* **Viewport Containment**: Constrained to `max-height: 85vh` with pinned headers, scrollable body (`overflow-y-auto`), and pinned sticky footers. Submit buttons never disappear below the viewport.
-* **Size Hierarchy**:
-  * **Small (`400–500px`)**: Confirmation (`ConfirmDialog`), Habit Deletion (`DeleteHabitModal`), Focus Timer (`FocusModeModal`), Energy Check-in (`EnergyLogModal`), Profile Edit (`EditProfileModal`).
-  * **Medium (`550–650px`)**: Quick Add (`QuickAddModal`), Event Scheduler (`EventModal`), Event Details (`EventDetailsModal`), Daily Review (`DailyReviewModal`), Forge Score (`ForgeScoreModal`), Collectible Reveal (`MomentDetailModal`), Command Palette (`CommandPalette` - `Cmd+K`).
-  * **Large (`680–820px`)**: Goal Creator (`GoalModal`), Habit Builder (`CreateHabitModal`), Experiment Wizard (`ExperimentBuilderModal`), Experiment Detail (`ExperimentDetailModal`), Milestone Gallery (`AchievementGalleryModal`).
-* **Adaptive Theme Tokens**: Clean elevated white surfaces in Light Mode; deep navy elevated surfaces in Dark Mode.
+### Core Endpoints Overview
+
+| Domain | Method | Endpoint | Description |
+|---|:---:|---|---|
+| **Auth** | `POST` | `/api/v1/auth/request-otp` | Request 6-digit email OTP. |
+| **Auth** | `POST` | `/api/v1/auth/verify-otp` | Verify OTP and receive JWT token. |
+| **Today** | `GET` | `/api/v1/today` | Retrieve today's habits, progress, and Spark quote. |
+| **Today** | `POST` | `/api/v1/today/review` | Submit idempotent End of Day Review. |
+| **Habits** | `GET` | `/api/v1/habits` | List active habits with streak metrics. |
+| **Habits** | `POST` | `/api/v1/habits` | Create routine with circadian timing and targets. |
+| **Habits** | `POST` | `/api/v1/habits/:id/complete` | Record daily habit completion. |
+| **Planner**| `GET` | `/api/v1/planner` | Fetch calendar overview, capacity, and day health. |
+| **Planner**| `POST` | `/api/v1/planner/events` | Schedule new time block on planner. |
+| **Goals** | `GET` | `/api/v1/goals` | List high-impact goals and trajectory pacing. |
+| **Goals** | `POST` | `/api/v1/goals` | Create goal with milestones and targets. |
+| **Analytics**| `GET` | `/api/v1/analytics/overview` | Compute 5-pillar Forge Score and trend history. |
+| **AI** | `POST` | `/api/v1/ai/coach/chat` | Query the multi-agent AI coaching fleet. |
+
+*Full API specification available in [`docs/api/`](./docs/api/).*
 
 ---
 
-## 🛠️ Tech Stack
-
-### Frontend
-| Component | Technology | Version | Purpose |
-|---|---|---|---|
-| **Core Framework** | React | `^18.3.1` | Component-based interactive UI |
-| **Language** | TypeScript | `^5.7.3` | End-to-end static type safety |
-| **Build Tool** | Vite | `^5.4.14` | High-speed ESM dev server & bundler |
-| **Routing** | React Router DOM | `^6.29.0` | Client-side SPA routing |
-| **Styling** | Tailwind CSS | `^3.4.17` | Utility CSS with semantic design tokens |
-| **Data Visualization** | Recharts | `^2.15.1` | Area, Bar, Line, Radar charts |
-| **Icons** | Lucide React | `^0.475.0` | Consistent iconography |
-| **HTTP Client** | Axios | `^1.7.9` | REST client with JWT interceptors |
-
-### Backend
-| Component | Technology | Version | Purpose |
-|---|---|---|---|
-| **Runtime** | Node.js | `>=18.0.0` | Server JavaScript runtime |
-| **Web Framework** | Express | `^4.21.2` | RESTful API server & middleware pipeline |
-| **Database & ODM** | MongoDB + Mongoose | `^8.24.3` | Document database and object modeling |
-| **Schema Validation** | Zod | `^3.24.2` | Runtime request body validation |
-| **Security & Auth** | JWT + bcryptjs + Helmet | `^9.0.2` | Token auth, password hashing, HTTP headers |
-| **Rate Limiting** | express-rate-limit | `^7.5.0` | Brute force & DDoS protection |
-| **API Documentation** | Swagger UI Express | `^5.0.1` | OpenAPI 3.0 interactive documentation |
-| **Testing** | Jest + Supertest | `^29.7.0` | Unit & API integration test runner |
-
----
-
-## 🗂️ Project Structure
-
-```text
-DailyForge/
-├── backend/
-│   ├── scripts/                        # Database seed and reset automation scripts
-│   ├── src/
-│   │   ├── ai/                         # Closed-loop AI Coaching Engine
-│   │   │   ├── agents/                 # 8 Specialized domain intelligence agents
-│   │   │   ├── context/                # ContextBuilder & PersonalContextEngine
-│   │   │   ├── memory/                 # Long-term AI conversational memory
-│   │   │   ├── orchestrator/           # IntentRouter & ForgeAIOrchestrator
-│   │   │   ├── providers/              # OpenAI, Gemini & Mock provider abstractions
-│   │   │   ├── rag/                    # Vector knowledge retrieval services
-│   │   │   └── safety/                 # Tool execution sanitization & guardrails
-│   │   ├── config/                     # Database connection & environment variables
-│   │   ├── controllers/                # 15 Express request handlers
-│   │   ├── middleware/                 # Auth JWT, Rate Limit, Error handling
-│   │   ├── models/                     # 31 Mongoose domain schemas
-│   │   ├── routes/                     # 15 API v1 router definitions
-│   │   ├── services/                   # Business logic, analytics & email providers
-│   │   │   └── email/                  # EmailProvider, Gmail & Console providers
-│   │   ├── utils/                      # OTP generation, HMAC crypto, date helpers
-│   │   ├── validators/                 # Zod validation schemas
-│   │   ├── app.js                      # Express configuration & Swagger OpenAPI spec
-│   │   └── server.js                   # HTTP server entrypoint & graceful shutdown
-│   └── tests/                          # Jest test suites (OTP, Auth, Metrics, Streak)
-│
-├── frontend/
-│   ├── public/
-│   │   └── logos/                      # 12 Theme-aware SVG brand and logo assets
-│   ├── src/
-│   │   ├── app/                        # App entry and React Router routing tables
-│   │   ├── components/                 # Shared UI primitives (Dialog, Button, Card)
-│   │   │   ├── brand/                  # ThemeLogo & central brand engine
-│   │   │   ├── dialogs/                # Master Dialog primitives & Command Palette
-│   │   │   ├── layout/                 # Sidebar, TopBar, MobileNav, Shell
-│   │   │   └── ui/                     # Avatar, Input, OtpInput, ProgressBar
-│   │   ├── context/                    # AuthContext, ThemeContext, ToastContext
-│   │   ├── features/                   # 12 Domain feature modules
-│   │   │   ├── ai/                     # AI Coach chat workspace
-│   │   │   ├── ai-insights/            # Forge Insights intelligence dashboard
-│   │   │   ├── analytics/              # Behavioral analytics & Forge Score
-│   │   │   ├── auth/                   # OTP Login, Register & verification pages
-│   │   │   ├── dashboard/              # Overview, KPI cards, today execution
-│   │   │   ├── forge-lab/              # Behavioral experimentation suite
-│   │   │   ├── goals/                  # Goal trees & milestone roadmaps
-│   │   │   ├── habits/                 # Habit builder, catalog & metrics
-│   │   │   ├── milestones/             # Collectible moment cards & gallery
-│   │   │   ├── planner/                # Time blocking & circadian auto-schedule
-│   │   │   └── profile/                # Identity, 365d heatmap & preferences
-│   │   ├── hooks/                      # Custom hooks (useAuth, useTheme, useToast)
-│   │   ├── services/                   # Frontend Axios API client services
-│   │   ├── styles/                     # CSS design tokens & theme variables
-│   │   └── types/                      # Comprehensive TypeScript interfaces
-│   ├── index.html                      # HTML shell with theme initialization
-│   ├── tailwind.config.js              # Tailwind configuration with semantic tokens
-│   └── vite.config.ts                  # Vite build and path alias configuration
-│
-└── README.md                           # Master Project Documentation
-```
-
----
-
-## 🔌 REST API Documentation & Swagger
-
-DailyForge exposes an interactive OpenAPI 3.0 Swagger UI documentation dashboard:
-
-👉 **[Open Interactive Swagger UI](http://localhost:5001/api/docs)** *(When running locally)*
-
-### API Endpoint Directory
-
-#### Authentication (`/api/v1/auth`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `POST` | `/api/v1/auth/send-otp` | Generate & dispatch 6-digit email OTP | No |
-| `POST` | `/api/v1/auth/verify-otp` | Verify OTP code and issue JWT session | No |
-| `POST` | `/api/v1/auth/resend-otp` | Resend active OTP with rate cooldown | No |
-| `POST` | `/api/v1/auth/register` | Register with email/password (legacy) | No |
-| `POST` | `/api/v1/auth/login` | Authenticate with email/password | No |
-| `GET` | `/api/v1/auth/me` | Fetch authenticated user profile | Yes |
-
-#### Habits (`/api/v1/habits`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `GET` | `/api/v1/habits` | List all active user habits | Yes |
-| `POST` | `/api/v1/habits` | Create new habit with schedule & target | Yes |
-| `GET` | `/api/v1/habits/:id` | Get detailed habit telemetry | Yes |
-| `PATCH` | `/api/v1/habits/:id` | Update habit parameters | Yes |
-| `DELETE` | `/api/v1/habits/:id` | Permanently delete habit | Yes |
-| `POST` | `/api/v1/habits/:id/toggle` | Toggle routine completion for date | Yes |
-
-#### Goals & Milestones (`/api/v1/goals`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `GET` | `/api/v1/goals` | List high-impact goals with progress | Yes |
-| `POST` | `/api/v1/goals` | Create goal with target metric & milestones | Yes |
-| `GET` | `/api/v1/goals/:id` | Get goal details, linked habits & tasks | Yes |
-| `PATCH` | `/api/v1/goals/:id` | Update goal roadmap | Yes |
-| `DELETE` | `/api/v1/goals/:id` | Delete goal | Yes |
-| `POST` | `/api/v1/goals/:id/milestones` | Add checkpoint milestone | Yes |
-
-#### Planner & Time Blocking (`/api/v1/planner`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `GET` | `/api/v1/planner/events` | List calendar events for date range | Yes |
-| `POST` | `/api/v1/planner/events` | Schedule new time block | Yes |
-| `PATCH` | `/api/v1/planner/events/:id` | Update event timing or category | Yes |
-| `DELETE` | `/api/v1/planner/events/:id` | Remove block from schedule | Yes |
-| `POST` | `/api/v1/planner/auto-schedule` | Generate AI Circadian auto-schedule | Yes |
-| `POST` | `/api/v1/planner/auto-schedule/apply` | Apply auto-schedule adjustments | Yes |
-
-#### Forge Lab Experiments (`/api/v1/experiments`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `GET` | `/api/v1/experiments` | List active and completed N-of-1 trials | Yes |
-| `POST` | `/api/v1/experiments` | Launch new 7–30 day habit experiment | Yes |
-| `GET` | `/api/v1/experiments/:id` | Get trial workspace, chart data & verdict | Yes |
-| `POST` | `/api/v1/experiments/:id/apply` | Apply experiment outcome to habits | Yes |
-
-#### AI Coaching & Insights (`/api/v1/ai`)
-| Method | Endpoint | Description | Auth Required |
-|---|---|---|:---:|
-| `POST` | `/api/v1/ai/chat` | Multi-turn conversational AI Coach query | Yes |
-| `GET` | `/api/v1/ai/insights/feed` | List proactive behavioral insights | Yes |
-| `POST` | `/api/v1/ai/insights/:id/feedback` | Record helpful / unhelpful rating | Yes |
-| `GET` | `/api/v1/ai/recommendations` | Ranked actionable routine recommendations | Yes |
-| `POST` | `/api/v1/ai/recommendations/:id/apply` | Apply recommendation mutation | Yes |
-
----
-
-## 🗄️ Database Domain Models
-
-DailyForge models 31 distinct MongoDB Mongoose domain entities:
+## 🗄️ Data Architecture
 
 ```mermaid
 erDiagram
     USER ||--o{ HABIT : owns
-    USER ||--o{ GOAL : pursues
-    USER ||--o{ CALENDAR_EVENT : schedules
-    USER ||--o{ EXPERIMENT : runs
-    USER ||--o{ AI_INSIGHT : receives
+    USER ||--o{ GOAL : owns
+    USER ||--o{ CALENDAR_EVENT : owns
+    USER ||--o{ DAILY_REVIEW : records
+    USER ||--o{ DAILY_SNAPSHOT : aggregates
     USER ||--o{ USER_ACHIEVEMENT : earns
-    USER ||--o{ EMAIL_VERIFICATION_CODE : requests
 
-    HABIT ||--o{ HABIT_COMPLETION : logs
-    HABIT ||--o{ HABIT_MISS : tracks_friction
-    GOAL ||--o{ MILESTONE : contains
-    GOAL }o--o{ HABIT : linked_to
-    EXPERIMENT }o--|| HABIT : tests
-    USER_ACHIEVEMENT }o--|| ACHIEVEMENT : unlocks
+    HABIT ||--o{ HABIT_COMPLETION : tracks
+    HABIT ||--o{ HABIT_MISS : logs
+    GOAL ||--o{ MILESTONE : decomposes
+    GOAL ||--o{ HABIT : connects
+    ACHIEVEMENT ||--o{ USER_ACHIEVEMENT : unlocks
+
+    USER {
+        ObjectId _id PK
+        string email UK
+        string name
+        string timezone
+        boolean isVerified
+    }
+    HABIT {
+        ObjectId _id PK
+        string name
+        string trackingType
+        number currentStreak
+        number completionRate
+    }
+    DAILY_REVIEW {
+        ObjectId _id PK
+        string date UK_compound
+        string rating
+        number completionPercentage
+        string forgeNote
+    }
+    GOAL {
+        ObjectId _id PK
+        string name
+        number progress
+        string status
+    }
 ```
 
 ---
 
-## 🎨 6-Theme Visual Identity System
+## 🛠️ Technology Stack
 
-DailyForge features a dynamic, persistent multi-theme architecture:
-
-| Theme Name | Primary Accent | Background Surface | Identity Mood |
-|---|---|---|---|
-| **🔥 Forge Dark** *(Default)* | Electric Orange (`#F97316`) | Deep Navy (`#0A0F1D`) | High-focus, terminal-inspired dark mode |
-| **☀️ Forge Light** | Royal Indigo (`#6366F1`) | Crisp Cloud White (`#F8FAFC`) | Clean, high-contrast daylight workspace |
-| **⚡ Focus Blue** | Cyan / Cobalt (`#3B82F6`) | Dark Slate (`#0B132B`) | Deep engineering flow state |
-| **🌲 Forest Mint** | Emerald Green (`#10B981`) | Midnight Pine (`#061A14`) | Calm, natural rhythm & recovery |
-| **✨ Amber Forge** | Golden Amber (`#F59E0B`) | Warm Charcoal (`#181512`) | High energy, milestone celebration |
-| **🖤 Monochrome** | Slate Silver (`#94A3B8`) | Jet Black (`#09090B`) | Minimalist, distraction-free execution |
+```text
+Frontend:         React 18 · TypeScript 5 · Tailwind CSS · Vite 5 · Lucide Icons · Recharts
+Backend:          Node.js 20+ · Express.js · Mongoose ORM · JWT · Timing-Safe Crypto OTP
+Database:         MongoDB 6+ (Compound Unique Indexes & Strict Schemas)
+Architecture:     Grounded Personal Context Engine · Multi-Agent Fleet · Design Token Studio
+Testing:          Jest · Supertest · Comprehensive Domain Integration Runner
+```
 
 ---
 
-## 🚀 Quick Start & Local Development
+## ⚙️ Getting Started
 
 ### Prerequisites
-* **Node.js**: `>= 18.0.0`
-* **npm**: `>= 9.0.0`
-* **MongoDB**: Active MongoDB Atlas URI or local instance on `mongodb://localhost:27017`
+- **Node.js**: `v18.0.0` or higher (`v20+` recommended)
+- **MongoDB**: Local MongoDB instance (`mongodb://localhost:27017`) or MongoDB Atlas URI
 
-### 1. Clone the Repository
+### 1. Clone Repository
 ```bash
-git clone https://github.com/tensor-ops/DailyForge.git
+git clone https://github.com/dailyforge/dailyforge.git
 cd DailyForge
 ```
 
-### 2. Backend Setup
+### 2. Configure Environment Variables
+```bash
+# Backend environment setup
+cp backend/.env.example backend/.env
+```
+
+Ensure `backend/.env` contains your configuration:
+```env
+PORT=5001
+MONGODB_URI=mongodb://localhost:27017/ai-habit-tracker
+JWT_SECRET=your_super_secret_jwt_key_dailyforge_prod_2026
+OTP_PEPPER_SECRET=your_cryptographic_otp_pepper_secret_key_2026
+EMAIL_SERVICE=mock # or 'smtp' with Gmail App Password
+```
+
+### 3. Install & Start Backend
 ```bash
 cd backend
 npm install
-
-# Configure environment
-cp .env.example .env
-# Edit backend/.env with your MongoDB URI & JWT Secret
-
-# Optional: Seed sample database records
-npm run seed
-
-# Launch Backend Development Server (Port 5001)
 npm run dev
 ```
+*Backend runs on `http://localhost:5001` (Swagger API at `http://localhost:5001/api-docs`).*
 
-### 3. Frontend Setup
+### 4. Install & Start Frontend
 ```bash
 cd ../frontend
 npm install
-
-# Launch Frontend Development Server (Port 5173)
 npm run dev
 ```
-
-### 4. Access the Application
-* **Frontend Web App**: `http://localhost:5173`
-* **Backend API Base**: `http://localhost:5001/api/v1`
-* **Swagger API Docs**: `http://localhost:5001/api/docs`
-* **Health Check**: `http://localhost:5001/health`
-
----
-
-## ⚙️ Environment Variables
-
-### Backend (`backend/.env`)
-```env
-# Server Configuration
-PORT=5001
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-
-# Database
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/dailyforge
-
-# Security & JWT
-JWT_SECRET=your_super_secret_jwt_key_at_least_32_chars_long
-JWT_EXPIRES_IN=7d
-
-# Email Provider Configuration (Optional for production Gmail OTP)
-EMAIL_PROVIDER=console
-# Set to 'gmail' when using Google OAuth2
-GMAIL_USER=your-email@gmail.com
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-google-client-secret
-GOOGLE_REFRESH_TOKEN=your-google-oauth2-refresh-token
-
-# AI Provider Configuration (Optional)
-AI_PROVIDER=mock
-# Set to 'openai' or 'gemini' for live AI
-OPENAI_API_KEY=sk-...
-GEMINI_API_KEY=AIza...
-```
-
-### Frontend (`frontend/.env`)
-```env
-VITE_API_URL=http://localhost:5001/api/v1
-```
+*Frontend runs on `http://localhost:5173`.*
 
 ---
 
 ## 🧪 Testing & Verification
 
-DailyForge includes comprehensive unit, integration, and type-safety test suites.
+DailyForge maintains strict automated quality control across frontend and backend layers:
 
-### Run Backend Jest Tests
 ```bash
+# Run backend Jest test suite
 cd backend
 npm test
-```
-```text
-PASS tests/otpAuth.test.js
-PASS tests/behaviorMetrics.test.js
-PASS tests/userIsolation.test.js
-PASS tests/auth.test.js
-PASS tests/onboarding.test.js
-PASS tests/streak.test.js
 
-Test Suites: 6 passed, 6 total
-Tests:       23 passed, 23 total
-Snapshots:   0 total
-```
+# Run comprehensive 12-domain E2E integration runner
+node scripts/run_e2e_verification.js
 
-### Run Frontend Static Type Check
-```bash
-cd frontend
+# Run frontend TypeScript type checking
+cd ../frontend
 npx tsc --noEmit
-# 0 compilation errors across all 20+ features and dialogs
+
+# Build production bundle
+npm run build
 ```
 
 ---
 
-## 🛡️ Security & Privacy Guardrails
+## 🎨 Design System & Theme Studio
 
-* **Data Isolation**: All queries enforce tenant isolation via verified `req.user.id` extraction from signed JWT tokens.
-* **Cryptographic OTP Storage**: 6-digit verification codes are hashed with HMAC-SHA256 and server-side secret salts.
-* **Rate Limiting**: Critical endpoints (Auth, AI Chat, Auto-Scheduler) are protected by IP and user rate limiters.
-* **Sanitized Inputs**: All inbound payloads are validated against strict Zod schemas before reaching controllers.
-* **Security Headers**: Production HTTP responses are hardened with [Helmet](https://helmetjs.github.io/) headers and strict CORS policies.
+DailyForge features an integrated **Theme Studio** providing real-time workspace personalization via semantic CSS design tokens:
+
+- 🔥 **Forge Dark**: High-contrast dark workspace with amber orange highlights.
+- ☀️ **Forge Light**: Daylight workspace with deep indigo typography.
+- 🔵 **Focus Blue**: Deep electric cyan tuned for coding concentration.
+- 🌲 **Forest Mint**: Emerald green and midnight pine for sustainable habit building.
+- ✨ **Amber Forge**: Golden hearth warmth and radiant energy.
+- 🖤 **Monochrome**: Distraction-free silver, charcoal, and slate.
+- 🌌 **Midnight**, ❄️ **Arctic Focus**, 🍷 **Crimson Forge**, 🌊 **Ocean Forge**.
 
 ---
 
-## 🗺️ Future Roadmap
+## 🗺️ Roadmap
 
-- [ ] Web Push & Cross-Platform Circadian Reminders
-- [ ] Apple HealthKit & Google Fit Sleep / Activity Bi-directional Sync
-- [ ] Multi-User Team & Community Accountability Pods
-- [ ] Native Mobile App (React Native / Expo)
-- [ ] Offline-First IndexedDB Local Sync Engine
+- [x] **Email OTP Authentication**: Timing-safe cryptographic HMAC-SHA256 verification.
+- [x] **Universal Dialog Design System**: Master modal templates mounted via React Portals.
+- [x] **End of Day Momentum Review**: Idempotent daily reflection cockpit.
+- [x] **Multi-Tier Goal Roadmaps**: Checkpoint milestones and velocity curves.
+- [x] **Theme Studio & Design Tokens**: 10 curated presets with live preview and JSON export/import.
+- [x] **Forge Lab Behavioral Trials**: N-of-1 scientific routine experiments.
+- [ ] **Mobile Native Companion**: React Native / Expo companion app.
+- [ ] **Wearable & Biometric Sync**: Apple HealthKit & Google Health Connect sync.
+
+---
+
+## 🔐 Security Policy
+
+Security and data isolation are core engineering priorities in DailyForge. Review our comprehensive [Security Policy](./SECURITY.md) for vulnerability reporting and cryptographic implementation standards.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions to DailyForge are welcome! Please follow these steps:
-
-1. **Fork the Repository**: `https://github.com/tensor-ops/DailyForge/fork`
-2. **Create a Feature Branch**: `git checkout -b feature/amazing-feature`
-3. **Commit Changes**: `git commit -m 'feat: add amazing feature'`
-4. **Run Verification**: Ensure `npm test` and `npx tsc --noEmit` pass with 0 errors.
-5. **Push to Branch**: `git push origin feature/amazing-feature`
-6. **Open a Pull Request** with a detailed summary of changes.
+Contributions are welcomed! Please read our [Contributing Guide](./CONTRIBUTING.md) for local development workflows, coding conventions, and pull request guidelines.
 
 ---
 
 ## 📄 License
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more information.
+DailyForge is open-source software licensed under the [MIT License](./LICENSE).
 
 ---
 
 <p align="center">
-  Built with ⚒️ by the DailyForge Open-Source Engineering Team.
-</p>
-
-<p align="center">
-  <strong>DailyForge</strong> — Forge better days. Build lasting consistency.
+  <strong>🔥 DAILY FORGE</strong><br />
+  <em>Build better. Every day.</em><br />
+  Habits &bull; Consistency &bull; Momentum &bull; Growth &bull; Intelligence
 </p>

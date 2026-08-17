@@ -497,7 +497,7 @@ async function completeEvent(userId, eventId) {
     startedAt: new Date(Date.now() - (event.durationMinutes || 30) * 60000),
     endedAt: new Date(),
     durationMinutes: event.durationMinutes || 30,
-    focusQuality: 90,
+    focusQuality: 9,
   });
 
   return getPlannerOverview(userId, { date: event.date });

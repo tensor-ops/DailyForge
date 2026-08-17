@@ -61,7 +61,7 @@ export const DeleteHabitModal: React.FC<DeleteHabitModalProps> = ({
         <DialogFooter
           onCancel={onClose}
           cancelLabel="Keep Habit"
-          onConfirm={undefined}
+          onConfirm={() => handleDelete({ preventDefault: () => {} } as any)}
           confirmLabel={isDeleting ? 'Deleting...' : 'Permanently Delete'}
           confirmVariant="danger"
           disabled={!isMatch || isDeleting}

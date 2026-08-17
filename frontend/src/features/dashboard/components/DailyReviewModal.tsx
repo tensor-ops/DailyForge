@@ -70,7 +70,7 @@ export const DailyReviewModal: React.FC<DailyReviewModalProps> = ({
           <DialogFooter
             onCancel={onClose}
             cancelLabel="Cancel"
-            onConfirm={undefined}
+            onConfirm={() => handleSubmit({ preventDefault: () => {} } as any)}
             confirmLabel="Complete Day Review"
             isSubmitting={isSubmitting}
             confirmIcon={Sparkles}

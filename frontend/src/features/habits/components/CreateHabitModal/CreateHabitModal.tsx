@@ -161,7 +161,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
             onClose();
           }}
           cancelLabel="Cancel"
-          onConfirm={undefined}
+          onConfirm={() => handleSubmit({ preventDefault: () => {} } as any)}
           confirmLabel="Create Habit"
           isSubmitting={isSubmitting}
         />

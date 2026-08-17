@@ -150,7 +150,7 @@ export const QuickAddModal: React.FC<QuickAddModalProps> = ({
         <DialogFooter
           onCancel={onClose}
           cancelLabel="Cancel"
-          onConfirm={undefined}
+          onConfirm={() => handleSubmit({ preventDefault: () => {} } as any)}
           confirmLabel={
             activeType === 'habit'
               ? 'Add Habit'
