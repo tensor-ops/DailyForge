@@ -24,7 +24,7 @@ export function DialogTabs<T extends string>({
   return (
     <div
       className={cn(
-        'grid p-1 bg-[#070C18] border border-border/80 rounded-xl gap-1.5',
+        'grid p-1 bg-surface-sunken border border-border rounded-xl gap-1.5',
         className
       )}
       style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
@@ -40,8 +40,8 @@ export function DialogTabs<T extends string>({
             className={cn(
               'flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer select-none',
               isActive
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-white/5'
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted/70'
             )}
           >
             {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}

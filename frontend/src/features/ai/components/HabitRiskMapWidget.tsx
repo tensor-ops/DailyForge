@@ -61,9 +61,9 @@ export const HabitRiskMapWidget: React.FC<HabitRiskMapWidgetProps> = ({ classNam
           ) : (
             <div className="space-y-1.5">
               {riskMap.atRisk.map((h) => (
-                <div key={h.habitId} className="p-2 rounded-xl bg-black/30 border border-rose-500/20 text-xs">
+                <div key={h.habitId} className="p-2 rounded-xl bg-surface-elevated/90 border border-rose-500/30 text-xs">
                   <div className="font-bold text-foreground truncate">{h.name}</div>
-                  <p className="text-[10px] text-rose-300/80 mt-0.5 leading-snug">{h.suggestedMitigation}</p>
+                  <p className="text-[10px] text-rose-500 dark:text-rose-300/80 mt-0.5 leading-snug">{h.suggestedMitigation}</p>
                 </div>
               ))}
             </div>
@@ -73,19 +73,19 @@ export const HabitRiskMapWidget: React.FC<HabitRiskMapWidgetProps> = ({ classNam
         {/* Watch Column */}
         <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-500 dark:text-amber-400">
               Watch ({riskMap.watch.length})
             </span>
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
           </div>
           {riskMap.watch.length === 0 ? (
             <p className="text-[11px] text-muted-foreground italic">All stable.</p>
           ) : (
             <div className="space-y-1.5">
               {riskMap.watch.map((h) => (
-                <div key={h.habitId} className="p-2 rounded-xl bg-black/30 border border-amber-500/20 text-xs">
+                <div key={h.habitId} className="p-2 rounded-xl bg-surface-elevated/90 border border-amber-500/30 text-xs">
                   <div className="font-bold text-foreground truncate">{h.name}</div>
-                  <p className="text-[10px] text-amber-300/80 mt-0.5 leading-snug">{h.suggestedMitigation}</p>
+                  <p className="text-[10px] text-amber-600 dark:text-amber-300/80 mt-0.5 leading-snug">{h.suggestedMitigation}</p>
                 </div>
               ))}
             </div>
@@ -95,16 +95,16 @@ export const HabitRiskMapWidget: React.FC<HabitRiskMapWidgetProps> = ({ classNam
         {/* Stable Column */}
         <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
               Stable Automaticity ({riskMap.stable.length})
             </span>
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="space-y-1.5">
             {riskMap.stable.map((h) => (
-              <div key={h.habitId} className="p-2 rounded-xl bg-black/30 border border-emerald-500/20 text-xs">
+              <div key={h.habitId} className="p-2 rounded-xl bg-surface-elevated/90 border border-emerald-500/30 text-xs">
                 <div className="font-bold text-foreground truncate">{h.name}</div>
-                <span className="text-[10px] font-mono text-emerald-400">7-Day: {h.recent7DayRate}</span>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400">7-Day: {h.recent7DayRate}</span>
               </div>
             ))}
           </div>

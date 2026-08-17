@@ -87,7 +87,7 @@ export const AchievementGalleryModal: React.FC<AchievementGalleryModalProps> = (
       <div className="space-y-4 text-left">
         {/* Category & Status Filter Bar */}
         <div className="flex items-center justify-between flex-wrap gap-2 pt-0.5">
-          <div className="flex flex-wrap gap-1 bg-[#070C18] p-1 rounded-xl border border-border/80 text-[10px] font-bold">
+          <div className="flex flex-wrap gap-1 bg-surface-sunken p-1 rounded-xl border border-border text-[10px] font-bold">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -105,7 +105,7 @@ export const AchievementGalleryModal: React.FC<AchievementGalleryModalProps> = (
             ))}
           </div>
 
-          <div className="flex gap-1 bg-[#070C18] p-1 rounded-xl border border-border/80 text-[10px] font-bold">
+          <div className="flex gap-1 bg-surface-sunken p-1 rounded-xl border border-border text-[10px] font-bold">
             {(['ALL', 'UNLOCKED', 'LOCKED'] as const).map((s) => (
               <button
                 key={s}

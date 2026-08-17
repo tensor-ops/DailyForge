@@ -220,7 +220,7 @@ export const ForgeInsightsDashboard: React.FC = () => {
 
               {/* Evidence Capsule */}
               {topInsight.evidence && (
-                <div className="p-3 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between text-xs">
+                <div className="p-3 rounded-2xl bg-surface-elevated border border-border flex items-center justify-between text-xs">
                   <div className="space-y-0.5">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase">
                       Observed Evidence
@@ -229,14 +229,14 @@ export const ForgeInsightsDashboard: React.FC = () => {
                       {topInsight.evidence.headline || topInsight.evidence.metric}
                     </span>
                   </div>
-                  <span className="text-emerald-400 font-mono font-bold text-sm">
+                  <span className="text-emerald-500 dark:text-emerald-400 font-mono font-bold text-sm">
                     {topInsight.evidence.difference}
                   </span>
                 </div>
               )}
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-2 border-t border-white/10">
+              <div className="flex items-center justify-between pt-2 border-t border-border">
                 <button
                   onClick={() => setEvidenceModalInsight(topInsight)}
                   className="px-3.5 py-1.5 bg-white/10 hover:bg-white/15 text-foreground rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"

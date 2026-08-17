@@ -13,15 +13,23 @@
 
   /* Surfaces */
   --color-surface: 255 255 255;        /* #FFFFFF — Cards, panels */
-  --color-surface-elevated: 255 255 255;
-  --color-surface-sunken: 241 245 249; /* #F1F5F9 */
+  --color-surface-elevated: 255 255 255; /* #FFFFFF — Dialogs, elevated cards */
+  --color-surface-sunken: 241 245 249; /* #F1F5F9 — Input wells, subtle boxes */
 
   /* Cards */
   --color-card: 255 255 255;
   --color-card-hover: 248 250 252;
+  --color-card-foreground: 17 24 39;
+
+  /* Dialogs, Modals & Popovers */
+  --color-popover: 255 255 255;
+  --color-popover-foreground: 17 24 39;
+  --color-dialog-header: 255 255 255;
+  --color-dialog-footer: 248 250 252;
+  --color-overlay: 15 23 42;           /* Used with 0.40 alpha in Light */
 
   /* Borders */
-  --color-border: 229 234 242;         /* #E5EAF2 */
+  --color-border: 226 232 240;         /* #E2E8F0 */
   --color-border-subtle: 241 245 249;
   --color-border-strong: 203 213 225;
 
@@ -70,6 +78,7 @@
   /* Inputs */
   --color-input: 255 255 255;
   --color-input-border: 216 222 233;   /* #D8DEE9 */
+  --color-ring: 37 99 235;
 
   /* Sidebar */
   --color-sidebar: 255 255 255;
@@ -101,17 +110,25 @@
 
   /* Surfaces */
   --color-surface: 16 22 34;           /* #101622 */
-  --color-surface-elevated: 19 27 41;  /* #131B29 */
-  --color-surface-sunken: 8 12 20;
+  --color-surface-elevated: 19 27 41;  /* #131B29 — Modals, popovers */
+  --color-surface-sunken: 11 16 26;    /* #0B101A — Sunken inputs */
 
   /* Cards */
   --color-card: 16 22 34;             /* #101622 */
   --color-card-hover: 21 29 44;       /* #151D2C */
+  --color-card-foreground: 248 250 252;
+
+  /* Dialogs, Modals & Popovers */
+  --color-popover: 19 27 41;          /* #131B29 */
+  --color-popover-foreground: 248 250 252;
+  --color-dialog-header: 19 27 41;
+  --color-dialog-footer: 14 20 31;
+  --color-overlay: 0 0 0;             /* Used with 0.70-0.80 alpha in Dark */
 
   /* Borders */
   --color-border: 29 41 61;           /* #1D293D */
   --color-border-subtle: 23 34 53;
-  --color-border-strong: 29 41 61;
+  --color-border-strong: 39 53 79;
 
   /* Muted */
   --color-muted: 21 29 44;
@@ -158,6 +175,7 @@
   /* Inputs */
   --color-input: 16 22 34;
   --color-input-border: 29 41 61;
+  --color-ring: 59 130 246;
 
   /* Sidebar */
   --color-sidebar: 16 22 34;          /* same as surface */
@@ -257,7 +275,6 @@
   --color-ai: 251 113 133;
   --color-chart-primary: 249 115 22;
   --color-chart-accent: 251 113 133;
-  /* NOTE: semantic colors (success, danger) remain UNCHANGED */
 }
 .accent-ember:not(.dark) {
   --color-primary: 234 88 12;          /* darker orange for light bg */
@@ -296,7 +313,7 @@
   --color-chart-accent: 22 135 255;
 }
 
-/* 2. FORGE LIGHT (Orange + Deep Blue + Navy) */
+/* 2. FORGE LIGHT (Orange + Deep Blue + Clean Surface) */
 .theme-forge-light {
   --color-primary: 240 90 0;           /* #F05A00 */
   --color-primary-hover: 217 74 0;
@@ -353,6 +370,7 @@ body,
 .bg-surface-elevated, 
 .bg-card, 
 .bg-sidebar, 
-.bg-background {
+.bg-background,
+.bg-popover {
   transition: background-color 200ms ease-in-out, border-color 200ms ease-in-out, color 200ms ease-in-out;
 }

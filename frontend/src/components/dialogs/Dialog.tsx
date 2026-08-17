@@ -25,7 +25,7 @@ export const Dialog: React.FC<DialogProps> = ({
   title,
   description,
   icon: Icon,
-  iconColor = '#F97316',
+  iconColor,
   badge,
   children,
   footer,
@@ -61,17 +61,17 @@ export const Dialog: React.FC<DialogProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
-      {/* Backdrop with Blur */}
+      {/* Theme-Aware Backdrop with Soft Blur */}
       <div
-        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Main Dialog Card */}
+      {/* Main Dialog Card Container */}
       <div
         className={cn(
-          'relative z-50 w-full max-h-[88vh] flex flex-col bg-[#0D1527] border border-border/90 rounded-2xl shadow-2xl animate-scale-in text-foreground text-left transition-all overflow-hidden',
+          'relative z-50 w-full max-h-[88vh] flex flex-col bg-surface-elevated text-foreground border border-border rounded-2xl shadow-popover animate-scale-in text-left transition-all overflow-hidden',
           sizeClasses[size],
           className
         )}
@@ -81,12 +81,12 @@ export const Dialog: React.FC<DialogProps> = ({
       >
         {/* Pinned Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-start justify-between p-5 sm:p-6 pb-4 border-b border-border/60 shrink-0 bg-[#0D1527]">
+          <div className="flex items-start justify-between p-5 sm:p-6 pb-4 border-b border-border shrink-0 bg-surface-elevated">
             <div className="flex items-start gap-3.5 min-w-0 pr-4">
               {Icon && (
                 <div
-                  className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm"
-                  style={{ backgroundColor: `${iconColor}15`, color: iconColor }}
+                  className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 border border-primary/20 bg-primary/10 text-primary shadow-xs"
+                  style={iconColor ? { backgroundColor: `${iconColor}18`, color: iconColor, borderColor: `${iconColor}30` } : undefined}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
@@ -121,13 +121,13 @@ export const Dialog: React.FC<DialogProps> = ({
         )}
 
         {/* Scrollable Body Content */}
-        <div className="p-5 sm:p-6 pt-4 flex-1 overflow-y-auto space-y-4">
+        <div className="p-5 sm:p-6 pt-4 flex-1 overflow-y-auto space-y-4 text-foreground">
           {children}
         </div>
 
         {/* Optional Pinned Footer */}
         {footer && (
-          <div className="p-4 sm:p-5 pt-3.5 border-t border-border/60 shrink-0 bg-[#0A1020]">
+          <div className="p-4 sm:p-5 pt-3.5 border-t border-border shrink-0 bg-surface-sunken/80">
             {footer}
           </div>
         )}

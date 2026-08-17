@@ -89,6 +89,16 @@ export default {
           DEFAULT: 'rgb(var(--color-accent) / <alpha-value>)',
           soft: 'rgb(var(--color-accent-soft) / <alpha-value>)',
         },
+        popover: {
+          DEFAULT: 'rgb(var(--color-popover) / <alpha-value>)',
+          foreground: 'rgb(var(--color-popover-foreground) / <alpha-value>)',
+        },
+        dialog: {
+          header: 'rgb(var(--color-dialog-header) / <alpha-value>)',
+          footer: 'rgb(var(--color-dialog-footer) / <alpha-value>)',
+        },
+        overlay: 'rgb(var(--color-overlay) / <alpha-value>)',
+        ring: 'rgb(var(--color-ring) / <alpha-value>)',
       },
       fontFamily: {
         sans: [

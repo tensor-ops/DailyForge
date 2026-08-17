@@ -54,13 +54,13 @@ export const MomentDetailModal: React.FC<MomentDetailModalProps> = ({
   const getRarityGlow = (rarity: string) => {
     switch (rarity) {
       case 'LEGENDARY':
-        return 'border-amber-500/50 bg-gradient-to-b from-amber-500/15 via-[#0D1527] to-[#0A1020] text-amber-400';
+        return 'border-amber-500/50 bg-gradient-to-b from-amber-500/15 via-surface-elevated to-surface-sunken text-amber-500 dark:text-amber-400';
       case 'EPIC':
-        return 'border-purple-500/50 bg-gradient-to-b from-purple-500/15 via-[#0D1527] to-[#0A1020] text-purple-400';
+        return 'border-purple-500/50 bg-gradient-to-b from-purple-500/15 via-surface-elevated to-surface-sunken text-purple-500 dark:text-purple-400';
       case 'RARE':
-        return 'border-cyan-500/50 bg-gradient-to-b from-cyan-500/15 via-[#0D1527] to-[#0A1020] text-cyan-400';
+        return 'border-cyan-500/50 bg-gradient-to-b from-cyan-500/15 via-surface-elevated to-surface-sunken text-cyan-600 dark:text-cyan-400';
       default:
-        return 'border-emerald-500/50 bg-gradient-to-b from-emerald-500/15 via-[#0D1527] to-[#0A1020] text-emerald-400';
+        return 'border-emerald-500/50 bg-gradient-to-b from-emerald-500/15 via-surface-elevated to-surface-sunken text-emerald-600 dark:text-emerald-400';
     }
   };
 
@@ -96,15 +96,15 @@ export const MomentDetailModal: React.FC<MomentDetailModalProps> = ({
           </div>
 
           <div className="space-y-1">
-            <h3 className="text-base font-extrabold text-white tracking-tight">
+            <h3 className="text-base font-extrabold text-foreground tracking-tight">
               {moment.title}
             </h3>
-            <p className="text-xs text-slate-300 leading-snug">
+            <p className="text-xs text-muted-foreground leading-snug">
               {moment.description}
             </p>
           </div>
 
-          <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+          <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
             <span className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>{moment.unlockedAt ? new Date(moment.unlockedAt).toLocaleDateString() : 'Achieved'}</span>

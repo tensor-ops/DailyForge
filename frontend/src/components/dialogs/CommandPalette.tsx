@@ -243,11 +243,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       onClose={onClose}
       size="md"
       showCloseButton={false}
-      className="p-0 border-primary/40 bg-[#0A0F1E]"
+      className="p-0 border-border bg-surface-elevated"
     >
-      <div className="space-y-3">
+      <div className="space-y-2">
         {/* Search input header */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border/70 bg-[#0D1527]">
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border bg-surface-elevated">
           <Search className="h-5 w-5 text-primary shrink-0" />
           <input
             type="text"
@@ -284,7 +284,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     'flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all select-none',
                     isSelected
                       ? 'bg-primary text-white shadow-md'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-surface-elevated'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/70'
                   )}
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -320,7 +320,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer shortcuts hint */}
-        <div className="px-4 py-2.5 border-t border-border/50 bg-[#070B14] flex items-center justify-between text-[10px] text-muted-foreground font-mono">
+        <div className="px-4 py-2.5 border-t border-border bg-surface-sunken/60 flex items-center justify-between text-[10px] text-muted-foreground font-mono">
           <span>Navigate with ↑ ↓</span>
           <span>Select with ↵</span>
         </div>

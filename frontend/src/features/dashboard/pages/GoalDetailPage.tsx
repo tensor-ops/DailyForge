@@ -740,8 +740,8 @@ export const GoalDetailPage: React.FC = () => {
 
       {/* Add Milestone Modal */}
       {isAddMilestoneOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 text-left shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 text-left shadow-popover animate-scale-in">
             <h3 className="text-sm font-extrabold text-foreground">Add Target Milestone</h3>
             <form onSubmit={handleAddMilestone} className="space-y-3">
               <div>
@@ -807,8 +807,8 @@ export const GoalDetailPage: React.FC = () => {
 
       {/* Link Habit Modal */}
       {isLinkHabitOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-popover animate-scale-in">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-extrabold text-foreground">Link an Existing Habit</h3>
               <button
@@ -844,8 +844,8 @@ export const GoalDetailPage: React.FC = () => {
 
       {/* Link Task Modal */}
       {isLinkTaskOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-popover animate-scale-in">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-extrabold text-foreground">Link an Existing Task</h3>
               <button
