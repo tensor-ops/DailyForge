@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/utils/cn';
 import { X } from 'lucide-react';
 
@@ -21,6 +22,12 @@ export const Modal: React.FC<ModalProps> = ({
   className,
   size = 'md',
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -37,7 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const sizeClasses = {
     sm: 'max-w-sm',
@@ -46,8 +53,11 @@ export const Modal: React.FC<ModalProps> = ({
     xl: 'max-w-3xl sm:max-w-4xl',
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center p-3 sm:p-6 overflow-hidden select-auto"
+      style={{ isolation: 'isolate' }}
+    >
       {/* Theme-Aware Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm transition-opacity animate-fade-in"
@@ -58,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Modal Dialog Box */}
       <div
         className={cn(
-          'relative z-50 w-full max-h-[88vh] flex flex-col bg-surface-elevated text-foreground border border-border rounded-2xl shadow-popover animate-scale-in text-left transition-all overflow-hidden',
+          'relative z-50 w-full max-h-[88vh] flex flex-col bg-surface-elevated text-foreground border border-border rounded-2xl shadow-popover animate-scale-in text-left transition-all overflow-hidden my-auto',
           sizeClasses[size],
           className
         )}
@@ -94,4 +104,6 @@ export const Modal: React.FC<ModalProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };

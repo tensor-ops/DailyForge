@@ -1,6 +1,7 @@
 /* ============================================================
-   DAILY FORGE — DESIGN SYSTEM TOKENS
-   Semantic CSS variables for full Light/Dark/Accent theme support
+   DAILYFORGE — DESIGN SYSTEM TOKENS & MODULAR THEME ENGINE
+   Semantic CSS variables for Theme Presets, Accents, Densities,
+   Radii, Surfaces, Backgrounds, Typography, Charts & Accessibility
    ============================================================ */
 
 /* ============================================================
@@ -26,7 +27,7 @@
   --color-popover-foreground: 17 24 39;
   --color-dialog-header: 255 255 255;
   --color-dialog-footer: 248 250 252;
-  --color-overlay: 15 23 42;           /* Used with 0.40 alpha in Light */
+  --color-overlay: 15 23 42;
 
   /* Borders */
   --color-border: 226 232 240;         /* #E2E8F0 */
@@ -82,22 +83,26 @@
 
   /* Sidebar */
   --color-sidebar: 255 255 255;
-  --color-sidebar-hover: 239 246 255;  /* soft primary bg */
+  --color-sidebar-hover: 239 246 255;
   --color-sidebar-active: 239 246 255;
   --color-sidebar-active-text: 37 99 235;
 
   /* Chart */
-  --color-chart-primary: 37 99 235;    /* #2563EB */
-  --color-chart-secondary: 96 165 250; /* #60A5FA */
-  --color-chart-accent: 8 145 178;     /* #0891B2 */
-  --color-chart-grid: 226 232 240;     /* #E2E8F0 */
-  --color-chart-text: 100 116 139;     /* #64748B */
+  --color-chart-primary: 37 99 235;
+  --color-chart-secondary: 96 165 250;
+  --color-chart-accent: 8 145 178;
+  --color-chart-grid: 226 232 240;
+  --color-chart-text: 100 116 139;
   --color-chart-tooltip-bg: 255 255 255;
   --color-chart-tooltip-border: 229 234 242;
 
-  /* Accent Theme (defaults to Midnight palette adapted for light) */
+  /* Accent */
   --color-accent: 37 99 235;
   --color-accent-soft: 239 246 255;
+
+  /* Geometry & Tokens */
+  --radius-factor: 1rem;
+  --font-scale-factor: 1rem;
 }
 
 /* ============================================================
@@ -114,16 +119,16 @@
   --color-surface-sunken: 11 16 26;    /* #0B101A — Sunken inputs */
 
   /* Cards */
-  --color-card: 16 22 34;             /* #101622 */
-  --color-card-hover: 21 29 44;       /* #151D2C */
+  --color-card: 16 22 34;
+  --color-card-hover: 21 29 44;
   --color-card-foreground: 248 250 252;
 
   /* Dialogs, Modals & Popovers */
-  --color-popover: 19 27 41;          /* #131B29 */
+  --color-popover: 19 27 41;
   --color-popover-foreground: 248 250 252;
   --color-dialog-header: 19 27 41;
   --color-dialog-footer: 14 20 31;
-  --color-overlay: 0 0 0;             /* Used with 0.70-0.80 alpha in Dark */
+  --color-overlay: 0 0 0;
 
   /* Borders */
   --color-border: 29 41 61;           /* #1D293D */
@@ -178,17 +183,17 @@
   --color-ring: 59 130 246;
 
   /* Sidebar */
-  --color-sidebar: 16 22 34;          /* same as surface */
+  --color-sidebar: 16 22 34;
   --color-sidebar-hover: 21 29 44;
-  --color-sidebar-active: 37 99 235;  /* primary/15 in alpha */
+  --color-sidebar-active: 37 99 235;
   --color-sidebar-active-text: 59 130 246;
 
   /* Chart */
-  --color-chart-primary: 59 130 246;  /* #3B82F6 */
+  --color-chart-primary: 59 130 246;
   --color-chart-secondary: 96 165 250;
-  --color-chart-accent: 34 211 238;   /* #22D3EE */
-  --color-chart-grid: 29 41 61;       /* #1D293D */
-  --color-chart-text: 148 163 184;    /* #94A3B8 */
+  --color-chart-accent: 34 211 238;
+  --color-chart-grid: 29 41 61;
+  --color-chart-text: 148 163 184;
   --color-chart-tooltip-bg: 16 22 34;
   --color-chart-tooltip-border: 29 41 61;
 
@@ -198,173 +203,298 @@
 }
 
 /* ============================================================
-   ACCENT THEME OVERRIDES — Midnight (default dark)
-   ============================================================ */
-.accent-midnight.dark {
-  --color-primary: 59 130 246;         /* #3B82F6 */
-  --color-primary-hover: 29 78 216;
-  --color-accent: 34 211 238;          /* #22D3EE */
-  --color-ai: 34 211 238;
-  --color-chart-primary: 59 130 246;
-  --color-chart-accent: 34 211 238;
-}
-.accent-midnight:not(.dark) {
-  --color-primary: 37 99 235;          /* #2563EB */
-  --color-primary-hover: 29 78 216;
-  --color-accent: 8 145 178;           /* #0891B2 */
-}
-
-/* ============================================================
-   ACCENT THEME OVERRIDES — Arctic Blue
-   ============================================================ */
-.accent-arctic.dark {
-  --color-primary: 37 99 235;          /* #2563EB */
-  --color-primary-hover: 29 78 216;
-  --color-accent: 6 182 212;           /* #06B6D4 */
-  --color-ai: 6 182 212;
-  --color-chart-primary: 37 99 235;
-  --color-chart-accent: 6 182 212;
-}
-.accent-arctic:not(.dark) {
-  --color-primary: 37 99 235;
-  --color-primary-hover: 29 78 216;
-  --color-accent: 6 182 212;
-}
-
-/* ============================================================
-   ACCENT THEME OVERRIDES — Royal Indigo
-   ============================================================ */
-.accent-indigo.dark {
-  --color-primary: 99 102 241;         /* #6366F1 */
-  --color-primary-hover: 79 70 229;
-  --color-accent: 139 92 246;          /* #8B5CF6 */
-  --color-ai: 139 92 246;
-  --color-chart-primary: 99 102 241;
-  --color-chart-accent: 139 92 246;
-}
-.accent-indigo:not(.dark) {
-  --color-primary: 99 102 241;
-  --color-primary-hover: 79 70 229;
-  --color-accent: 139 92 246;
-}
-
-/* ============================================================
-   ACCENT THEME OVERRIDES — Emerald Forge
-   ============================================================ */
-.accent-emerald.dark {
-  --color-primary: 16 185 129;         /* #10B981 */
-  --color-primary-hover: 5 150 105;
-  --color-accent: 20 184 166;          /* #14B8A6 */
-  --color-ai: 20 184 166;
-  --color-chart-primary: 16 185 129;
-  --color-chart-accent: 20 184 166;
-}
-.accent-emerald:not(.dark) {
-  --color-primary: 5 150 105;          /* #059669 */
-  --color-primary-hover: 4 120 87;
-  --color-accent: 20 184 166;
-}
-
-/* ============================================================
-   ACCENT THEME OVERRIDES — Ember
-   ============================================================ */
-.accent-ember.dark {
-  --color-primary: 249 115 22;         /* #F97316 */
-  --color-primary-hover: 234 88 12;
-  --color-accent: 251 113 133;         /* #FB7185 */
-  --color-ai: 251 113 133;
-  --color-chart-primary: 249 115 22;
-  --color-chart-accent: 251 113 133;
-}
-.accent-ember:not(.dark) {
-  --color-primary: 234 88 12;          /* darker orange for light bg */
-  --color-primary-hover: 194 65 12;
-  --color-accent: 251 113 133;
-}
-
-/* ============================================================
-   ACCENT THEME OVERRIDES — Rose Quartz
-   ============================================================ */
-.accent-rose.dark {
-  --color-primary: 225 29 72;          /* #E11D48 */
-  --color-primary-hover: 190 18 60;
-  --color-accent: 192 38 211;          /* #C026D3 */
-  --color-ai: 244 114 182;             /* #F472B6 */
-  --color-chart-primary: 225 29 72;
-  --color-chart-accent: 192 38 211;
-}
-.accent-rose:not(.dark) {
-  --color-primary: 225 29 72;
-  --color-primary-hover: 190 18 60;
-  --color-accent: 192 38 211;
-}
-
-/* ============================================================
-   FIRST-CLASS DAILY FORGE THEMES
+   10 FIRST-CLASS THEME PRESETS
    ============================================================ */
 
-/* 1. FORGE DARK (Signature Orange + Blue + Dark Navy) */
+/* 1. FORGE DARK (Orange + Blue + Dark Navy) */
 .theme-forge-dark.dark {
-  --color-primary: 255 106 0;          /* #FF6A00 */
+  --color-background: 8 12 20;
+  --color-surface: 16 22 34;
+  --color-surface-elevated: 19 27 41;
+  --color-primary: 255 106 0;
   --color-primary-hover: 234 88 12;
-  --color-accent: 22 135 255;          /* #1687FF */
+  --color-accent: 22 135 255;
   --color-ai: 22 135 255;
   --color-chart-primary: 255 106 0;
   --color-chart-accent: 22 135 255;
 }
 
-/* 2. FORGE LIGHT (Orange + Deep Blue + Clean Surface) */
+/* 2. FORGE LIGHT (Vibrant Orange + Deep Blue + Daylight White) */
 .theme-forge-light {
-  --color-primary: 240 90 0;           /* #F05A00 */
+  --color-background: 245 247 251;
+  --color-surface: 255 255 255;
+  --color-surface-elevated: 255 255 255;
+  --color-primary: 240 90 0;
   --color-primary-hover: 217 74 0;
-  --color-accent: 21 94 239;           /* #155EEF */
+  --color-accent: 21 94 239;
   --color-ai: 21 94 239;
   --color-chart-primary: 240 90 0;
   --color-chart-accent: 21 94 239;
 }
 
-/* 3. FOCUS BLUE (Electric Blue + Cyan + White) */
+/* 3. FOCUS BLUE (Electric Blue + Cyan + Slate) */
 .theme-focus-blue.dark {
-  --color-primary: 22 135 255;         /* #1687FF */
+  --color-background: 7 16 30;
+  --color-surface: 11 24 45;
+  --color-surface-elevated: 15 32 60;
+  --color-primary: 22 135 255;
   --color-primary-hover: 0 112 230;
-  --color-accent: 0 194 255;           /* #00C2FF */
+  --color-accent: 0 194 255;
   --color-ai: 0 194 255;
   --color-chart-primary: 22 135 255;
   --color-chart-accent: 0 194 255;
 }
 
-/* 4. FOREST (Emerald + Teal + White) */
+/* 4. FOREST MINT (Emerald + Teal + Pine) */
 .theme-forest.dark {
-  --color-primary: 22 184 120;         /* #16B878 */
+  --color-background: 8 20 16;
+  --color-surface: 13 32 25;
+  --color-surface-elevated: 18 44 34;
+  --color-primary: 22 184 120;
   --color-primary-hover: 16 155 100;
-  --color-accent: 32 201 151;          /* #20C997 */
+  --color-accent: 32 201 151;
   --color-ai: 32 201 151;
   --color-chart-primary: 22 184 120;
   --color-chart-accent: 32 201 151;
 }
 
-/* 5. AMBER FORGE (Amber + Warm Orange + Warm White) */
+/* 5. AMBER FORGE (Golden Amber + Warm Orange + Charcoal) */
 .theme-amber-forge.dark {
-  --color-primary: 255 176 0;          /* #FFB000 */
+  --color-background: 18 13 6;
+  --color-surface: 28 20 10;
+  --color-surface-elevated: 38 27 14;
+  --color-primary: 255 176 0;
   --color-primary-hover: 235 150 0;
-  --color-accent: 255 106 0;           /* #FF6A00 */
+  --color-accent: 255 106 0;
   --color-ai: 255 106 0;
   --color-chart-primary: 255 176 0;
   --color-chart-accent: 255 106 0;
 }
 
-/* 6. MONOCHROME (White + Slate + Gray) */
+/* 6. MONOCHROME (Pure Silver + Slate + Black) */
 .theme-monochrome.dark {
-  --color-primary: 241 245 249;        /* #F1F5F9 */
+  --color-background: 11 15 23;
+  --color-surface: 18 24 38;
+  --color-surface-elevated: 24 32 50;
+  --color-primary: 241 245 249;
   --color-primary-hover: 226 232 240;
-  --color-accent: 148 163 184;         /* #94A3B8 */
+  --color-accent: 148 163 184;
   --color-ai: 148 163 184;
   --color-chart-primary: 241 245 249;
   --color-chart-accent: 148 163 184;
   --color-sidebar-active-text: 248 250 252;
 }
 
-/* Smooth 200ms theme transition across interactive surfaces */
+/* 7. MIDNIGHT FORGE (Cobalt + Sapphire + Deep Void) */
+.theme-midnight.dark {
+  --color-background: 4 7 17;
+  --color-surface: 8 15 35;
+  --color-surface-elevated: 12 22 48;
+  --color-primary: 59 130 246;
+  --color-primary-hover: 37 99 235;
+  --color-accent: 96 165 250;
+  --color-ai: 96 165 250;
+  --color-chart-primary: 59 130 246;
+  --color-chart-accent: 96 165 250;
+}
+
+/* 8. ARCTIC FOCUS (Ice Cyan + Polar Blue + Slate) */
+.theme-arctic.dark {
+  --color-background: 7 18 30;
+  --color-surface: 11 28 47;
+  --color-surface-elevated: 16 38 64;
+  --color-primary: 6 182 212;
+  --color-primary-hover: 8 145 178;
+  --color-accent: 56 189 248;
+  --color-ai: 56 189 248;
+  --color-chart-primary: 6 182 212;
+  --color-chart-accent: 56 189 248;
+}
+
+/* 9. CRIMSON FORGE (Crimson + Rose + Obsidian) */
+.theme-crimson.dark {
+  --color-background: 19 8 11;
+  --color-surface: 32 12 18;
+  --color-surface-elevated: 44 17 25;
+  --color-primary: 225 29 72;
+  --color-primary-hover: 190 18 60;
+  --color-accent: 251 113 133;
+  --color-ai: 251 113 133;
+  --color-chart-primary: 225 29 72;
+  --color-chart-accent: 251 113 133;
+}
+
+/* 10. OCEAN FORGE (Marine Blue + Aquamarine + Navy) */
+.theme-ocean.dark {
+  --color-background: 5 17 32;
+  --color-surface: 8 27 50;
+  --color-surface-elevated: 12 37 68;
+  --color-primary: 2 132 199;
+  --color-primary-hover: 3 105 161;
+  --color-accent: 6 182 212;
+  --color-ai: 6 182 212;
+  --color-chart-primary: 2 132 199;
+  --color-chart-accent: 6 182 212;
+}
+
+/* ============================================================
+   ACCENT PALETTE OVERRIDES (10 Curated Colors)
+   ============================================================ */
+
+/* Midnight */
+.accent-midnight.dark { --color-primary: 59 130 246; --color-primary-hover: 29 78 216; --color-accent: 34 211 238; }
+.accent-midnight:not(.dark) { --color-primary: 37 99 235; --color-primary-hover: 29 78 216; --color-accent: 8 145 178; }
+
+/* Arctic */
+.accent-arctic.dark { --color-primary: 37 99 235; --color-primary-hover: 29 78 216; --color-accent: 6 182 212; }
+.accent-arctic:not(.dark) { --color-primary: 37 99 235; --color-primary-hover: 29 78 216; --color-accent: 6 182 212; }
+
+/* Indigo */
+.accent-indigo.dark { --color-primary: 99 102 241; --color-primary-hover: 79 70 229; --color-accent: 139 92 246; }
+.accent-indigo:not(.dark) { --color-primary: 99 102 241; --color-primary-hover: 79 70 229; --color-accent: 139 92 246; }
+
+/* Emerald */
+.accent-emerald.dark { --color-primary: 16 185 129; --color-primary-hover: 5 150 105; --color-accent: 20 184 166; }
+.accent-emerald:not(.dark) { --color-primary: 5 150 105; --color-primary-hover: 4 120 87; --color-accent: 20 184 166; }
+
+/* Ember */
+.accent-ember.dark { --color-primary: 249 115 22; --color-primary-hover: 234 88 12; --color-accent: 251 113 133; }
+.accent-ember:not(.dark) { --color-primary: 234 88 12; --color-primary-hover: 194 65 12; --color-accent: 251 113 133; }
+
+/* Rose */
+.accent-rose.dark { --color-primary: 225 29 72; --color-primary-hover: 190 18 60; --color-accent: 192 38 211; }
+.accent-rose:not(.dark) { --color-primary: 225 29 72; --color-primary-hover: 190 18 60; --color-accent: 192 38 211; }
+
+/* Cyan */
+.accent-cyan.dark { --color-primary: 6 182 212; --color-primary-hover: 8 145 178; --color-accent: 56 189 248; }
+.accent-cyan:not(.dark) { --color-primary: 8 145 178; --color-primary-hover: 14 116 144; --color-accent: 6 182 212; }
+
+/* Violet */
+.accent-violet.dark { --color-primary: 139 92 246; --color-primary-hover: 124 58 237; --color-accent: 168 85 247; }
+.accent-violet:not(.dark) { --color-primary: 124 58 237; --color-primary-hover: 109 40 217; --color-accent: 139 92 246; }
+
+/* Gold */
+.accent-gold.dark { --color-primary: 234 179 8; --color-primary-hover: 202 138 4; --color-accent: 245 158 11; }
+.accent-gold:not(.dark) { --color-primary: 202 138 4; --color-primary-hover: 161 98 7; --color-accent: 234 179 8; }
+
+/* Crimson */
+.accent-crimson.dark { --color-primary: 239 68 68; --color-primary-hover: 220 38 38; --color-accent: 244 63 94; }
+.accent-crimson:not(.dark) { --color-primary: 220 38 38; --color-primary-hover: 185 28 28; --color-accent: 239 68 68; }
+
+/* ============================================================
+   CORNER RADIUS MODULAR TOKENS
+   ============================================================ */
+.radius-sharp {
+  --radius-card: 0.375rem; /* 6px */
+  --radius-button: 0.25rem;
+  --radius-input: 0.25rem;
+  --radius-panel: 0.375rem;
+}
+.radius-balanced {
+  --radius-card: 0.75rem;  /* 12px */
+  --radius-button: 0.5rem;
+  --radius-input: 0.5rem;
+  --radius-panel: 0.875rem;
+}
+.radius-rounded {
+  --radius-card: 1rem;     /* 16px */
+  --radius-button: 0.75rem;
+  --radius-input: 0.75rem;
+  --radius-panel: 1.125rem;
+}
+.radius-soft {
+  --radius-card: 1.375rem; /* 22px */
+  --radius-button: 1rem;
+  --radius-input: 1rem;
+  --radius-panel: 1.5rem;
+}
+
+/* ============================================================
+   UI DENSITY MODULAR TOKENS
+   ============================================================ */
+.density-compact {
+  --spacing-multiplier: 0.85;
+  --density-card-padding: 0.875rem;
+  --density-table-row: 2.25rem;
+}
+.density-comfortable {
+  --spacing-multiplier: 1;
+  --density-card-padding: 1.25rem;
+  --density-table-row: 2.75rem;
+}
+.density-spacious {
+  --spacing-multiplier: 1.2;
+  --density-card-padding: 1.75rem;
+  --density-table-row: 3.25rem;
+}
+
+/* ============================================================
+   SURFACE STYLES
+   ============================================================ */
+.surface-glass .bg-surface-elevated,
+.surface-glass .bg-card {
+  backdrop-filter: blur(12px);
+  background-color: rgb(var(--color-surface-elevated) / 0.75);
+}
+
+.surface-forge.dark .bg-card,
+.surface-forge.dark .bg-surface-elevated {
+  box-shadow: 0 0 20px -5px rgb(var(--color-primary) / 0.12), inset 0 1px 0 0 rgb(var(--color-border-strong) / 0.4);
+}
+
+/* ============================================================
+   BACKGROUND STYLES
+   ============================================================ */
+.bg-style-gradient.dark {
+  background: radial-gradient(circle at 50% 0%, rgb(var(--color-primary) / 0.08), transparent 70%),
+              rgb(var(--color-background));
+}
+
+.bg-style-forge-glow.dark {
+  background: radial-gradient(circle at top right, rgb(var(--color-primary) / 0.12), transparent 40%),
+              radial-gradient(circle at bottom left, rgb(var(--color-accent) / 0.08), transparent 50%),
+              rgb(var(--color-background));
+}
+
+.bg-style-forge-grid.dark {
+  background-color: rgb(var(--color-background));
+  background-image: linear-gradient(to right, rgb(var(--color-border) / 0.15) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgb(var(--color-border) / 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ============================================================
+   ACCESSIBILITY & HIGH CONTRAST
+   ============================================================ */
+.contrast-high {
+  --color-border: 75 85 99;
+  --color-border-strong: 107 114 128;
+}
+.contrast-high.dark {
+  --color-border: 55 65 81;
+  --color-border-strong: 75 85 99;
+  --color-foreground: 255 255 255;
+}
+
+.focus-enhanced *:focus-visible {
+  outline: 2px solid rgb(var(--color-primary)) !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgb(var(--color-primary) / 0.25) !important;
+}
+
+/* Motion system */
+.motion-reduced * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 100ms !important;
+}
+
+.motion-minimal * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Smooth theme transition */
 body, 
 .bg-surface, 
 .bg-surface-elevated, 

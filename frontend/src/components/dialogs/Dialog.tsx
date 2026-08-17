@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/utils/cn';
 import { X } from 'lucide-react';
 
@@ -33,6 +34,12 @@ export const Dialog: React.FC<DialogProps> = ({
   size = 'md',
   showCloseButton = true,
 }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -49,7 +56,7 @@ export const Dialog: React.FC<DialogProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const sizeClasses: Record<DialogSize, string> = {
     sm: 'max-w-md sm:max-w-md',
@@ -59,8 +66,11 @@ export const Dialog: React.FC<DialogProps> = ({
     full: 'max-w-5xl sm:max-w-6xl',
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+  const dialogContent = (
+    <div
+      className="fixed inset-0 z-[999] flex items-center justify-center p-3 sm:p-6 overflow-hidden select-auto"
+      style={{ isolation: 'isolate' }}
+    >
       {/* Theme-Aware Backdrop with Soft Blur */}
       <div
         className="fixed inset-0 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm transition-opacity animate-fade-in"
@@ -71,7 +81,7 @@ export const Dialog: React.FC<DialogProps> = ({
       {/* Main Dialog Card Container */}
       <div
         className={cn(
-          'relative z-50 w-full max-h-[88vh] flex flex-col bg-surface-elevated text-foreground border border-border rounded-2xl shadow-popover animate-scale-in text-left transition-all overflow-hidden',
+          'relative z-50 w-full max-h-[88vh] flex flex-col bg-surface-elevated text-foreground border border-border rounded-2xl shadow-popover animate-scale-in text-left transition-all overflow-hidden my-auto',
           sizeClasses[size],
           className
         )}
@@ -134,4 +144,6 @@ export const Dialog: React.FC<DialogProps> = ({
       </div>
     </div>
   );
+
+  return createPortal(dialogContent, document.body);
 };

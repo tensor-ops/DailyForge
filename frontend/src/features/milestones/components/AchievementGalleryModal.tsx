@@ -125,7 +125,7 @@ export const AchievementGalleryModal: React.FC<AchievementGalleryModalProps> = (
         </div>
 
         {/* Achievement Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[58vh] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
           {filtered.map((ach) => (
             <div
               key={ach.id}

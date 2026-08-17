@@ -2,90 +2,132 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { ThemeName, themeLogos } from '@/components/brand/themeLogos';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
-export type AccentTheme = 'midnight' | 'arctic' | 'indigo' | 'emerald' | 'ember' | 'rose';
-export type { ThemeName };
+export type AccentTheme =
+  | 'midnight'
+  | 'arctic'
+  | 'indigo'
+  | 'emerald'
+  | 'ember'
+  | 'rose'
+  | 'cyan'
+  | 'violet'
+  | 'gold'
+  | 'crimson'
+  | 'custom';
 
-interface ThemeContextType {
-  // Mode & Accent
+export type RadiusStyle = 'sharp' | 'balanced' | 'rounded' | 'soft';
+export type DensityStyle = 'compact' | 'comfortable' | 'spacious';
+export type SurfaceStyle = 'solid' | 'elevated' | 'glass' | 'forge';
+export type BackgroundStyle = 'plain' | 'gradient' | 'forge-glow' | 'forge-grid';
+export type SidebarStyle = 'classic' | 'compact' | 'floating' | 'minimal';
+export type NavigationStyle = 'soft' | 'accent-bar' | 'filled' | 'minimal';
+export type ChartPaletteStyle = 'forge' | 'ocean' | 'forest' | 'aurora' | 'ember' | 'monochrome';
+export type MotionStyle = 'full' | 'reduced' | 'minimal' | 'system';
+export type ContrastStyle = 'standard' | 'high' | 'maximum';
+export type FontScaleStyle = 'sm' | 'default' | 'lg';
+
+export interface ThemeConfig {
+  preset: ThemeName;
+  mode: ThemeMode;
+  accent: AccentTheme;
+  customAccentHex?: string;
+  surface: SurfaceStyle;
+  background: BackgroundStyle;
+  radius: RadiusStyle;
+  density: DensityStyle;
+  sidebar: SidebarStyle;
+  navigation: NavigationStyle;
+  chartPalette: ChartPaletteStyle;
+  motion: MotionStyle;
+  contrast: ContrastStyle;
+  fontScale: FontScaleStyle;
+  enhancedFocus: boolean;
+  focusMode: boolean;
+}
+
+export interface CustomPreset {
+  id: string;
+  name: string;
+  config: ThemeConfig;
+  createdAt: string;
+}
+
+export interface ThemeContextType {
+  config: ThemeConfig;
   theme: ThemeMode;
   accentTheme: AccentTheme;
   resolvedTheme: 'light' | 'dark';
-
-  // First-class Daily Forge Theme System
   currentTheme: ThemeName;
-  setThemeName: (name: ThemeName) => void;
+  customPresets: CustomPreset[];
 
-  // Setters & Actions
-  setTheme: (theme: ThemeMode) => void;
+  // Setters
+  setTheme: (mode: ThemeMode) => void;
+  setThemeName: (name: ThemeName) => void;
   setAccentTheme: (accent: AccentTheme) => void;
+  setCustomAccentHex: (hex: string) => void;
+  setSurfaceStyle: (surface: SurfaceStyle) => void;
+  setBackgroundStyle: (bg: BackgroundStyle) => void;
+  setRadiusStyle: (radius: RadiusStyle) => void;
+  setDensityStyle: (density: DensityStyle) => void;
+  setSidebarStyle: (sidebar: SidebarStyle) => void;
+  setNavigationStyle: (nav: NavigationStyle) => void;
+  setChartPalette: (palette: ChartPaletteStyle) => void;
+  setMotionStyle: (motion: MotionStyle) => void;
+  setContrastStyle: (contrast: ContrastStyle) => void;
+  setFontScale: (scale: FontScaleStyle) => void;
+  setEnhancedFocus: (enabled: boolean) => void;
+  setFocusMode: (enabled: boolean) => void;
+
+  // Actions
   toggleTheme: () => void;
+  saveCustomPreset: (name: string) => void;
+  applyCustomPreset: (preset: CustomPreset) => void;
+  deleteCustomPreset: (id: string) => void;
+  exportThemeJson: () => string;
+  importThemeJson: (jsonStr: string) => { success: boolean; error?: string };
+  resetAppearance: () => void;
+  resetAll: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_KEY = 'df-theme';
-const ACCENT_KEY = 'df-accent';
-const THEME_NAME_KEY = 'df-theme-name';
+const THEME_CONFIG_KEY = 'df-theme-studio-config-v2';
+const CUSTOM_PRESETS_KEY = 'df-custom-presets-v2';
 
-const THEME_CLASSES: ThemeName[] = [
-  'forge-dark',
-  'forge-light',
-  'focus-blue',
-  'forest',
-  'amber-forge',
-  'monochrome',
-];
+export const DEFAULT_THEME_CONFIG: ThemeConfig = {
+  preset: 'forge-dark',
+  mode: 'dark',
+  accent: 'ember',
+  customAccentHex: '#F97316',
+  surface: 'elevated',
+  background: 'plain',
+  radius: 'balanced',
+  density: 'comfortable',
+  sidebar: 'classic',
+  navigation: 'soft',
+  chartPalette: 'forge',
+  motion: 'full',
+  contrast: 'standard',
+  fontScale: 'default',
+  enhancedFocus: false,
+  focusMode: false,
+};
 
-const ACCENT_CLASSES: AccentTheme[] = [
-  'midnight',
-  'arctic',
-  'indigo',
-  'emerald',
-  'ember',
-  'rose',
-];
-
-/**
- * Maps a Daily Forge ThemeName to its base mode and accent theme.
- */
-function themeNameToModeAndAccent(name: ThemeName): { mode: ThemeMode; accent: AccentTheme } {
-  switch (name) {
-    case 'forge-light':
-      return { mode: 'light', accent: 'ember' };
-    case 'focus-blue':
-      return { mode: 'dark', accent: 'arctic' };
-    case 'forest':
-      return { mode: 'dark', accent: 'emerald' };
-    case 'amber-forge':
-      return { mode: 'dark', accent: 'ember' };
-    case 'monochrome':
-      return { mode: 'dark', accent: 'midnight' };
-    case 'forge-dark':
-    default:
-      return { mode: 'dark', accent: 'midnight' };
+function hexToRgb(hex: string): string | null {
+  const sanitized = hex.replace('#', '').trim();
+  if (sanitized.length === 3) {
+    const r = parseInt(sanitized[0] + sanitized[0], 16);
+    const g = parseInt(sanitized[1] + sanitized[1], 16);
+    const b = parseInt(sanitized[2] + sanitized[2], 16);
+    return isNaN(r) || isNaN(g) || isNaN(b) ? null : `${r} ${g} ${b}`;
   }
-}
-
-/**
- * Derives a ThemeName from current mode and accent theme.
- */
-function deriveThemeName(isDark: boolean, accent: AccentTheme, storedThemeName?: ThemeName | null): ThemeName {
-  if (!isDark) return 'forge-light';
-  if (storedThemeName && storedThemeName !== 'forge-light') return storedThemeName;
-
-  switch (accent) {
-    case 'emerald':
-      return 'forest';
-    case 'arctic':
-      return 'focus-blue';
-    case 'ember':
-      return 'amber-forge';
-    case 'midnight':
-    case 'indigo':
-    case 'rose':
-    default:
-      return 'forge-dark';
+  if (sanitized.length === 6) {
+    const r = parseInt(sanitized.substring(0, 2), 16);
+    const g = parseInt(sanitized.substring(2, 4), 16);
+    const b = parseInt(sanitized.substring(4, 6), 16);
+    return isNaN(r) || isNaN(g) || isNaN(b) ? null : `${r} ${g} ${b}`;
   }
+  return null;
 }
 
 function updateFavicon(themeName: ThemeName) {
@@ -97,14 +139,14 @@ function updateFavicon(themeName: ThemeName) {
       link.href = iconConfig.icon;
     }
   } catch {
-    // Ignore in non-browser environments
+    /* noop */
   }
 }
 
-function applyThemeClasses(isDark: boolean, accent: AccentTheme, themeName: ThemeName) {
+function applyThemeToDom(config: ThemeConfig, isDark: boolean) {
   const root = document.documentElement;
 
-  // 1. Apply dark/light base
+  // 1. Mode class
   if (isDark) {
     root.classList.add('dark');
     root.classList.remove('light');
@@ -113,161 +155,351 @@ function applyThemeClasses(isDark: boolean, accent: AccentTheme, themeName: Them
     root.classList.remove('dark');
   }
 
-  // 2. Apply theme name class (e.g. theme-forge-dark, theme-forest)
-  THEME_CLASSES.forEach((t) => root.classList.remove(`theme-${t}`));
-  root.classList.add(`theme-${themeName}`);
+  // 2. Theme Presets (10 presets)
+  const allPresets: ThemeName[] = [
+    'forge-dark',
+    'forge-light',
+    'focus-blue',
+    'forest',
+    'amber-forge',
+    'monochrome',
+    'midnight',
+    'arctic',
+    'crimson',
+    'ocean',
+  ];
+  allPresets.forEach((p) => root.classList.remove(`theme-${p}`));
+  root.classList.add(`theme-${config.preset}`);
 
-  // 3. Apply accent class (remove all others first)
-  ACCENT_CLASSES.forEach((a) => root.classList.remove(`accent-${a}`));
-  root.classList.add(`accent-${accent}`);
+  // 3. Accent theme
+  const allAccents: AccentTheme[] = [
+    'midnight',
+    'arctic',
+    'indigo',
+    'emerald',
+    'ember',
+    'rose',
+    'cyan',
+    'violet',
+    'gold',
+    'crimson',
+    'custom',
+  ];
+  allAccents.forEach((a) => root.classList.remove(`accent-${a}`));
+  root.classList.add(`accent-${config.accent}`);
 
-  // 4. Update dynamic favicon
-  updateFavicon(themeName);
+  // Custom accent injection
+  if (config.accent === 'custom' && config.customAccentHex) {
+    const rgb = hexToRgb(config.customAccentHex);
+    if (rgb) {
+      root.style.setProperty('--color-primary', rgb);
+      root.style.setProperty('--color-accent', rgb);
+      root.style.setProperty('--color-ring', rgb);
+      root.style.setProperty('--color-chart-primary', rgb);
+    }
+  } else {
+    root.style.removeProperty('--color-primary');
+    root.style.removeProperty('--color-accent');
+    root.style.removeProperty('--color-ring');
+    root.style.removeProperty('--color-chart-primary');
+  }
+
+  // 4. Corner Radius
+  ['radius-sharp', 'radius-balanced', 'radius-rounded', 'radius-soft'].forEach((r) =>
+    root.classList.remove(r)
+  );
+  root.classList.add(`radius-${config.radius}`);
+
+  // 5. UI Density
+  ['density-compact', 'density-comfortable', 'density-spacious'].forEach((d) =>
+    root.classList.remove(d)
+  );
+  root.classList.add(`density-${config.density}`);
+
+  // 6. Surface Style
+  ['surface-solid', 'surface-elevated', 'surface-glass', 'surface-forge'].forEach((s) =>
+    root.classList.remove(s)
+  );
+  root.classList.add(`surface-${config.surface}`);
+
+  // 7. Background Style
+  ['bg-style-plain', 'bg-style-gradient', 'bg-style-forge-glow', 'bg-style-forge-grid'].forEach((b) =>
+    root.classList.remove(b)
+  );
+  root.classList.add(`bg-style-${config.background}`);
+
+  // 8. Typography Scale
+  ['font-scale-sm', 'font-scale-default', 'font-scale-lg'].forEach((f) =>
+    root.classList.remove(f)
+  );
+  root.classList.add(`font-scale-${config.fontScale}`);
+
+  // 9. Contrast
+  ['contrast-standard', 'contrast-high', 'contrast-maximum'].forEach((c) =>
+    root.classList.remove(c)
+  );
+  root.classList.add(`contrast-${config.contrast}`);
+
+  // 10. Motion
+  ['motion-full', 'motion-reduced', 'motion-minimal'].forEach((m) =>
+    root.classList.remove(m)
+  );
+  root.classList.add(`motion-${config.motion}`);
+
+  // 11. Enhanced Focus
+  if (config.enhancedFocus) {
+    root.classList.add('focus-enhanced');
+  } else {
+    root.classList.remove('focus-enhanced');
+  }
+
+  // 12. Favicon
+  updateFavicon(config.preset);
 }
 
-function getInitialTheme(): ThemeMode {
+function loadInitialConfig(): ThemeConfig {
   try {
-    return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'dark';
+    const stored = localStorage.getItem(THEME_CONFIG_KEY);
+    if (stored) {
+      return { ...DEFAULT_THEME_CONFIG, ...JSON.parse(stored) };
+    }
   } catch {
-    return 'dark';
+    /* fallback */
   }
+  return DEFAULT_THEME_CONFIG;
 }
 
-function getInitialAccent(): AccentTheme {
+function loadInitialPresets(): CustomPreset[] {
   try {
-    return (localStorage.getItem(ACCENT_KEY) as AccentTheme) || 'midnight';
+    const stored = localStorage.getItem(CUSTOM_PRESETS_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
   } catch {
-    return 'midnight';
+    /* fallback */
   }
-}
-
-function getInitialThemeName(): ThemeName {
-  try {
-    const stored = localStorage.getItem(THEME_NAME_KEY) as ThemeName;
-    if (stored && THEME_CLASSES.includes(stored)) return stored;
-    const mode = getInitialTheme();
-    return mode === 'light' ? 'forge-light' : 'forge-dark';
-  } catch {
-    return 'forge-dark';
-  }
+  return [];
 }
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemeMode>(getInitialTheme);
-  const [accentTheme, setAccentState] = useState<AccentTheme>(getInitialAccent);
-  const [themeName, setThemeNameState] = useState<ThemeName>(getInitialThemeName);
+  const [config, setConfig] = useState<ThemeConfig>(loadInitialConfig);
+  const [customPresets, setCustomPresets] = useState<CustomPreset[]>(loadInitialPresets);
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
 
-  // React to system color scheme changes if mode is 'system'
+  // React to system preference or config changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const updateTheme = () => {
+    const syncTheme = () => {
       let isDark = false;
-      if (theme === 'system') {
+      if (config.mode === 'system') {
         isDark = mediaQuery.matches;
       } else {
-        isDark = theme === 'dark';
+        isDark = config.mode === 'dark';
       }
 
       setResolvedTheme(isDark ? 'dark' : 'light');
-
-      const derived = deriveThemeName(isDark, accentTheme, themeName);
-      setThemeNameState(derived);
-      applyThemeClasses(isDark, accentTheme, derived);
+      applyThemeToDom(config, isDark);
     };
 
-    updateTheme();
+    syncTheme();
 
     const listener = () => {
-      if (theme === 'system') updateTheme();
+      if (config.mode === 'system') syncTheme();
     };
     mediaQuery.addEventListener('change', listener);
     return () => mediaQuery.removeEventListener('change', listener);
-  }, [theme, accentTheme]);
+  }, [config]);
 
-  /**
-   * Set one of the 6 official Daily Forge Themes directly.
-   */
-  const setThemeName = (name: ThemeName) => {
-    setThemeNameState(name);
-    try {
-      localStorage.setItem(THEME_NAME_KEY, name);
-    } catch {
-      /* noop */
-    }
-
-    const { mode, accent } = themeNameToModeAndAccent(name);
-    setThemeState(mode);
-    setAccentState(accent);
-    try {
-      localStorage.setItem(THEME_KEY, mode);
-      localStorage.setItem(ACCENT_KEY, accent);
-    } catch {
-      /* noop */
-    }
-
-    const isDark = mode === 'dark';
-    setResolvedTheme(isDark ? 'dark' : 'light');
-    applyThemeClasses(isDark, accent, name);
+  const updateConfig = (updater: Partial<ThemeConfig> | ((prev: ThemeConfig) => ThemeConfig)) => {
+    setConfig((prev) => {
+      const next = typeof updater === 'function' ? updater(prev) : { ...prev, ...updater };
+      try {
+        localStorage.setItem(THEME_CONFIG_KEY, JSON.stringify(next));
+      } catch {
+        /* noop */
+      }
+      return next;
+    });
   };
 
-  const setTheme = (newTheme: ThemeMode) => {
-    setThemeState(newTheme);
-    try {
-      localStorage.setItem(THEME_KEY, newTheme);
-    } catch {
-      /* noop */
+  const setTheme = (mode: ThemeMode) => {
+    updateConfig({ mode });
+  };
+
+  const setThemeName = (preset: ThemeName) => {
+    // Determine default accent & mode for the chosen preset
+    let mode: ThemeMode = 'dark';
+    let accent: AccentTheme = 'ember';
+
+    if (preset === 'forge-light') {
+      mode = 'light';
+      accent = 'ember';
+    } else if (preset === 'focus-blue') {
+      mode = 'dark';
+      accent = 'arctic';
+    } else if (preset === 'forest') {
+      mode = 'dark';
+      accent = 'emerald';
+    } else if (preset === 'amber-forge') {
+      mode = 'dark';
+      accent = 'gold';
+    } else if (preset === 'monochrome') {
+      mode = 'dark';
+      accent = 'midnight';
+    } else if (preset === 'midnight') {
+      mode = 'dark';
+      accent = 'midnight';
+    } else if (preset === 'arctic') {
+      mode = 'dark';
+      accent = 'cyan';
+    } else if (preset === 'crimson') {
+      mode = 'dark';
+      accent = 'crimson';
+    } else if (preset === 'ocean') {
+      mode = 'dark';
+      accent = 'cyan';
     }
 
-    const isDark = newTheme === 'dark';
-    const newName: ThemeName = isDark
-      ? themeName === 'forge-light'
-        ? 'forge-dark'
-        : themeName
-      : 'forge-light';
-
-    setThemeNameState(newName);
-    try {
-      localStorage.setItem(THEME_NAME_KEY, newName);
-    } catch {
-      /* noop */
-    }
+    updateConfig({ preset, mode, accent });
   };
 
   const setAccentTheme = (accent: AccentTheme) => {
-    setAccentState(accent);
-    try {
-      localStorage.setItem(ACCENT_KEY, accent);
-    } catch {
-      /* noop */
-    }
+    updateConfig({ accent });
+  };
 
-    const derived = deriveThemeName(resolvedTheme === 'dark', accent, null);
-    setThemeNameState(derived);
+  const setCustomAccentHex = (customAccentHex: string) => {
+    updateConfig({ accent: 'custom', customAccentHex });
+  };
+
+  const setSurfaceStyle = (surface: SurfaceStyle) => updateConfig({ surface });
+  const setBackgroundStyle = (background: BackgroundStyle) => updateConfig({ background });
+  const setRadiusStyle = (radius: RadiusStyle) => updateConfig({ radius });
+  const setDensityStyle = (density: DensityStyle) => updateConfig({ density });
+  const setSidebarStyle = (sidebar: SidebarStyle) => updateConfig({ sidebar });
+  const setNavigationStyle = (navigation: NavigationStyle) => updateConfig({ navigation });
+  const setChartPalette = (chartPalette: ChartPaletteStyle) => updateConfig({ chartPalette });
+  const setMotionStyle = (motion: MotionStyle) => updateConfig({ motion });
+  const setContrastStyle = (contrast: ContrastStyle) => updateConfig({ contrast });
+  const setFontScale = (fontScale: FontScaleStyle) => updateConfig({ fontScale });
+  const setEnhancedFocus = (enhancedFocus: boolean) => updateConfig({ enhancedFocus });
+  const setFocusMode = (focusMode: boolean) => updateConfig({ focusMode });
+
+  const toggleTheme = () => {
+    const nextMode = config.mode === 'dark' ? 'light' : 'dark';
+    setTheme(nextMode);
+  };
+
+  const saveCustomPreset = (name: string) => {
+    const newPreset: CustomPreset = {
+      id: `custom-${Date.now()}`,
+      name: name.trim() || 'Custom Preset',
+      config: { ...config },
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [newPreset, ...customPresets];
+    setCustomPresets(updated);
     try {
-      localStorage.setItem(THEME_NAME_KEY, derived);
+      localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(updated));
     } catch {
       /* noop */
     }
   };
 
-  const toggleTheme = () => {
-    const nextMode = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextMode);
+  const applyCustomPreset = (preset: CustomPreset) => {
+    updateConfig(preset.config);
+  };
+
+  const deleteCustomPreset = (id: string) => {
+    const updated = customPresets.filter((p) => p.id !== id);
+    setCustomPresets(updated);
+    try {
+      localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(updated));
+    } catch {
+      /* noop */
+    }
+  };
+
+  const exportThemeJson = (): string => {
+    const payload = {
+      schemaVersion: 1,
+      appName: 'DailyForge',
+      name: 'DailyForge Custom Theme',
+      exportedAt: new Date().toISOString(),
+      config,
+    };
+    return JSON.stringify(payload, null, 2);
+  };
+
+  const importThemeJson = (jsonStr: string): { success: boolean; error?: string } => {
+    try {
+      const parsed = JSON.parse(jsonStr);
+      if (!parsed || typeof parsed !== 'object') {
+        return { success: false, error: 'Invalid JSON payload structure.' };
+      }
+      if (parsed.schemaVersion !== 1 && !parsed.config) {
+        return { success: false, error: 'Unsupported theme schema version.' };
+      }
+      const importedConfig = parsed.config || parsed;
+      updateConfig({ ...DEFAULT_THEME_CONFIG, ...importedConfig });
+      return { success: true };
+    } catch (e: any) {
+      return { success: false, error: e?.message || 'Failed to parse JSON file.' };
+    }
+  };
+
+  const resetAppearance = () => {
+    updateConfig({
+      preset: 'forge-dark',
+      mode: 'dark',
+      accent: 'ember',
+      surface: 'elevated',
+      background: 'plain',
+      radius: 'balanced',
+      density: 'comfortable',
+      sidebar: 'classic',
+      navigation: 'soft',
+      chartPalette: 'forge',
+    });
+  };
+
+  const resetAll = () => {
+    updateConfig(DEFAULT_THEME_CONFIG);
   };
 
   return (
     <ThemeContext.Provider
       value={{
-        theme,
-        accentTheme,
+        config,
+        theme: config.mode,
+        accentTheme: config.accent,
         resolvedTheme,
-        currentTheme: themeName,
-        setThemeName,
+        currentTheme: config.preset,
+        customPresets,
         setTheme,
+        setThemeName,
         setAccentTheme,
+        setCustomAccentHex,
+        setSurfaceStyle,
+        setBackgroundStyle,
+        setRadiusStyle,
+        setDensityStyle,
+        setSidebarStyle,
+        setNavigationStyle,
+        setChartPalette,
+        setMotionStyle,
+        setContrastStyle,
+        setFontScale,
+        setEnhancedFocus,
+        setFocusMode,
         toggleTheme,
+        saveCustomPreset,
+        applyCustomPreset,
+        deleteCustomPreset,
+        exportThemeJson,
+        importThemeJson,
+        resetAppearance,
+        resetAll,
       }}
     >
       {children}
