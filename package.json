@@ -1,0 +1,28 @@
+{
+  "name": "dailyforge",
+  "version": "1.0.0",
+  "description": "DailyForge — Personal Habit, Consistency & Execution Operating System",
+  "private": true,
+  "scripts": {
+    "test:all": "node scripts/test-all.js",
+    "test": "cd backend && npm test",
+    "test:unit": "cd backend && npx jest tests/streak.test.js tests/behaviorMetrics.test.js tests/performance.test.js --runInBand --forceExit",
+    "test:api": "cd backend && npx jest tests/habits.test.js tests/goals.test.js tests/planner.test.js tests/dailyReview.test.js --runInBand --forceExit",
+    "test:security": "cd backend && npx jest tests/security.test.js tests/userIsolation.test.js --runInBand --forceExit",
+    "test:e2e": "cd backend && node scripts/run_e2e_verification.js",
+    "typecheck": "cd frontend && npx tsc --noEmit",
+    "build": "cd frontend && npm run build",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev"
+  },
+  "keywords": [
+    "habit-tracker",
+    "productivity",
+    "goals",
+    "time-blocking",
+    "analytics",
+    "ai-coach"
+  ],
+  "author": "DailyForge Authors",
+  "license": "MIT"
+}
