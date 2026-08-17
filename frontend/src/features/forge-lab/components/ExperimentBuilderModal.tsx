@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { useToast } from '@/hooks/useToast';
 import { habitService } from '@/services/habitService';
 import { experimentService } from '@/services/experimentService';
@@ -11,6 +11,7 @@ import {
   Zap,
   ShieldCheck,
   Flame,
+  Beaker,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -122,11 +123,13 @@ export const ExperimentBuilderModal: React.FC<ExperimentBuilderModalProps> = ({
   const selectedHabit = habits.find((h) => h.id === selectedHabitId);
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
       title="Create Personal Experiment"
       description={`Step ${step} of 4 · Scientific Routine Optimization`}
+      icon={Beaker}
+      iconColor="#8B5CF6"
       size="md"
     >
       <div className="space-y-4 text-left pt-1">
@@ -143,7 +146,7 @@ export const ExperimentBuilderModal: React.FC<ExperimentBuilderModalProps> = ({
                 <select
                   value={selectedHabitId}
                   onChange={(e) => handleHabitChange(e.target.value)}
-                  className="w-full bg-surface-sunken border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary"
+                  className="w-full bg-surface-sunken border border-border rounded-xl px-3 py-2 text-xs font-semibold text-foreground focus:outline-none focus:border-primary cursor-pointer"
                 >
                   {habits.map((h) => (
                     <option key={h.id} value={h.id}>
@@ -299,7 +302,7 @@ export const ExperimentBuilderModal: React.FC<ExperimentBuilderModalProps> = ({
               </div>
               <div className="flex justify-between items-center text-muted-foreground">
                 <span>Target Success Rate:</span>
-                <strong className="text-emerald-400 font-mono text-sm">{targetValue}% (+8 pts)</strong>
+                <strong className="text-emerald-500 dark:text-emerald-400 font-mono text-sm">{targetValue}% (+8 pts)</strong>
               </div>
               <div className="flex justify-between items-center text-muted-foreground">
                 <span>Experiment Duration:</span>
@@ -375,6 +378,6 @@ export const ExperimentBuilderModal: React.FC<ExperimentBuilderModalProps> = ({
           )}
         </div>
       </div>
-    </Modal>
+    </Dialog>
   );
 };

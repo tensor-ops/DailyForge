@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { useToast } from '@/hooks/useToast';
 import { plannerService } from '@/services/plannerService';
 import { CalendarEvent } from '@/types/planner';
-import { Play, Pause, RotateCcw, Check, Target } from 'lucide-react';
+import { Play, Pause, RotateCcw, Check, Target, Clock } from 'lucide-react';
 
 interface FocusModeModalProps {
   isOpen: boolean;
@@ -62,14 +62,16 @@ export const FocusModeModal: React.FC<FocusModeModalProps> = ({
   };
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
       title="Focus Mode"
-      description={`Active block: "${event.title}"`}
+      description={`Active session: "${event.title}"`}
+      icon={Clock}
+      iconColor="#6366F1"
       size="sm"
     >
-      <div className="space-y-6 text-center py-2">
+      <div className="space-y-5 text-center py-2">
         {/* Goal Badge */}
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-bold">
           <Target className="h-3.5 w-3.5" />
@@ -77,12 +79,12 @@ export const FocusModeModal: React.FC<FocusModeModalProps> = ({
         </div>
 
         {/* Digital Countdown Timer */}
-        <div className="py-4">
-          <div className="text-5xl sm:text-6xl font-extrabold text-foreground font-mono tracking-tight">
+        <div className="py-2">
+          <div className="text-5xl sm:text-6xl font-black text-foreground font-mono tracking-tight select-none">
             {formattedTime}
           </div>
           <p className="text-xs text-muted-foreground font-semibold mt-2">
-            {isRunning ? 'Flow state in progress' : 'Timer paused'}
+            {isRunning ? '⚡ Flow state in progress' : 'Timer paused'}
           </p>
         </div>
 
@@ -90,7 +92,7 @@ export const FocusModeModal: React.FC<FocusModeModalProps> = ({
         <div className="flex items-center justify-center gap-3">
           <button
             onClick={() => setIsRunning(!isRunning)}
-            className="p-3 rounded-2xl bg-primary hover:bg-primary-hover text-white transition-all shadow-md cursor-pointer"
+            className="p-3 rounded-2xl bg-primary hover:bg-primary-hover text-white transition-all shadow-md cursor-pointer active:scale-95"
             title={isRunning ? 'Pause' : 'Resume'}
           >
             {isRunning ? <Pause className="h-5 w-5 fill-white" /> : <Play className="h-5 w-5 fill-white" />}
@@ -108,13 +110,13 @@ export const FocusModeModal: React.FC<FocusModeModalProps> = ({
         <div className="pt-2 border-t border-border/60">
           <button
             onClick={handleComplete}
-            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+            className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer active:scale-[0.98]"
           >
             <Check className="h-4 w-4 stroke-[3px]" />
             <span>Complete Session</span>
           </button>
         </div>
       </div>
-    </Modal>
+    </Dialog>
   );
 };

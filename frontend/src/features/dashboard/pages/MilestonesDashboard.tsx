@@ -324,7 +324,7 @@ export const MilestonesDashboard: React.FC = () => {
                 setSelectedMoment(moment);
                 setIsMomentModalOpen(true);
               }}
-              className="p-4 rounded-2xl bg-gradient-to-b from-[#111A30] to-[#0A1020] border border-border/80 hover:border-primary/60 transition-all text-center flex flex-col justify-between gap-3 cursor-pointer group shadow-sm hover:scale-[1.02] active:scale-[0.99]"
+              className="p-4 rounded-2xl bg-surface-elevated hover:bg-surface border border-border hover:border-primary/60 transition-all text-center flex flex-col justify-between gap-3 cursor-pointer group shadow-xs hover:scale-[1.02] active:scale-[0.99]"
             >
               <div className="flex items-center justify-between">
                 <span

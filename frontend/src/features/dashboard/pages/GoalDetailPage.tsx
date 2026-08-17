@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { ProgressRing } from '@/components/ui/ProgressRing';
 import { GoalStatusBadge } from '@/features/goals/components/GoalStatusBadge';
 import { GoalModal } from '@/features/goals/components/GoalModal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { goalService } from '@/services/goalService';
 import { habitService } from '@/services/habitService';
 import { taskService } from '@/services/taskService';
@@ -739,147 +740,140 @@ export const GoalDetailPage: React.FC = () => {
       />
 
       {/* Add Milestone Modal */}
-      {isAddMilestoneOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-sm w-full space-y-4 text-left shadow-popover animate-scale-in">
-            <h3 className="text-sm font-extrabold text-foreground">Add Target Milestone</h3>
-            <form onSubmit={handleAddMilestone} className="space-y-3">
-              <div>
-                <label className="text-xs font-bold text-muted-foreground block mb-1">
-                  Milestone Title
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Master dynamic programming"
-                  value={newMilestoneTitle}
-                  onChange={(e) => setNewMilestoneTitle(e.target.value)}
-                  className="w-full h-9 px-3 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-                  autoFocus
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground block mb-1">
-                    Weight
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    max={10}
-                    value={newMilestoneWeight}
-                    onChange={(e) => setNewMilestoneWeight(Number(e.target.value))}
-                    className="w-full h-9 px-3 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-muted-foreground block mb-1">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    value={newMilestoneDueDate}
-                    onChange={(e) => setNewMilestoneDueDate(e.target.value)}
-                    className="w-full h-9 px-2 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
-                <button
-                  type="button"
-                  onClick={() => setIsAddMilestoneOpen(false)}
-                  className="px-3 py-1.5 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer"
-                >
-                  Add Milestone
-                </button>
-              </div>
-            </form>
+      <Dialog
+        isOpen={isAddMilestoneOpen}
+        onClose={() => setIsAddMilestoneOpen(false)}
+        title="Add Target Milestone"
+        description="Define a specific checkpoint towards goal completion."
+        size="sm"
+      >
+        <form onSubmit={handleAddMilestone} className="space-y-4 text-left">
+          <div>
+            <label className="text-xs font-bold text-muted-foreground block mb-1">
+              Milestone Title
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Master dynamic programming"
+              value={newMilestoneTitle}
+              onChange={(e) => setNewMilestoneTitle(e.target.value)}
+              className="w-full h-9 px-3 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+              autoFocus
+            />
           </div>
-        </div>
-      )}
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs font-bold text-muted-foreground block mb-1">
+                Weight
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={10}
+                value={newMilestoneWeight}
+                onChange={(e) => setNewMilestoneWeight(Number(e.target.value))}
+                className="w-full h-9 px-3 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-muted-foreground block mb-1">
+                Due Date
+              </label>
+              <input
+                type="date"
+                value={newMilestoneDueDate}
+                onChange={(e) => setNewMilestoneDueDate(e.target.value)}
+                className="w-full h-9 px-2 rounded-xl bg-surface-sunken border border-border text-foreground text-xs font-semibold focus:outline-none focus:border-primary cursor-pointer"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/60">
+            <button
+              type="button"
+              onClick={() => setIsAddMilestoneOpen(false)}
+              className="px-3 py-1.5 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-all shadow-md cursor-pointer"
+            >
+              Add Milestone
+            </button>
+          </div>
+        </form>
+      </Dialog>
 
       {/* Link Habit Modal */}
-      {isLinkHabitOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-popover animate-scale-in">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-extrabold text-foreground">Link an Existing Habit</h3>
-              <button
-                onClick={() => setIsLinkHabitOpen(false)}
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
+      <Dialog
+        isOpen={isLinkHabitOpen}
+        onClose={() => setIsLinkHabitOpen(false)}
+        title="Link an Existing Habit"
+        description="Connect daily routines to this high-impact goal."
+        size="sm"
+      >
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1 text-left">
+          {allHabits.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-4 text-center">No habits available to link.</p>
+          ) : (
+            allHabits.map((habit) => (
+              <div
+                key={habit.id}
+                className="p-2.5 bg-surface-sunken border border-border/60 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold"
               >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-              {allHabits.map((habit) => (
-                <div
-                  key={habit.id}
-                  className="p-2.5 bg-surface-sunken border border-border/60 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold"
-                >
-                  <div className="min-w-0">
-                    <p className="text-foreground font-bold truncate">{habit.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{habit.category}</p>
-                  </div>
-                  <button
-                    onClick={() => handleLinkHabit(habit.id)}
-                    className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-lg transition-all cursor-pointer"
-                  >
-                    Link
-                  </button>
+                <div className="min-w-0">
+                  <p className="text-foreground font-bold truncate">{habit.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{habit.category}</p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <button
+                  onClick={() => handleLinkHabit(habit.id)}
+                  className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-lg transition-all cursor-pointer shadow-xs"
+                >
+                  Link
+                </button>
+              </div>
+            ))
+          )}
         </div>
-      )}
+      </Dialog>
 
       {/* Link Task Modal */}
-      {isLinkTaskOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 dark:bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-surface-elevated border border-border rounded-2xl p-5 max-w-md w-full space-y-4 text-left shadow-popover animate-scale-in">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-extrabold text-foreground">Link an Existing Task</h3>
-              <button
-                onClick={() => setIsLinkTaskOpen(false)}
-                className="text-muted-foreground hover:text-foreground cursor-pointer"
+      <Dialog
+        isOpen={isLinkTaskOpen}
+        onClose={() => setIsLinkTaskOpen(false)}
+        title="Link an Existing Task"
+        description="Connect action items to this goal's execution plan."
+        size="sm"
+      >
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1 text-left">
+          {allTasks.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-4 text-center">No tasks available to link.</p>
+          ) : (
+            allTasks.map((task) => (
+              <div
+                key={task.id}
+                className="p-2.5 bg-surface-sunken border border-border/60 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold"
               >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-              {allTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="p-2.5 bg-surface-sunken border border-border/60 rounded-xl flex items-center justify-between gap-3 text-xs font-semibold"
-                >
-                  <div className="min-w-0">
-                    <p className="text-foreground font-bold truncate">{task.title}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {task.priority} • {task.scheduledStart || 'No date'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleLinkTask(task.id)}
-                    className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-lg transition-all cursor-pointer"
-                  >
-                    Link
-                  </button>
+                <div className="min-w-0">
+                  <p className="text-foreground font-bold truncate">{task.title}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {task.priority} • {task.scheduledStart || 'No date'}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <button
+                  onClick={() => handleLinkTask(task.id)}
+                  className="px-3 py-1 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-lg transition-all cursor-pointer shadow-xs"
+                >
+                  Link
+                </button>
+              </div>
+            ))
+          )}
         </div>
-      )}
+      </Dialog>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
+import { Dialog } from '@/components/dialogs/Dialog';
+import { DialogFooter } from '@/components/dialogs/DialogFooter';
 import { useToast } from '@/hooks/useToast';
 import { habitService } from '@/services/habitService';
 import {
@@ -16,7 +16,7 @@ import { HabitTargetSection } from './HabitTargetSection';
 import { HabitRemindersSection } from './HabitRemindersSection';
 import { HabitDifficultySection } from './HabitDifficultySection';
 import { HabitPreviewCard } from './HabitPreviewCard';
-import { ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface CreateHabitModalProps {
   isOpen: boolean;
@@ -143,7 +143,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
   };
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={() => {
         resetForm();
@@ -151,11 +151,25 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
       }}
       title="Create New Habit"
       description="Build a routine that fits your life, not the other way around."
+      icon={CheckCircle2}
+      iconColor="#F97316"
       size="lg"
+      footer={
+        <DialogFooter
+          onCancel={() => {
+            resetForm();
+            onClose();
+          }}
+          cancelLabel="Cancel"
+          onConfirm={undefined}
+          confirmLabel="Create Habit"
+          isSubmitting={isSubmitting}
+        />
+      }
     >
-      <form onSubmit={handleSubmit} className="space-y-5 pt-1 max-h-[75vh] overflow-y-auto pr-1">
+      <form onSubmit={handleSubmit} className="space-y-4 text-left pt-1">
         {/* 1. BASICS SECTION */}
-        <section className="space-y-3">
+        <section className="space-y-2.5">
           <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
             <span className="h-4 w-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-mono">
               1
@@ -177,7 +191,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
         </section>
 
         {/* 2. FREQUENCY & SCHEDULE */}
-        <section className="space-y-3 pt-3 border-t border-border/50">
+        <section className="space-y-2.5 pt-3 border-t border-border/50">
           <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
             <span className="h-4 w-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-mono">
               2
@@ -201,7 +215,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
         </section>
 
         {/* 3. TARGET & MEASUREMENT */}
-        <section className="space-y-3 pt-3 border-t border-border/50">
+        <section className="space-y-2.5 pt-3 border-t border-border/50">
           <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
             <span className="h-4 w-4 rounded-full bg-primary/20 text-primary text-[10px] flex items-center justify-center font-mono">
               3
@@ -235,7 +249,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
           </button>
 
           {showAdvanced && (
-            <div className="space-y-5 pt-4 motion-safe:animate-fade-in">
+            <div className="space-y-4 pt-3 motion-safe:animate-fade-in">
               {/* 4. REMINDERS */}
               <section className="space-y-2">
                 <div className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
@@ -279,25 +293,7 @@ export const CreateHabitModal: React.FC<CreateHabitModalProps> = ({
           reminderTime={reminderTime}
           difficulty={difficulty}
         />
-
-        {/* ACTIONS */}
-        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-border sticky bottom-0 bg-surface/95 backdrop-blur-sm py-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              resetForm();
-              onClose();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" size="sm" isLoading={isSubmitting}>
-            Create Habit
-          </Button>
-        </div>
       </form>
-    </Modal>
+    </Dialog>
   );
 };

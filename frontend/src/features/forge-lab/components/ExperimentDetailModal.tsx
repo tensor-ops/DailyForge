@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { useToast } from '@/hooks/useToast';
 import { experimentService } from '@/services/experimentService';
@@ -11,6 +11,7 @@ import {
   XCircle,
   ShieldCheck,
   Check,
+  Beaker,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -90,11 +91,13 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
   };
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
       title={detail?.experiment.name || 'Experiment Workspace'}
       description={`Testing: ${detail?.experiment.habitName || 'Routine'} · N-of-1 Behavior Trial`}
+      icon={Beaker}
+      iconColor="#8B5CF6"
       size="lg"
     >
       {loading ? (
@@ -125,7 +128,7 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
               </span>
               <div className="flex items-baseline gap-1.5 font-extrabold text-foreground">
                 <span className="text-2xl text-primary">{detail.experiment.currentValue}%</span>
-                <span className="text-[11px] font-mono text-emerald-400 font-bold">
+                <span className="text-[11px] font-mono text-emerald-500 dark:text-emerald-400 font-bold">
                   +{detail.experiment.improvementPts || 9} pts
                 </span>
               </div>
@@ -136,8 +139,8 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
                 Target Success Goal
               </span>
               <div className="flex items-baseline gap-1.5 font-extrabold text-foreground">
-                <span className="text-2xl text-emerald-400">{detail.experiment.targetValue}%</span>
-                <span className="text-[10px] text-emerald-400/80 font-bold">Target Achieved ✓</span>
+                <span className="text-2xl text-emerald-500 dark:text-emerald-400">{detail.experiment.targetValue}%</span>
+                <span className="text-[10px] text-emerald-500/80 dark:text-emerald-400/80 font-bold">Target Achieved ✓</span>
               </div>
             </div>
           </div>
@@ -185,15 +188,16 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
                       <stop offset="95%" stopColor="#F97316" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.3} />
-                  <XAxis dataKey="day" stroke="#94A3B8" fontSize={10} tickLine={false} />
-                  <YAxis stroke="#94A3B8" fontSize={10} tickLine={false} domain={[50, 100]} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-border opacity-40" />
+                  <XAxis dataKey="day" stroke="currentColor" className="text-muted-foreground" fontSize={10} tickLine={false} />
+                  <YAxis stroke="currentColor" className="text-muted-foreground" fontSize={10} tickLine={false} domain={[50, 100]} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0D1527',
-                      borderColor: '#334155',
+                      backgroundColor: 'var(--color-surface-elevated, #1e293b)',
+                      borderColor: 'var(--color-border, #334155)',
                       borderRadius: '12px',
                       fontSize: '11px',
+                      color: 'var(--color-foreground, #ffffff)',
                     }}
                   />
                   <ReferenceLine y={detail.experiment.targetValue} stroke="#10B981" strokeDasharray="3 3" />
@@ -240,9 +244,9 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
                     </div>
                     <div className="flex items-center gap-2">
                       {obs.completed ? (
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
                       ) : (
-                        <XCircle className="h-3.5 w-3.5 text-rose-400" />
+                        <XCircle className="h-3.5 w-3.5 text-rose-500 dark:text-rose-400" />
                       )}
                       <span className="text-[10px] font-mono text-primary font-bold">
                         {obs.score}%
@@ -260,7 +264,7 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
                   <span className="text-[10px] font-extrabold text-foreground uppercase tracking-wider">
                     Trial Adherence & Quality
                   </span>
-                  <span className="text-emerald-400 font-mono font-bold text-xs">
+                  <span className="text-emerald-500 dark:text-emerald-400 font-mono font-bold text-xs">
                     {detail.adherence}%
                   </span>
                 </div>
@@ -277,10 +281,10 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
                 </span>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div className="text-muted-foreground">
-                    Reliability: <strong className="text-emerald-400">+12 pts</strong>
+                    Reliability: <strong className="text-emerald-500 dark:text-emerald-400">+12 pts</strong>
                   </div>
                   <div className="text-muted-foreground">
-                    Friction: <strong className="text-emerald-400">-18%</strong>
+                    Friction: <strong className="text-emerald-500 dark:text-emerald-400">-18%</strong>
                   </div>
                 </div>
               </div>
@@ -288,13 +292,13 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
           </div>
 
           {/* Verdict & Recommendation Banner */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-[#111C33] to-[#0D1527] border border-primary/40 space-y-2">
+          <div className="p-4 rounded-2xl bg-surface-elevated border border-primary/40 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-extrabold text-primary uppercase tracking-widest flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4" />
                 <span>Trial Verdict</span>
               </span>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 uppercase">
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-500 dark:text-emerald-400 uppercase">
                 {detail.verdict.badge}
               </span>
             </div>
@@ -302,7 +306,7 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
               {detail.verdict.summary}
             </p>
             <p className="text-[11px] text-muted-foreground font-semibold">
-              Recommendation: <strong className="text-slate-300">{detail.verdict.recommendation}</strong>
+              Recommendation: <strong className="text-foreground">{detail.verdict.recommendation}</strong>
             </p>
           </div>
 
@@ -345,6 +349,6 @@ export const ExperimentDetailModal: React.FC<ExperimentDetailModalProps> = ({
           </div>
         </div>
       )}
-    </Modal>
+    </Dialog>
   );
 };

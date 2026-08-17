@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { useToast } from '@/hooks/useToast';
 import { plannerService } from '@/services/plannerService';
 import { CalendarEvent } from '@/types/planner';
@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Edit2,
   Trash2,
+  Calendar,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -89,30 +90,32 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
   };
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
       title={event.title}
       description={`${event.startTime} — ${event.endTime} (${event.durationMinutes} min)`}
+      icon={Calendar}
+      iconColor="#3B82F6"
       size="md"
     >
-      <div className="space-y-5 text-left pt-1">
+      <div className="space-y-4 text-left pt-1">
         {/* Badges Row */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] font-extrabold bg-primary/20 text-primary border border-primary/30 px-2.5 py-0.5 rounded-full uppercase">
+          <span className="text-[10px] font-extrabold bg-primary/15 text-primary border border-primary/30 px-2.5 py-0.5 rounded-full uppercase">
             {event.type}
           </span>
-          <span className="text-[10px] font-bold bg-muted px-2.5 py-0.5 rounded-full border border-border text-slate-300 uppercase">
+          <span className="text-[10px] font-bold bg-surface-sunken px-2.5 py-0.5 rounded-full border border-border text-muted-foreground uppercase">
             {event.category}
           </span>
           <span
             className={cn(
               'text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase border',
               event.status === 'completed'
-                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 dark:text-emerald-400'
                 : event.status === 'in_progress'
                 ? 'bg-primary/20 border-primary/40 text-primary'
-                : 'bg-muted border-border text-muted-foreground'
+                : 'bg-surface-sunken border-border text-muted-foreground'
             )}
           >
             {event.status}
@@ -127,7 +130,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           </span>
           <div className="flex items-center justify-between text-xs font-bold">
             <span className="text-foreground">{event.goalTitle || 'General Consistency'}</span>
-            <span className="text-success font-mono">
+            <span className="text-emerald-500 dark:text-emerald-400 font-mono">
               {event.expectedGoalContribution || '+1.2% Goal Progress'}
             </span>
           </div>
@@ -137,7 +140,7 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
         {event.description && (
           <div className="space-y-1 text-xs font-semibold">
             <span className="text-[10px] text-muted-foreground block uppercase font-bold">Notes</span>
-            <p className="text-slate-300 leading-relaxed">{event.description}</p>
+            <p className="text-muted-foreground leading-relaxed">{event.description}</p>
           </div>
         )}
 
@@ -200,9 +203,9 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           <button
             onClick={handleComplete}
             disabled={isSubmitting || event.status === 'completed'}
-            className="p-2.5 rounded-xl bg-surface-elevated hover:bg-emerald-500/20 hover:border-emerald-500/40 border border-border text-foreground text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+            className="p-2.5 rounded-xl bg-surface-elevated hover:bg-emerald-500/15 hover:border-emerald-500/40 border border-border text-foreground text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
           >
-            <Check className="h-3.5 w-3.5 text-emerald-400" />
+            <Check className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
             <span>{event.status === 'completed' ? 'Completed' : 'Complete'}</span>
           </button>
 
@@ -237,6 +240,6 @@ export const EventDetailsModal: React.FC<EventDetailsModalProps> = ({
           </button>
         </div>
       </div>
-    </Modal>
+    </Dialog>
   );
 };

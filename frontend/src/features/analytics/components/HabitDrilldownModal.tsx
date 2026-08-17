@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Modal } from '@/components/ui/Modal';
+import { Dialog } from '@/components/dialogs/Dialog';
 import { analyticsService } from '@/services/analyticsService';
 import { HabitIntelligenceSnapshot } from '@/types/habitIntelligence';
 import {
@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Target,
   ExternalLink,
+  Activity,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -42,11 +43,13 @@ export const HabitDrilldownModal: React.FC<HabitDrilldownModalProps> = ({
   if (!habitId) return null;
 
   return (
-    <Modal
+    <Dialog
       isOpen={isOpen}
       onClose={onClose}
       title={snapshot?.name || 'Habit Intelligence Snapshot'}
-      description={`${snapshot?.category || 'Habit'} · Behavioral Diagnosis`}
+      description={`${snapshot?.category || 'Habit'} · Behavioral Diagnosis & Patterns`}
+      icon={Activity}
+      iconColor="#3B82F6"
       size="md"
     >
       {loading ? (
@@ -121,18 +124,18 @@ export const HabitDrilldownModal: React.FC<HabitDrilldownModalProps> = ({
 
             <div className="p-3 rounded-xl bg-surface-elevated border border-border/70 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Calendar className="h-3.5 w-3.5 text-emerald-400" />
+                <Calendar className="h-3.5 w-3.5 text-emerald-500 dark:text-emerald-400" />
                 <span className="text-muted-foreground">Strongest Day:</span>
               </div>
               <span className="text-foreground font-bold">{snapshot.bestDay}</span>
             </div>
 
             <div className="p-3 rounded-xl bg-surface-elevated border border-border/70 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-amber-400">
+              <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400">
                 <AlertTriangle className="h-3.5 w-3.5" />
                 <span className="text-muted-foreground">Primary Risk:</span>
               </div>
-              <span className="text-amber-400 font-bold">{snapshot.primaryRisk}</span>
+              <span className="text-amber-500 dark:text-amber-400 font-bold">{snapshot.primaryRisk}</span>
             </div>
           </div>
 
@@ -153,11 +156,11 @@ export const HabitDrilldownModal: React.FC<HabitDrilldownModalProps> = ({
             <button
               onClick={() => {
                 onClose();
-                navigate(`/habits/${snapshot.habitId}`);
+                navigate(`/habits`);
               }}
               className="px-3.5 py-2 rounded-xl bg-surface-elevated hover:bg-muted border border-border text-foreground text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <span>Open Habit</span>
+              <span>View Habits</span>
               <ExternalLink className="h-3 w-3" />
             </button>
             <button
@@ -172,6 +175,6 @@ export const HabitDrilldownModal: React.FC<HabitDrilldownModalProps> = ({
           </div>
         </div>
       )}
-    </Modal>
+    </Dialog>
   );
 };
