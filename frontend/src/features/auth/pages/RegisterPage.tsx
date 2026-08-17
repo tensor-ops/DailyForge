@@ -2,25 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { OtpInput } from '@/components/ui/OtpInput';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/useToast';
-import { 
-  ArrowRight, 
+import {
+  ArrowRight,
   ArrowLeft,
-  Lock, 
-  Mail, 
-  User, 
-  Check, 
-  GraduationCap, 
-  Laptop, 
-  Dumbbell, 
-  Brain, 
-  Zap, 
-  Rocket, 
-  Clock, 
+  Mail,
+  User,
+  Check,
+  GraduationCap,
+  Laptop,
+  Dumbbell,
+  Brain,
+  Zap,
+  Rocket,
+  Clock,
   Sparkles,
-  Eye,
-  EyeOff
+  RefreshCw,
 } from 'lucide-react';
 import axios from 'axios';
 import { cn } from '@/utils/cn';
@@ -35,29 +34,41 @@ interface OnboardingDraft {
 }
 
 export const RegisterPage: React.FC = () => {
-  useDocumentTitle('DailyForge — Join Us');
-  
-  const { register, isAuthenticated, user, updateUserPreferences } = useAuth();
+  useDocumentTitle('DailyForge — Create Your Account');
+
+  const { sendOtp, verifyOtp, resendOtp, isAuthenticated, user, updateUserPreferences } = useAuth();
   const { success: showToast } = useToast();
   const navigate = useNavigate();
 
-  // Wizard state
+  // Wizard state: 1 = Email & OTP, 2 = Focus, 3 = Commitment, 4 = Goals, 5 = Ready
   const [step, setStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // Step 1: Account fields
-  const [name, setName] = useState('');
+  // Step 1: Email OTP flow states
+  const [authStage, setAuthStage] = useState<'enter_email' | 'enter_otp'>('enter_email');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState('');
+  const [otp, setOtp] = useState('');
+  const [maskedEmail, setMaskedEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [isResending, setIsResending] = useState(false);
 
   // Onboarding state
   const [focusAreas, setFocusAreas] = useState<string[]>([]);
   const [dailyCommitment, setDailyCommitment] = useState<string>('');
   const [goals, setGoals] = useState<string[]>([]);
+
+  // Resend Countdown Timer
+  useEffect(() => {
+    let timer: any = null;
+    if (resendCooldown > 0) {
+      timer = setInterval(() => {
+        setResendCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -68,12 +79,9 @@ export const RegisterPage: React.FC = () => {
         if (draft.focusAreas) setFocusAreas(draft.focusAreas);
         if (draft.dailyCommitment) setDailyCommitment(draft.dailyCommitment);
         if (draft.goals) setGoals(draft.goals);
-        
-        // If authenticated, we skip account creation (Step 1)
+
         if (isAuthenticated) {
           setStep(Math.max(2, draft.step || 2));
-        } else {
-          setStep(draft.step || 1);
         }
       } else if (isAuthenticated) {
         setStep(2);
@@ -90,7 +98,7 @@ export const RegisterPage: React.FC = () => {
         step,
         focusAreas,
         dailyCommitment,
-        goals
+        goals,
       };
       localStorage.setItem('daily_forge_onboarding_draft', JSON.stringify(draft));
     } catch (e) {
@@ -98,62 +106,93 @@ export const RegisterPage: React.FC = () => {
     }
   }, [step, focusAreas, dailyCommitment, goals]);
 
-  // Real-time password strength check
-  const getPasswordStrength = () => {
-    if (!password) return 0;
-    let score = 0;
-    if (password.length >= 8) score += 25;
-    if (/[a-z]/.test(password)) score += 25;
-    if (/[A-Z]/.test(password)) score += 25;
-    if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) score += 25;
-    return score;
-  };
-
-  const strength = getPasswordStrength();
-
-  const handleStep1Submit = async (e: React.FormEvent) => {
+  // Handle Send Verification Code
+  const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!name || !email || !password) {
-      setError('Please fill in all fields.');
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail) {
+      setError('Please enter your email address.');
       return;
     }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
-    if (!/[A-Z]/.test(password)) {
-      setError('Password must contain at least one uppercase letter.');
-      return;
-    }
-    if (!/[0-9]/.test(password)) {
-      setError('Password must contain at least one number.');
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await register(name, email, password, password);
-      showToast('Account created! 🎉', 'Please configure your preferences to build your Forge.');
-      setStep(2);
+      const res = await sendOtp(cleanEmail, 'registration');
+      setMaskedEmail(res.maskedEmail || cleanEmail);
+      setResendCooldown(res.resendCooldownSeconds || 60);
+      setAuthStage('enter_otp');
+      showToast('Verification code sent! ✉️', 'Check your inbox for your 6-digit code.');
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const data = err.response?.data;
-        if (data?.error?.details && Array.isArray(data.error.details)) {
-          setError(data.error.details.map((e: { message: string }) => e.message).join(' · '));
-        } else {
-          setError(data?.message || 'Registration failed. Please try again.');
-        }
+        setError(data?.message || 'Could not send verification email. Please try again.');
       } else {
         setError('Something went wrong. Please try again.');
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Handle Verify OTP
+  const handleVerifyCode = async (codeToVerify?: string) => {
+    const targetOtp = (codeToVerify || otp).trim();
+    setError('');
+
+    if (targetOtp.length !== 6) {
+      setError('Please enter the complete 6-digit verification code.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await verifyOtp(email.trim().toLowerCase(), targetOtp, 'registration', name.trim() || undefined);
+      showToast('Email verified! 🎉', 'Welcome to DailyForge.');
+      
+      // If user is returning/existing with configured preferences, proceed to dashboard
+      if (!res.isNewUser && res.user.preferences?.goals?.length) {
+        navigate('/dashboard');
+      } else {
+        setStep(2);
+      }
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+        setError(data?.message || "Couldn't verify that code. Please try again.");
+      } else {
+        setError('Verification failed. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle Resend Code
+  const handleResendCode = async () => {
+    if (resendCooldown > 0 || isResending) return;
+    setError('');
+    setIsResending(true);
+
+    try {
+      const res = await resendOtp(email.trim().toLowerCase(), 'registration');
+      setResendCooldown(res.resendCooldownSeconds || 60);
+      setOtp('');
+      showToast('New code sent! ✉️', 'A fresh 6-digit code has been dispatched.');
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data;
+        setError(data?.message || 'Could not resend code. Please try again shortly.');
+      } else {
+        setError('Failed to resend code.');
+      }
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -187,22 +226,22 @@ export const RegisterPage: React.FC = () => {
       await updateUserPreferences({
         focusAreas,
         dailyCommitment,
-        goals
+        goals,
       });
-      
-      // Update local storage returning stats cache
-      localStorage.setItem('daily_forge_last_user', JSON.stringify({
-        name: user?.name || name || 'Developer',
-        streakDays: 0,
-        consistency: 100,
-        tasksCompleted: 0,
-        activeGoals: goals.length,
-      }));
 
-      // Clear onboarding draft
+      localStorage.setItem(
+        'daily_forge_last_user',
+        JSON.stringify({
+          name: user?.name || name || 'Developer',
+          streakDays: 0,
+          consistency: 100,
+          tasksCompleted: 0,
+          activeGoals: goals.length,
+        })
+      );
+
       localStorage.removeItem('daily_forge_onboarding_draft');
-
-      showToast('Forge Configured! ⚙️', 'Your dashboard insights have been prepared.');
+      showToast('Forge Configured! ⚙️', 'Your personal dashboard has been prepared.');
       setStep(5);
     } catch (err: unknown) {
       console.error(err);
@@ -214,7 +253,6 @@ export const RegisterPage: React.FC = () => {
 
   const handlePrev = () => {
     setError('');
-    // Prevent logged-in users from backing into account creation
     if (step > 2) {
       setStep(step - 1);
     } else if (step === 2 && !isAuthenticated) {
@@ -222,72 +260,77 @@ export const RegisterPage: React.FC = () => {
     }
   };
 
-  // Step definition details
   const steps = [
-    { num: 1, label: 'Account' },
+    { num: 1, label: 'Verify' },
     { num: 2, label: 'Focus' },
     { num: 3, label: 'Commitment' },
-    { num: 4, label: 'Goals' }
+    { num: 4, label: 'Goals' },
   ];
 
-  // Onboarding Selection Cards Data
   const focusOptions = [
     { id: 'study', icon: GraduationCap, title: 'Study', desc: 'Academics, learning new skills, or research.' },
-    { id: 'career', icon: Laptop, title: 'Career', desc: 'Professional growth, tasks, or side projects.' },
-    { id: 'fitness', icon: Dumbbell, title: 'Fitness', desc: 'Workout routines, diet, and physical habits.' },
+    { id: 'career', icon: Laptop, title: 'Career', desc: 'Professional growth, projects, or work routines.' },
+    { id: 'fitness', icon: Dumbbell, title: 'Fitness', desc: 'Workout routines, diet, and physical health.' },
     { id: 'growth', icon: Brain, title: 'Personal Growth', desc: 'Mindfulness, reading, journaling, and tracking.' },
-    { id: 'productivity', icon: Zap, title: 'Productivity', desc: 'Time management, organization, and focus.' },
-    { id: 'multiple', icon: Rocket, title: 'Multiple Goals', desc: 'Balancing multiple spheres simultaneously.' }
+    { id: 'productivity', icon: Zap, title: 'Productivity', desc: 'Time management, organization, and deep focus.' },
+    { id: 'multiple', icon: Rocket, title: 'Multiple Goals', desc: 'Balancing multiple growth spheres simultaneously.' },
   ];
 
   const commitmentOptions = [
     { id: '30m', title: '30 minutes', text: 'Slight habit building. Easy to start.' },
     { id: '60m', title: '60 minutes', text: 'Moderate execution. Highly recommended.' },
-    { id: '90m', title: '90 minutes', text: 'Substantial daily efforts. serious track.' },
-    { id: '2h+', title: '2+ hours', text: 'High-intensity transformation routines.' }
+    { id: '90m', title: '90 minutes', text: 'Substantial daily efforts. Serious consistency.' },
+    { id: '2h+', title: '2+ hours', text: 'High-intensity transformation routines.' },
   ];
 
   const goalOptions = [
-    'Consistency', 'Focus', 'Time Management', 'Learning', 'Career Growth', 
-    'Fitness', 'Habits', 'Productivity', 'Personal Growth'
+    'Consistency',
+    'Focus',
+    'Time Management',
+    'Learning',
+    'Career Growth',
+    'Fitness',
+    'Habits',
+    'Productivity',
+    'Personal Growth',
   ];
 
   return (
     <AuthLayout>
-      <div className="space-y-6">
-        {/* Step Indicator Header (Only for Steps 1-4) */}
+      <div className="space-y-6 text-left">
+        {/* Step Indicator Header */}
         {step <= 4 && (
-          <div className="w-full pb-6 border-b border-border/10">
+          <div className="w-full pb-5 border-b border-border">
             <div className="flex items-center justify-between max-w-sm mx-auto relative">
               {/* Progress Line */}
               <div className="absolute top-4 left-4 right-4 h-0.5 bg-muted -z-0">
-                <div 
+                <div
                   className="h-full bg-primary transition-all duration-300"
                   style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
                 />
               </div>
-              
+
               {steps.map((s) => {
                 const isActive = step === s.num;
                 const isCompleted = step > s.num;
                 return (
                   <div key={s.num} className="flex flex-col items-center gap-1.5 z-10">
-                    <div 
+                    <div
                       className={cn(
-                        "h-8.5 w-8.5 rounded-full flex items-center justify-center font-bold text-xs border transition-all duration-300",
-                        isCompleted 
-                          ? "bg-primary border-primary text-white" 
+                        'h-8 w-8 rounded-full flex items-center justify-center font-bold text-xs border transition-all duration-300',
+                        isCompleted
+                          ? 'bg-primary border-primary text-white'
                           : isActive
-                          ? "bg-card border-primary text-primary ring-4 ring-primary/10"
-                          : "bg-card border-border text-foreground0"
+                          ? 'bg-surface-elevated border-primary text-primary ring-4 ring-primary/15 font-black'
+                          : 'bg-surface-sunken border-border text-muted-foreground'
                       )}
                     >
                       {isCompleted ? <Check className="h-4 w-4" /> : s.num}
                     </div>
-                    <span 
+                    <span
                       className={cn(
-                        "text-[10px] font-bold tracking-wide uppercase transition-colors duration-300",
-                        isActive ? "text-primary" : "text-muted-foreground/60"
+                        'text-[10px] font-bold tracking-wide uppercase transition-colors duration-300',
+                        isActive ? 'text-primary font-extrabold' : 'text-muted-foreground/60'
                       )}
                     >
                       {s.label}
@@ -301,143 +344,58 @@ export const RegisterPage: React.FC = () => {
 
         {/* Global Error Banner */}
         {error && (
-          <div className="p-3 rounded-lg bg-danger/10 border border-danger/20 text-danger text-xs font-medium animate-shake">
+          <div className="p-3.5 rounded-xl bg-danger/10 border border-danger/25 text-danger text-xs font-semibold animate-shake">
             {error}
           </div>
         )}
 
-        {/* ================= STEP 1: CREATE ACCOUNT ================= */}
-        {step === 1 && (
-          <div className="space-y-4 animate-fade-in">
-            <div className="space-y-1.5 text-left">
+        {/* ================= STEP 1: EMAIL OTP AUTHENTICATION ================= */}
+        {step === 1 && authStage === 'enter_email' && (
+          <div className="space-y-5 animate-fade-in">
+            <div className="space-y-1.5">
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
-                Create your Daily Forge
+                Create your DailyForge account
               </h2>
               <p className="text-sm text-muted-foreground">
-                Build better days, one decision at a time.
+                Build consistency. One day at a time.
               </p>
             </div>
 
-            <form onSubmit={handleStep1Submit} className="space-y-4 pt-2">
+            <form onSubmit={handleSendCode} className="space-y-4 pt-1">
               <Input
-                label="Full Name"
-                placeholder="Your name"
+                label="Full Name (Optional)"
+                placeholder="What should we call you?"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 leftIcon={<User className="h-4 w-4" />}
-                required
                 disabled={isSubmitting}
-                className="bg-card border-border text-foreground"
               />
 
               <Input
                 label="Email Address"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="you@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 leftIcon={<Mail className="h-4 w-4" />}
                 required
+                autoFocus
                 disabled={isSubmitting}
-                className="bg-card border-border text-foreground"
-              />
-
-              <div className="space-y-2">
-                <Input
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Min. 8 characters with caps & numbers"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  leftIcon={<Lock className="h-4 w-4" />}
-                  rightIcon={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground hover:text-foreground focus:outline-none"
-                    >
-                      {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
-                    </button>
-                  }
-                  required
-                  disabled={isSubmitting}
-                  className="bg-card border-border text-foreground"
-                />
-
-                {/* Password strength checklist */}
-                {password && (
-                  <div className="p-3 bg-card border border-border/5 rounded-lg space-y-2.5">
-                    <div className="space-y-1">
-                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className={cn(
-                            "h-full transition-all duration-300",
-                            strength >= 75 ? 'bg-success' : strength >= 50 ? 'bg-warning' : 'bg-danger'
-                          )}
-                          style={{ width: `${strength}%` }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground text-right font-medium">
-                        {strength >= 75 ? 'Strong password' : strength >= 50 ? 'Medium strength' : 'Weak password'}
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] text-muted-foreground">
-                      <div className={cn("flex items-center gap-1.5", password.length >= 8 ? "text-success" : "")}>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>8+ characters</span>
-                      </div>
-                      <div className={cn("flex items-center gap-1.5", /[A-Z]/.test(password) ? "text-success" : "")}>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Uppercase letter</span>
-                      </div>
-                      <div className={cn("flex items-center gap-1.5", /[a-z]/.test(password) ? "text-success" : "")}>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Lowercase letter</span>
-                      </div>
-                      <div className={cn("flex items-center gap-1.5", /[0-9]/.test(password) ? "text-success" : "")}>
-                        <Check className="h-3.5 w-3.5" />
-                        <span>Number included</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <Input
-                label="Confirm Password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Repeat your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                leftIcon={<Lock className="h-4 w-4" />}
-                rightIcon={
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="text-muted-foreground hover:text-foreground focus:outline-none"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
-                  </button>
-                }
-                required
-                disabled={isSubmitting}
-                className="bg-card border-border text-foreground"
               />
 
               <Button
                 type="submit"
                 variant="primary"
-                className="w-full h-10 mt-2 font-semibold active:scale-[0.98] transition-transform"
+                className="w-full h-11 font-bold shadow-md active:scale-[0.98] transition-all"
                 isLoading={isSubmitting}
                 rightIcon={<ArrowRight className="h-4 w-4" />}
                 disabled={isSubmitting}
               >
-                Create Account
+                Send Verification Code
               </Button>
             </form>
 
-            <div className="text-center text-xs text-muted-foreground pt-2 border-t border-border/10">
+            <div className="text-center text-xs text-muted-foreground pt-3 border-t border-border/80">
               Already have an account?{' '}
               <Link to="/login" className="text-primary font-bold hover:text-primary-hover transition-colors">
                 Sign in
@@ -446,19 +404,100 @@ export const RegisterPage: React.FC = () => {
           </div>
         )}
 
-        {/* ================= STEP 2: FOCUS ================= */}
+        {/* ================= STEP 1 (OTP ENTRY CARD): CHECK YOUR EMAIL ================= */}
+        {step === 1 && authStage === 'enter_otp' && (
+          <div className="space-y-5 animate-fade-in text-center">
+            {/* Header Icon */}
+            <div className="mx-auto h-12 w-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-xs">
+              <Mail className="h-6 w-6" />
+            </div>
+
+            <div className="space-y-1.5">
+              <h2 className="text-2xl font-black tracking-tight text-foreground">
+                Check your email
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                We sent a 6-digit verification code to
+              </p>
+              <p className="text-xs font-mono font-extrabold text-foreground bg-surface-sunken px-3 py-1 rounded-lg border border-border inline-block">
+                {maskedEmail || email}
+              </p>
+            </div>
+
+            {/* 6-Digit OTP Input Box with auto-paste support */}
+            <div className="py-2">
+              <OtpInput
+                value={otp}
+                onChange={setOtp}
+                onComplete={(completedCode) => handleVerifyCode(completedCode)}
+                disabled={isSubmitting}
+                hasError={!!error}
+                autoFocus
+              />
+            </div>
+
+            {/* Verify CTA */}
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => handleVerifyCode()}
+              className="w-full h-11 font-bold shadow-md active:scale-[0.98] transition-all"
+              isLoading={isSubmitting}
+              disabled={isSubmitting || otp.length < 6}
+            >
+              Verify & Continue
+            </Button>
+
+            {/* Resend Code Section with Live Countdown */}
+            <div className="pt-2 text-xs text-muted-foreground flex flex-col items-center gap-1.5">
+              <span>Didn&apos;t receive it?</span>
+              {resendCooldown > 0 ? (
+                <span className="font-mono text-xs text-muted-foreground/80 font-bold">
+                  Resend code in <strong className="text-foreground">{resendCooldown}s</strong>
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={isResending}
+                  className="text-primary font-bold hover:text-primary-hover transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <RefreshCw className={cn('h-3.5 w-3.5', isResending && 'animate-spin')} />
+                  <span>Resend code</span>
+                </button>
+              )}
+            </div>
+
+            {/* Change Email */}
+            <div className="pt-2 border-t border-border/80">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthStage('enter_email');
+                  setOtp('');
+                  setError('');
+                }}
+                className="text-[11px] text-muted-foreground hover:text-foreground font-semibold transition-colors cursor-pointer"
+              >
+                &larr; Use a different email
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ================= STEP 2: FOCUS AREAS ================= */}
         {step === 2 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="space-y-1.5 text-left">
+            <div className="space-y-1.5">
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 What are you currently focused on?
               </h2>
               <p className="text-sm text-muted-foreground">
-                We&apos;ll use this to personalize your experience.
+                We&apos;ll use this to personalize your Daily Forge intelligence.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3.5 pt-2 max-h-[360px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 gap-3 pt-2 max-h-[360px] overflow-y-auto pr-1">
               {focusOptions.map((opt) => {
                 const isSelected = focusAreas.includes(opt.title);
                 const IconComponent = opt.icon;
@@ -474,35 +513,32 @@ export const RegisterPage: React.FC = () => {
                       }
                     }}
                     className={cn(
-                      "flex flex-col text-left p-4 rounded-xl border transition-all select-none focus:outline-none min-h-[110px] justify-between cursor-pointer",
-                      isSelected 
-                        ? "border-primary bg-primary/10 shadow-md ring-2 ring-primary/20 text-foreground" 
-                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted"
+                      'flex flex-col text-left p-4 rounded-xl border transition-all select-none focus:outline-none min-h-[110px] justify-between cursor-pointer',
+                      isSelected
+                        ? 'border-primary bg-primary/10 shadow-sm ring-2 ring-primary/20 text-foreground'
+                        : 'border-border bg-surface-elevated text-muted-foreground hover:border-primary/50 hover:bg-muted/50'
                     )}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <IconComponent className={cn("h-6 w-6 shrink-0", isSelected ? "text-primary" : "text-muted-foreground")} />
+                      <IconComponent
+                        className={cn('h-6 w-6 shrink-0', isSelected ? 'text-primary' : 'text-muted-foreground')}
+                      />
                       {isSelected && <Check className="h-4.5 w-4.5 text-primary" />}
                     </div>
                     <div>
                       <h4 className="text-xs font-bold text-foreground">{opt.title}</h4>
-                      <p className="text-[10px] text-muted-foreground/80 leading-normal mt-0.5">{opt.desc}</p>
+                      <p className="text-[10px] text-muted-foreground leading-normal mt-0.5">{opt.desc}</p>
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex gap-3 pt-4 border-t border-border/10">
-              {!isAuthenticated && (
-                <Button variant="outline" onClick={handlePrev} className="h-10 px-4">
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-              )}
-              <Button 
-                variant="primary" 
-                onClick={handleStep2Next} 
-                className="flex-1 h-10 font-semibold"
+            <div className="flex gap-3 pt-4 border-t border-border">
+              <Button
+                variant="primary"
+                onClick={handleStep2Next}
+                className="w-full h-10 font-bold"
                 rightIcon={<ArrowRight className="h-4 w-4" />}
               >
                 Continue
@@ -511,10 +547,10 @@ export const RegisterPage: React.FC = () => {
           </div>
         )}
 
-        {/* ================= STEP 3: DAILY COMMITMENT ================= */}
+        {/* ================= STEP 3: COMMITMENT ================= */}
         {step === 3 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="space-y-1.5 text-left">
+            <div className="space-y-1.5">
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 How much can you commit each day?
               </h2>
@@ -523,7 +559,7 @@ export const RegisterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-3 pt-2">
+            <div className="space-y-2.5 pt-2">
               {commitmentOptions.map((opt) => {
                 const isSelected = dailyCommitment === opt.title;
                 return (
@@ -532,35 +568,40 @@ export const RegisterPage: React.FC = () => {
                     type="button"
                     onClick={() => setDailyCommitment(opt.title)}
                     className={cn(
-                      "w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer focus:outline-none",
-                      isSelected 
-                        ? "border-primary bg-primary/10 ring-2 ring-primary/20"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:bg-muted"
+                      'w-full flex items-center justify-between p-4 rounded-xl border text-left transition-all cursor-pointer focus:outline-none',
+                      isSelected
+                        ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                        : 'border-border bg-surface-elevated text-muted-foreground hover:border-primary/50 hover:bg-muted/50'
                     )}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={cn("h-4.5 w-4.5 rounded-full border flex items-center justify-center shrink-0", isSelected ? "border-primary" : "border-border")}>
+                      <div
+                        className={cn(
+                          'h-4.5 w-4.5 rounded-full border flex items-center justify-center shrink-0',
+                          isSelected ? 'border-primary' : 'border-border'
+                        )}
+                      >
                         {isSelected && <div className="h-2 w-2 rounded-full bg-primary" />}
                       </div>
                       <div>
                         <h4 className="text-xs font-bold text-foreground">{opt.title}</h4>
-                        <p className="text-[10px] text-slate-450 mt-0.5">{opt.text}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{opt.text}</p>
                       </div>
                     </div>
-                    <Clock className="h-4.5 w-4.5 text-muted-foreground/50" />
+                    <Clock className="h-4 w-4 text-muted-foreground/60" />
                   </button>
                 );
               })}
             </div>
 
-            <div className="flex gap-3 pt-4 border-t border-border/10">
+            <div className="flex gap-3 pt-4 border-t border-border">
               <Button variant="outline" onClick={handlePrev} className="h-10 px-4">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="primary" 
-                onClick={handleStep3Next} 
-                className="flex-1 h-10 font-semibold"
+              <Button
+                variant="primary"
+                onClick={handleStep3Next}
+                className="flex-1 h-10 font-bold"
                 rightIcon={<ArrowRight className="h-4 w-4" />}
               >
                 Continue
@@ -572,7 +613,7 @@ export const RegisterPage: React.FC = () => {
         {/* ================= STEP 4: GOALS ================= */}
         {step === 4 && (
           <div className="space-y-4 animate-fade-in">
-            <div className="space-y-1.5 text-left">
+            <div className="space-y-1.5">
               <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
                 What would you like to improve?
               </h2>
@@ -581,7 +622,7 @@ export const RegisterPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2.5 pt-2 max-h-[300px] overflow-y-auto">
+            <div className="flex flex-wrap gap-2 pt-2 max-h-[300px] overflow-y-auto">
               {goalOptions.map((goalName) => {
                 const isSelected = goals.includes(goalName);
                 return (
@@ -596,10 +637,10 @@ export const RegisterPage: React.FC = () => {
                       }
                     }}
                     className={cn(
-                      "px-4 py-2.5 rounded-full border text-xs font-bold transition-all cursor-pointer focus:outline-none flex items-center gap-1.5 select-none",
+                      'px-4 py-2 rounded-full border text-xs font-bold transition-all cursor-pointer focus:outline-none flex items-center gap-1.5 select-none',
                       isSelected
-                        ? "border-primary bg-primary text-foreground hover:bg-primary-hover shadow-sm"
-                        : "border-border bg-card text-muted-foreground hover:border-primary/50"
+                        ? 'border-primary bg-primary text-white shadow-xs'
+                        : 'border-border bg-surface-elevated text-muted-foreground hover:border-primary/50'
                     )}
                   >
                     <span>{goalName}</span>
@@ -609,14 +650,14 @@ export const RegisterPage: React.FC = () => {
               })}
             </div>
 
-            <div className="flex gap-3 pt-4 border-t border-border/10">
+            <div className="flex gap-3 pt-4 border-t border-border">
               <Button variant="outline" onClick={handlePrev} className="h-10 px-4">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <Button 
-                variant="primary" 
-                onClick={handleStep4Submit} 
-                className="flex-1 h-10 font-semibold"
+              <Button
+                variant="primary"
+                onClick={handleStep4Submit}
+                className="flex-1 h-10 font-bold"
                 isLoading={isSubmitting}
                 rightIcon={<ArrowRight className="h-4 w-4" />}
                 disabled={isSubmitting}
@@ -629,72 +670,63 @@ export const RegisterPage: React.FC = () => {
 
         {/* ================= STEP 5: ONBOARDING SUCCESS ================= */}
         {step === 5 && (
-          <div className="space-y-5 animate-fade-in py-2 text-left">
+          <div className="space-y-5 animate-fade-in py-2 text-center">
             <div className="flex justify-center my-2">
-              <div className="h-14 w-14 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-ai-glow">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-ai-glow">
                 <Sparkles className="h-7 w-7 animate-pulse" />
               </div>
             </div>
 
-            <div className="space-y-1.5 text-center">
-              <h2 className="text-2xl font-extrabold text-foreground tracking-tight">
+            <div className="space-y-1.5">
+              <h2 className="text-2xl font-black text-foreground tracking-tight">
                 Your Forge is Ready
               </h2>
               <p className="text-xs text-muted-foreground">
-                Welcome to Daily Forge, <span className="text-primary font-bold">{user?.name || name || 'Developer'}</span>.
+                Welcome to Daily Forge, <span className="text-primary font-bold">{user?.name || name || 'Forger'}</span>.
               </p>
             </div>
 
-            {/* System Configuration Box */}
-            <div className="bg-card border border-border rounded-xl p-5 space-y-4">
-              <div className="space-y-2 border-b border-border/10 pb-3">
-                <span className="text-[10px] font-bold text-primary tracking-widest uppercase">System Profile</span>
-                <p className="text-xs text-slate-350 leading-relaxed font-semibold">
-                  Your tracking nodes are initialized for:
+            {/* System Configuration Summary Card */}
+            <div className="bg-surface-elevated border border-border rounded-2xl p-5 space-y-4 text-left shadow-sm">
+              <div className="space-y-2 border-b border-border/80 pb-3">
+                <span className="text-[10px] font-extrabold text-primary tracking-widest uppercase">System Profile</span>
+                <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
+                  Tracking nodes initialized for:
                 </p>
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {focusAreas.map((f) => (
-                    <span key={f} className="text-[9px] font-bold bg-muted text-slate-300 border border-border/5 px-2 py-0.5 rounded">
+                    <span key={f} className="text-[10px] font-bold bg-surface-sunken text-foreground border border-border px-2.5 py-0.5 rounded-lg">
                       {f}
                     </span>
                   ))}
-                  <span className="text-[9px] font-bold bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded">
+                  <span className="text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 px-2.5 py-0.5 rounded-lg">
                     {dailyCommitment}/day
                   </span>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <span className="text-[10px] font-bold text-cyan-400 tracking-widest uppercase">Objectives Configured</span>
-                <p className="text-xs text-slate-350 flex items-center justify-between">
+                <span className="text-[10px] font-extrabold text-cyan-500 tracking-widest uppercase">Objectives Configured</span>
+                <p className="text-xs text-muted-foreground flex items-center justify-between">
                   <span>Consistency Focus:</span>
                   <span className="font-bold text-foreground">{goals.slice(0, 3).join(', ')}</span>
                 </p>
-                <div className="bg-success/5 border border-success/15 rounded-lg p-2.5 mt-2 flex items-center justify-between">
-                  <div>
-                    <span className="text-[9px] font-extrabold text-success tracking-wide uppercase">First Objective</span>
-                    <h5 className="text-xs font-bold text-foreground mt-0.5">Complete your first day</h5>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-success/80">0 / 3 tasks</span>
-                </div>
               </div>
             </div>
 
             <Button
               variant="primary"
               onClick={() => {
-                // Clear any drafts from storage
                 localStorage.removeItem('daily_forge_onboarding_draft');
                 navigate('/dashboard');
               }}
-              className="w-full h-10 mt-3 font-semibold text-foreground bg-gradient-to-r from-primary to-indigo-600 hover:from-primary-hover hover:to-indigo-700 shadow-md flex items-center justify-center gap-1.5 select-none active:scale-[0.98] transition-transform"
+              className="w-full h-11 font-bold shadow-md flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
             >
               <span>Enter Your Dashboard</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>
         )}
-
       </div>
     </AuthLayout>
   );

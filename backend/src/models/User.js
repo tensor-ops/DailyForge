@@ -34,7 +34,20 @@ const UserSchema = new mongoose.Schema(
     },
     passwordHash: {
       type: String,
-      required: [true, 'Password is required'],
+      default: null,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    emailVerifiedAt: {
+      type: Date,
+      default: null,
+    },
+    authProvider: {
+      type: String,
+      enum: ['email_otp', 'password', 'google'],
+      default: 'email_otp',
     },
     avatarUrl: {
       type: String,
@@ -137,7 +150,7 @@ const UserSchema = new mongoose.Schema(
 
 // Password hashing pre-save hook
 UserSchema.pre('save', async function () {
-  if (!this.isModified('passwordHash')) return;
+  if (!this.isModified('passwordHash') || !this.passwordHash) return;
   if (!this.passwordHash.startsWith('$2a$') && !this.passwordHash.startsWith('$2b$')) {
     this.passwordHash = await hashPassword(this.passwordHash);
   }
@@ -145,6 +158,7 @@ UserSchema.pre('save', async function () {
 
 // Compare password method
 UserSchema.methods.comparePassword = async function (candidatePassword) {
+  if (!this.passwordHash) return false;
   return comparePassword(candidatePassword, this.passwordHash);
 };
 

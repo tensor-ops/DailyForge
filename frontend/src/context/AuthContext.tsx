@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, AuthState } from '@/types/user';
-import { authService } from '@/services/authService';
+import { authService, SendOtpResponse, AuthResponse } from '@/services/authService';
 import { userService } from '@/services/userService';
 
 interface AuthContextType extends AuthState {
+  sendOtp: (email: string, purpose?: string) => Promise<SendOtpResponse>;
+  verifyOtp: (email: string, otp: string, purpose?: string, name?: string) => Promise<AuthResponse>;
+  resendOtp: (email: string, purpose?: string) => Promise<SendOtpResponse>;
   login: (email: string, password?: string) => Promise<void>;
   register: (name: string, email: string, password?: string, confirmPassword?: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -59,6 +62,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
+  const sendOtp = async (email: string, purpose: string = 'registration') => {
+    return await authService.sendOtp(email, purpose);
+  };
+
+  const verifyOtp = async (
+    email: string,
+    otp: string,
+    purpose: string = 'registration',
+    name?: string
+  ) => {
+    setIsLoading(true);
+    try {
+      const res = await authService.verifyOtp(email, otp, purpose, name);
+      setUser(res.user);
+      setToken(res.token);
+      return res;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resendOtp = async (email: string, purpose: string = 'registration') => {
+    return await authService.resendOtp(email, purpose);
+  };
+
   const login = async (email: string, password?: string) => {
     setIsLoading(true);
     try {
@@ -67,12 +95,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(res.token);
     } catch (err) {
       setIsLoading(false);
-      throw err; // Re-throw so LoginPage can show the error
+      throw err;
     }
     setIsLoading(false);
   };
 
-  const register = async (name: string, email: string, password?: string, confirmPassword?: string) => {
+  const register = async (
+    name: string,
+    email: string,
+    password?: string,
+    confirmPassword?: string
+  ) => {
     setIsLoading(true);
     try {
       const res = await authService.register(name, email, password, confirmPassword);
@@ -80,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(res.token);
     } catch (err) {
       setIsLoading(false);
-      throw err; // Re-throw so RegisterPage can show the error
+      throw err;
     }
     setIsLoading(false);
   };
@@ -113,6 +146,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!user && !!token,
         isLoading,
+        sendOtp,
+        verifyOtp,
+        resendOtp,
         login,
         register,
         logout,

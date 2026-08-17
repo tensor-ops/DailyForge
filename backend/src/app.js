@@ -88,9 +88,9 @@ app.get('/health', (req, res) => {
 const swaggerDocument = {
   openapi: '3.0.0',
   info: {
-    title: 'AI Habit Tracker API',
+    title: 'DailyForge API',
     version: '1.0.0',
-    description: 'Enterprise REST API Documentation for AI Habit Tracker',
+    description: 'Production-ready REST API for DailyForge Habit, Consistency & Productivity Operating System with Email OTP Auth',
   },
   servers: [
     {
@@ -98,6 +98,148 @@ const swaggerDocument = {
       description: 'Local development server',
     },
   ],
+  paths: {
+    '/auth/send-otp': {
+      post: {
+        summary: 'Send 6-digit verification OTP to email address',
+        tags: ['Authentication'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email'],
+                properties: {
+                  email: { type: 'string', format: 'email', example: 'user@gmail.com' },
+                  purpose: { type: 'string', enum: ['registration', 'login', 'verification', 'reset_password'], default: 'registration' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'Verification code sent successfully (OTP is never returned to client)',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Verification code sent' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        maskedEmail: { type: 'string', example: 'u••••@gmail.com' },
+                        expiresInMinutes: { type: 'number', example: 5 },
+                        resendCooldownSeconds: { type: 'number', example: 60 },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Validation error, resend cooldown active, or email limit reached' },
+        },
+      },
+    },
+    '/auth/verify-otp': {
+      post: {
+        summary: 'Verify 6-digit OTP code, authenticate user, and issue JWT session token',
+        tags: ['Authentication'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email', 'otp'],
+                properties: {
+                  email: { type: 'string', format: 'email', example: 'user@gmail.com' },
+                  otp: { type: 'string', minLength: 6, maxLength: 6, example: '483921' },
+                  purpose: { type: 'string', enum: ['registration', 'login', 'verification', 'reset_password'], default: 'registration' },
+                  name: { type: 'string', example: 'Parth' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: 'OTP verified successfully and session established',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    success: { type: 'boolean', example: true },
+                    message: { type: 'string', example: 'Email verified successfully' },
+                    data: {
+                      type: 'object',
+                      properties: {
+                        user: { type: 'object' },
+                        token: { type: 'string' },
+                        isNewUser: { type: 'boolean' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: { description: 'Invalid OTP code, expired code, or max attempts exceeded' },
+        },
+      },
+    },
+    '/auth/resend-otp': {
+      post: {
+        summary: 'Resend 6-digit verification OTP code to email address',
+        tags: ['Authentication'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email'],
+                properties: {
+                  email: { type: 'string', format: 'email', example: 'user@gmail.com' },
+                  purpose: { type: 'string', enum: ['registration', 'login', 'verification', 'reset_password'], default: 'registration' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'A new verification code has been sent.' },
+          400: { description: 'Cooldown active or hourly limit reached' },
+        },
+      },
+    },
+    '/auth/me': {
+      get: {
+        summary: 'Get currently authenticated user details',
+        tags: ['Authentication'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Current user profile returned' },
+          401: { description: 'Unauthorized' },
+        },
+      },
+    },
+    '/auth/logout': {
+      post: {
+        summary: 'Log out and invalidate session',
+        tags: ['Authentication'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Logged out successfully' },
+        },
+      },
+    },
+  },
   components: {
     securitySchemes: {
       bearerAuth: {

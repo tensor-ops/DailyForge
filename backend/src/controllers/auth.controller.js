@@ -1,6 +1,48 @@
 const authService = require('../services/auth.service');
 const { sendSuccess } = require('../utils/response');
 
+async function sendOtp(req, res, next) {
+  try {
+    const result = await authService.sendOtp({
+      email: req.body.email,
+      purpose: req.body.purpose || 'registration',
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+    return sendSuccess(res, result, 'Verification code sent', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function verifyOtp(req, res, next) {
+  try {
+    const result = await authService.verifyOtp({
+      email: req.body.email,
+      otp: req.body.otp,
+      purpose: req.body.purpose || 'registration',
+      name: req.body.name,
+    });
+    return sendSuccess(res, result, 'Email verified successfully', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function resendOtp(req, res, next) {
+  try {
+    const result = await authService.resendOtp({
+      email: req.body.email,
+      purpose: req.body.purpose || 'registration',
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
+    return sendSuccess(res, result, 'A new verification code has been sent.', 200);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function register(req, res, next) {
   try {
     const result = await authService.registerUser(req.body);
@@ -37,6 +79,9 @@ async function logout(req, res, next) {
 }
 
 module.exports = {
+  sendOtp,
+  verifyOtp,
+  resendOtp,
   register,
   login,
   getMe,
